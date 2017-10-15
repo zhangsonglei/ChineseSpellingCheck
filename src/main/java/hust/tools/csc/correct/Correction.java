@@ -2,6 +2,7 @@ package hust.tools.csc.correct;
 
 import java.util.List;
 
+import hust.tools.csc.detecet.Detecetion;
 import hust.tools.csc.util.Sentence;
 import hust.tools.csc.util.Word;
 
@@ -13,7 +14,7 @@ import hust.tools.csc.util.Word;
  *<li>Date: 2017年10月10日
  *</ul>
  */
-public interface Correction {
+public interface Correction extends Detecetion {
 
 	/**
 	 * 给定句子的n元模型概率
@@ -28,11 +29,4 @@ public interface Correction {
 	 * @return 所有检测出错位置的所有可能的纠正词
 	 */
 	List<Word> getSuggestions(Word word);
-	
-//	/**
-//	 * 该句子分词后的词串
-//	 * @param sentence	待分词的句子
-//	 * @return	分词后的词串
-//	 */
-//	Word[] getSegmentedSequence(Sentence sentence);
 }
