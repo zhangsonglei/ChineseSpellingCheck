@@ -73,5 +73,4 @@ public class WordTest {
 	public void testToString() {
 		assertEquals("12345", word.toString());
 	}
-
 }

@@ -2,14 +2,14 @@ package hust.tools.csc.util;
 
 /**
  *<ul>
- *<li>Description: passage中的词 
+ *<li>Description: 句子中的词 
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年10月10日
  *</ul>
  */
-public class Word implements Comparable<Word>{
-	  
+public class Word implements Comparable<Word> {
+	
 	/**
 	 * 词的内容
 	 */
@@ -45,6 +45,13 @@ public class Word implements Comparable<Word>{
 		this.copy(word);
 	}
 
+	/**
+	 * 设置该词的结束位置索引
+	 */
+	private void setEnd() {
+		end = start + word.length() - 1;
+	}
+	
 	/**
 	 * 返回该词的结束位置索引.
 	 * @return 该词的结束位置索引
@@ -97,18 +104,16 @@ public class Word implements Comparable<Word>{
 		setEnd();
 	}
 	
+	/**
+	 * 获取给定索引位置的字符
+	 * @param index	给定的索引
+	 * @return		给定索引位置的字符
+	 */
 	public Character getCharacter(int index) {
 		if(index > end || index < start)
 			return null;
 		
 		return word.toCharArray()[index - start];
-	}
-
-	/**
-	 * 设置该词的结束位置索引
-	 */
-	private void setEnd() {
-		end = start + word.length() - 1;
 	}
 	
 	/**

@@ -19,6 +19,7 @@ import java.util.List;
  *<li>@author Sonly
  *<li>Date: 2017年10月11日
  *</ul>
+ * @param <T>
  */
 public abstract class AbstractSentenceStream implements SenteceStream {
 	
@@ -27,19 +28,19 @@ public abstract class AbstractSentenceStream implements SenteceStream {
 	/**
 	 * 每次读取的行数
 	 */
-	private final int  slide_length = 10000;
+	private final int  slide_length = 1000;
 
 	/**
 	 * 流式读取的迭代器
 	 */
-	private Iterator<String> sentences = Collections.<String>emptyList().iterator();
+	private Iterator<Sentence> sentences = Collections.<Sentence>emptyList().iterator();
 
 	/**
 	 * 将训练语料解析成句子序列的抽象方法
 	 * @param lines 从训练语料中读取的行
 	 * @return 解析后的句子序列
 	 */
-	protected abstract Iterator<String> createSentences(List<String> lines);
+	protected abstract Iterator<Sentence> createSentences(List<String> lines);
 
 	public AbstractSentenceStream(String pathname, String encoding) throws FileNotFoundException, UnsupportedEncodingException {
 		File file = new File(pathname);
@@ -57,12 +58,11 @@ public abstract class AbstractSentenceStream implements SenteceStream {
 	 * @return 下一个句子
 	 * @throws IOException 如果读取过程中出错，抛出异常
 	 */
-	public final String next() throws IOException {
+	public final Sentence next() throws IOException {
 
 		if (sentences.hasNext()) {
 			return sentences.next();
-		}
-		else {
+		}else {
 			List<String> lines = new ArrayList<>();
 			String line = null;
 			int size = 0;
