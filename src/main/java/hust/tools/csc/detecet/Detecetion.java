@@ -57,4 +57,5 @@ public interface Detecetion {
 	 * @return			检测出的错误词
 	 */
 	Word[] getErrorWords(Sentence sentence);
+	
 }
