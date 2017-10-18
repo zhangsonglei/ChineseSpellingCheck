@@ -14,19 +14,18 @@ import hust.tools.csc.util.Word;
  *<li>Date: 2017年10月10日
  *</ul>
  */
-public interface Correction extends Detecetion {
-
-	/**
-	 * 给定句子的n元模型概率
-	 * @param sentence	待计算n元模型概率的句子
-	 * @param n	n元模型的最大阶数
-	 * @return	n元模型概率	
-	 */
-	double nGramProbablility(Sentence sentence, int n);
+public interface Corrector extends Detecetion {
 	
 	/**
 	 * 获取所有检测出错位置的所有可能的纠正词
 	 * @return 所有检测出错位置的所有可能的纠正词
 	 */
 	List<Word> getSuggestions(Word word);
+	
+	/**
+	 * 系统自动纠正给定句子中的错字
+	 * @param sentence	待纠正的句子
+	 * @return			纠正后的句子
+	 */
+	Sentence correct();
 }

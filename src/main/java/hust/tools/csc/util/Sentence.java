@@ -2,67 +2,101 @@ package hust.tools.csc.util;
 
 /**
  *<ul>
- *<li>Description: 句子接口 
+ *<li>Description: 句子抽象类
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年10月12日
  *</ul>
  */
-public interface Sentence {
+public class Sentence implements Comparable<Sentence>{
+	
+	private String sentence;
+	
+	public Sentence(String sentence) {
+		this.sentence = sentence;
+	}
 	
 	/**
 	 * 该句子的字符长度
 	 * @return	字符长度
 	 */
-	int length();
+	public int length(){
+		return sentence.length();
+	}
 	
 	/**
 	 * 返回是否包含子串str
 	 * @param str	待检索的子串
 	 * @return		true-包含/false-不包含
 	 */
-	boolean contains(String str);
-	
-	/**
-	 * 返回是否以子串str为开头
-	 * @param str	待检索的子串
-	 * @return		true-是/false-不是
-	 */
-	boolean startWith(String str);
-	
-	/**
-	 * 返回是否以子串str为结尾
-	 * @param str	待检索的子串
-	 * @return		true-是/false-不是
-	 */
-	boolean endWith(String str);
-	
-	/**
-	 * 返回第一个与给定元素匹配成功的位置索引
-	 * @param element	待匹配的元素
-	 * @return			第一个与给定元素匹配成功的位置索引
-	 */
-	int indexOf(String str);
+	public boolean contains(String str) {
+		return sentence.contains(str);
+	}
 	
 	/**
 	 * 返回给定索引位置的元素
 	 * @param index	待返回的位置索引
 	 * @return		给定索引位置的元素
 	 */
-	String getContent(int index);
+	public String getStr(int index) {		
+		if(index > -1 && index < length())
+			return sentence.split("")[index];
+		
+		return null;
+	}
 	
 	/**
 	 * 替换给定索引的元素
 	 * @param index	待替换的位置索引
 	 */
-	void setCharacter(int index, String character);
-	
+	public String update(int index, String string) {
+		String[] sen = sentence.split("");
+		if(index > -1 && index < length())
+			sen[index] = string;
+		
+		sentence = "";
+		for(String str : sen)
+			sentence += str;
+		
+		return sentence;
+	}
+
 	@Override
-	int hashCode();
-	
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((sentence == null) ? 0 : sentence.hashCode());
+		return result;
+	}
+
 	@Override
-	boolean equals(Object obj);
-	
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Sentence other = (Sentence) obj;
+		if (sentence == null) {
+			if (other.sentence != null)
+				return false;
+		} else if (!sentence.equals(other.sentence))
+			return false;
+		return true;
+	}
+
 	@Override
-	String toString();
+	public String toString() {
+		return sentence;
+	}
+
+	@Override
+	public int compareTo(Sentence arg0) {
+		int res = sentence.compareTo(arg0.sentence);
+		if(res == 0)
+			return 0;
+		else
+			return res > 0 ? 1 : -1;
+	}
 }
