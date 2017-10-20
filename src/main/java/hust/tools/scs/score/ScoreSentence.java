@@ -1,5 +1,7 @@
 package hust.tools.scs.score;
 
+import hust.tools.csc.util.Sentence;
+
 /**
  *<ul>
  *<li>Description: 为句子打分的接口 
@@ -10,5 +12,5 @@ package hust.tools.scs.score;
  */
 public interface ScoreSentence {
 
-	public double score();
+	public double score(Sentence sentence);
 }

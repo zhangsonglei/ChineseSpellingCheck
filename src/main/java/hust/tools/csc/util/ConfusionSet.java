@@ -1,5 +1,7 @@
 package hust.tools.csc.util;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -16,111 +18,143 @@ public class ConfusionSet {
 	/**
 	 * 词与其所有候选词（音同、音近、形近...的）的映射
 	 */
-	private HashMap<Word, HashSet<Word>> confusionSet;
+	private HashMap<String, HashSet<String>> confusionSet;
 	
-	public ConfusionSet(HashMap<Word, HashSet<Word>> confusionSet) {
+	public ConfusionSet(HashMap<String, HashSet<String>> confusionSet) {
 		this.confusionSet = confusionSet;
 	}
 	
+	public ConfusionSet(BufferedReader file) {
+		constructConfusionSet(file);
+	}
+	
+	private void constructConfusionSet(BufferedReader stream) {
+		confusionSet = new HashMap<String, HashSet<String>>();
+		String line = "";
+		try {
+			while ((line = stream.readLine())!= null) {
+				line = FormatConvert.ToDBC(line).replace("\\s+", "").trim();
+				if(!line.equals("")) {
+					String[] strings = line.split("");
+					add(strings);
+				}
+			}
+			stream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
-	 * 返回给定词的候选词数量
-	 * @param word	给定的词
-	 * @return		给定词的候选词数量
+	 * 返回给定字的候选字数量
+	 * @param charcater	给定的字
+	 * @return		给定字的候选字数量
 	 */
-	public int getConfusionCounts(Word word) {
-		if(contains(word))
-			return getConfusions(word).size();
+	public int getConfusionCounts(String charcater) {
+		if(contains(charcater))
+			return getConfusions(charcater).size();
 		
 		return 0;
 	}
 	
 	/**
-	 * 返回给定词的所有候选词的列表
-	 * @param word	给定的词
-	 * @return		给定词的所有候选词的列表
+	 * 返回给定字的所有候选字的列表
+	 * @param charcater	给定的字
+	 * @return		给定字的所有候选字的列表
 	 */
-	public HashSet<Word> getConfusions(Word word) {
-		if(contains(word))
-			return confusionSet.get(word);
+	public HashSet<String> getConfusions(String charcater) {
+		if(contains(charcater))
+			return confusionSet.get(charcater);
 		
 		return null;
 	}
 	
 	/**
-	 * 为给定词添加一个候选词
-	 * @param word		待添加的词
-	 * @param confusion	待添加的候选词
+	 * 为给定字添加一个候选字
+	 * @param charcater	待添加的字
+	 * @param confusion	待添加的候选字
 	 */
-	public void add(Word word, Word confusion) {
-		if(contains(word)) 
-			confusionSet.get(word).add(confusion);
+	public void add(String charcater, String confusion) {
+		if(contains(charcater)) 
+			confusionSet.get(charcater).add(confusion);
 		else {
-			HashSet<Word> confusions = new HashSet<>();
+			HashSet<String> confusions = new HashSet<>();
 			confusions.add(confusion);
-			confusionSet.put(word, confusions);
+			confusionSet.put(charcater, confusions);
 		}
 	}
 	
 	/**
-	 * 为给定词添加一组候选词
-	 * @param word		待添加的词
-	 * @param confusions待添加的候选词
+	 * 为给定字添加一组候选字
+	 * @param charcater	待添加的字
+	 * @param confusions待添加的候选字
 	 */
-	public void add(Word word, HashSet<Word> confusions) {
-		if(contains(word))
+	public void add(String charcater, HashSet<String> confusions) {
+		if(contains(charcater))
 			confusionSet.get(confusions).addAll(confusions);
 		else 
-			confusionSet.put(word, confusions);
+			confusionSet.put(charcater, confusions);
 	}
 	
 	/**
-	 * 从候选词集中删除给定词
-	 * @param word	待删除的词
-	 * @return		待删除的词的所有候选词
+	 * 添加一组候选字
+	 * @param confusions	
 	 */
-	public HashSet<Word> remove(Word word) {
-		HashSet<Word> rmWords = null;
+	public void add(String... confusions) {
+		if(confusions.length > 1) {
+			for(int i = 1; i < confusions.length; i++)
+				add(confusions[0], confusions[i]);
+		}		
+	}
+	
+	/**
+	 * 从候选字集中删除给定字
+	 * @param charcater	待删除的字
+	 * @return			待删除的词的所有候选字
+	 */
+	public HashSet<String> remove(String charcater) {
+		HashSet<String> confusions = null;
 		
-		if(contains(word)) {
-			rmWords = getConfusions(word);
-			confusionSet.remove(word);
+		if(contains(charcater)) {
+			confusions = getConfusions(charcater);
+			confusionSet.remove(charcater);
 		}
 		
-		return rmWords;
+		return confusions;
 	}
 	
 	/**
-	 * 从给定词的候选词集中删除给定的候选词
-	 * @param word		待删除的词
-	 * @param confusion	待删除的词的候选词
+	 * 从给定字的候选字集中删除给定的候选字
+	 * @param charcater	待删除的字
+	 * @param confusion	待删除的字的候选字
 	 */
-	public void remove(Word word, Word confusion) {
-		if(contains(word)) 
-			if(getConfusions(word).contains(confusion))
-				getConfusions(word).remove(confusion);
+	public void remove(String charcater, String confusion) {
+		if(contains(charcater)) 
+			if(getConfusions(charcater).contains(confusion))
+				getConfusions(charcater).remove(confusion);
 	}
 	
 	/**
-	 * 判断候选词集中是否包含给定词
-	 * @param word	给定词
-	 * @return		true-包含/false-不包含
+	 * 判断候选字集中是否包含给定字
+	 * @param charcater	给定字
+	 * @return			true-包含/false-不包含
 	 */
-	public boolean contains(Word word) {
-		if(confusionSet.containsKey(word))
+	public boolean contains(String charcater) {
+		if(confusionSet.containsKey(charcater))
 			return true;
 		
 		return false;
 	}
 	
 	/**
-	 * 判断给定词的候选词集中是否包含给定候选词
-	 * @param word		给定词
-	 * @param confusion	给定候选词
+	 * 判断给定字的候选字集中是否包含给定候选字
+	 * @param charcater	给定字
+	 * @param confusion	给定候选字
 	 * @return			true-包含/false-不包含
 	 */
-	public boolean contains(Word word, Word confusion) {
-		if(contains(word))
-			if(getConfusions(word).contains(confusion))
+	public boolean contains(String charcater, String confusion) {
+		if(contains(charcater))
+			if(getConfusions(charcater).contains(confusion))
 				return true;
 		
 		return false;

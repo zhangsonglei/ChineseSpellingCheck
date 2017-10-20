@@ -2,9 +2,9 @@ package hust.tools.csc.correct;
 
 import java.util.List;
 
-import hust.tools.csc.detecet.Detecetion;
+import hust.tools.csc.detecet.Detector;
+import hust.tools.csc.detecet.SpellError;
 import hust.tools.csc.util.Sentence;
-import hust.tools.csc.util.Word;
 
 /**
  *<ul>
@@ -14,13 +14,13 @@ import hust.tools.csc.util.Word;
  *<li>Date: 2017年10月10日
  *</ul>
  */
-public interface Corrector extends Detecetion {
+public interface Corrector extends Detector {
 	
 	/**
-	 * 获取所有检测出错位置的所有可能的纠正词
+	 * 返回检测出错位置的所有可能的纠正词队列，按照优先级别排序
 	 * @return 所有检测出错位置的所有可能的纠正词
 	 */
-	List<Word> getSuggestions(Word word);
+	List<String> getSuggestions(SpellError error);
 	
 	/**
 	 * 系统自动纠正给定句子中的错字

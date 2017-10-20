@@ -1,37 +1,23 @@
 package hust.tools.csc.detecet;
 
 import hust.tools.csc.util.Sentence;
-import hust.tools.csc.wordseg.AbstractWordSegment;
-import hust.tools.csc.wordseg.CKIPWordSegment;
-import hust.tools.scs.score.NGramScoreSentence;
-import hust.tools.scs.score.ScoreSentence;
 
 public abstract class AbstractDetector implements Detector {
 	
 	protected Sentence sentence;
-	private AbstractWordSegment wordSegment; 
-	private ScoreSentence scoreSentence;
 	
 	public AbstractDetector(Sentence sentence) {
-		this.sentence = sentence;
-		wordSegment = new CKIPWordSegment(sentence);
-		scoreSentence = new NGramScoreSentence(sentence);
+		this.sentence = sentence;		
 	}
 	
-	@Override
-	public int wordCounts(Sentence sentence) {
-		return wordSegment.segment().length;
-	}
+	/**
+	 * 返回分词结果的
+	 * @param sentence
+	 * @return
+	 */
+	public abstract String[] wordSegment(Sentence sentence);
 	
-	@Override
-	public String[] wordSegment(Sentence sentence) {		
-		return wordSegment.segment();
-	}
-	
-	@Override
-	public double scoreSentence(Sentence sentence) {
-		return scoreSentence.score();
-	}
+	public abstract double scoreSentence(Sentence sentence);
 	
 	public abstract void sort();
 }

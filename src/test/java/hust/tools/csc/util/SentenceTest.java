@@ -8,37 +8,38 @@ import org.junit.Test;
 public class SentenceTest {
 
 	private Sentence sentence;
-	Sentence sentence1 = new Sentence("我爱中国。");
-	Sentence sentence2 = new Sentence("我爱中国人。");
-	Sentence sentence3 = new Sentence("我爱中国");
+	Sentence sentence1 = new Sentence("我","爱","中","国","。");
+	Sentence sentence2 = new Sentence("我","爱","中","国","人","。");
+	Sentence sentence3 = new Sentence("我","爱","中","国");
 	
 	@Before
 	public void setup() {
-		sentence = new Sentence("我爱中国。");
+		sentence = new Sentence("我","爱","中","国","。");
 	}
 
 	@Test
 	public void testLength() {
-		assertEquals(5, sentence.length());
+		assertEquals(5, sentence.size());
 	}
 
 	@Test
 	public void testContains() {
-		assertTrue(sentence.contains("中国"));
-		assertFalse(sentence.contains("中华"));
+		assertTrue(sentence.contains("中"));
+		assertFalse(sentence.contains("华"));
 	}
 
 	@Test
 	public void testValueOf() {
-		assertEquals("我", sentence.getStr(0));
-		assertEquals("。", sentence.getStr(4));
-		assertEquals(null, sentence.getStr(5));
-		assertEquals(null, sentence.getStr(-1));
+		assertEquals("我", sentence.getToken(0));
+		assertEquals("。", sentence.getToken(4));
+		assertEquals(null, sentence.getToken(5));
+		assertEquals(null, sentence.getToken(-1));
 	}
 
 	@Test
 	public void testUpdate() {
-		assertEquals("我爱中国人。", sentence.update(3, "国人"));
+		sentence.setToken(3, "华");
+		assertEquals("[我,爱,中,华,。]", sentence.toString());
 	}
 
 	@Test

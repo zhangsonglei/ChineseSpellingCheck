@@ -2,8 +2,8 @@ package hust.tools.csc.correct;
 
 import java.util.List;
 
+import hust.tools.csc.detecet.SpellError;
 import hust.tools.csc.util.Sentence;
-import hust.tools.csc.util.Word;
 
 public abstract class AbstractCorrector implements Corrector {
 
@@ -14,7 +14,7 @@ public abstract class AbstractCorrector implements Corrector {
 	}
 	
 	@Override
-	public List<Word> getSuggestions(Word word) {
+	public List<String> getSuggestions(SpellError error) {
 		return null;
 	}
 	

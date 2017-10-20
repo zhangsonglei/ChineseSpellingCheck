@@ -2,47 +2,20 @@ package hust.tools.csc.detecet;
 
 import hust.tools.csc.util.Sentence;
 
+/**
+ *<ul>
+ *<li>Description: 句子错误检测器接口 
+ *<li>Company: HUST
+ *<li>@author Sonly
+ *<li>Date: 2017年10月20日
+ *</ul>
+ */
 public interface Detector {
 	
 	/**
-	 * 返回该句子中的词的数量
+	 * 返回给定句子检测错误的结果
 	 * @param sentence	待检测的句子
-	 * @return	所有词的数量
+	 * @return			检测错误的结果
 	 */
-	int wordCounts(Sentence sentence);
-	
-	/**
-	 * 返回组成该句子的所有词
-	 * @param sentence	待分词的句子
-	 * @return	所有组成该句子的词
-	 */
-	String[] wordSegment(Sentence sentence);
-	
-	/**
-	 * 为给定句子进行打分
-	 * @param sentence	待打分的句子
-	 * @return	给定句子的分数
-	 */
-	double scoreSentence(Sentence sentence);
-	
-	/**
-	 * 给定句子检测出的错误词的数量
-	 * @param sentence	待检测的句子
-	 * @return			检测出的错误词数量
-	 */
-	int getErrorWordCounts(Sentence sentence);
-	
-	/**
-	 * 给定句子检测出的所有错误词的位置
-	 * @param sentence	待检测的句子
-	 * @return 			所有错误词的位置
-	 */
-	int[] getErrorWordLocations(Sentence sentence);
-	
-	/**
-	 * 给定句子检测出的所有错误词
-	 * @param sentence	待检测的句子
-	 * @return			检测出的错误词
-	 */
-	String[] getErrorWords(Sentence sentence);
+	DetectResult detect(Sentence sentence);
 }

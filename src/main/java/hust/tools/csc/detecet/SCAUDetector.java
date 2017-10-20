@@ -17,20 +17,21 @@ public class SCAUDetector extends AbstractDetector {
 	}
 
 	@Override
-	public int getErrorWordCounts(Sentence sentence) {
+	public DetectResult detect(Sentence sentence) {
+		return null;
+	}
+
+
+	@Override
+	public String[] wordSegment(Sentence sentence) {
+		return null;
+	}
+
+	@Override
+	public double scoreSentence(Sentence sentence) {
 		return 0;
 	}
-
-	@Override
-	public int[] getErrorWordLocations(Sentence sentence) {
-		return null;
-	}
-
-	@Override
-	public String[] getErrorWords(Sentence sentence) {
-		return null;
-	}
-
+	
 	@Override
 	public void sort() {
 		
