@@ -1,4 +1,4 @@
-package hust.tools.scs.score;
+package hust.tools.csc.score;
 
 import hust.tools.csc.util.ConfusionSet;
 import hust.tools.csc.util.Sentence;
