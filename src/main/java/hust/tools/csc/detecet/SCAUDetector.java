@@ -21,8 +21,11 @@ public class SCAUDetector extends AbstractDetector {
 		return null;
 	}
 
-
-	@Override
+	/**
+	 * 返回句子分词后的词串
+	 * @param sentence	待分词的句子
+	 * @return			分词后的词串
+	 */
 	public String[] wordSegment(Sentence sentence) {
 		return null;
 	}
@@ -35,5 +38,15 @@ public class SCAUDetector extends AbstractDetector {
 	@Override
 	public void sort() {
 		
+	}
+
+	@Override
+	public String[] getErrorCharacter() {
+		return null;
+	}
+
+	@Override
+	public int[] getErrorLocation() {
+		return null;
 	}
 }

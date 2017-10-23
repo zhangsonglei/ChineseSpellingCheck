@@ -10,13 +10,6 @@ public abstract class AbstractDetector implements Detector {
 		this.sentence = sentence;		
 	}
 	
-	/**
-	 * 返回分词结果的
-	 * @param sentence
-	 * @return
-	 */
-	public abstract String[] wordSegment(Sentence sentence);
-	
 	public abstract double scoreSentence(Sentence sentence);
 	
 	public abstract void sort();
