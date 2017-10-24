@@ -1,7 +1,5 @@
 package hust.tools.csc.util;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -24,26 +22,30 @@ public class ConfusionSet {
 		this.confusionSet = confusionSet;
 	}
 	
-	public ConfusionSet(BufferedReader file) {
-		constructConfusionSet(file);
-	}
-	
-	private void constructConfusionSet(BufferedReader stream) {
-		confusionSet = new HashMap<String, HashSet<String>>();
-		String line = "";
-		try {
-			while ((line = stream.readLine())!= null) {
-				line = FormatConvert.ToDBC(line).replace("\\s+", "").trim();
-				if(!line.equals("")) {
-					String[] strings = line.split("");
-					add(strings);
-				}
-			}
-			stream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+//	public ConfusionSet(BufferedReader file) {
+//		constructConfusionSet(file);
+//	}
+//	
+//	/**
+//	 * 根据困惑集语料构造困惑矩阵
+//	 * @param stream	困惑集语料
+//	 */
+//	private void constructConfusionSet(BufferedReader stream) {
+//		confusionSet = new HashMap<String, HashSet<String>>();
+//		String line = "";
+//		try {
+//			while ((line = stream.readLine())!= null) {
+//				line = FormatConvert.ToDBC(line).replace("\\s+", "").trim();
+//				if(!line.equals("")) {
+//					String[] strings = line.split("");
+//					add(strings);
+//				}
+//			}
+//			stream.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	/**
 	 * 返回给定字的候选字数量
@@ -91,7 +93,7 @@ public class ConfusionSet {
 	 */
 	public void add(String charcater, HashSet<String> confusions) {
 		if(contains(charcater))
-			confusionSet.get(confusions).addAll(confusions);
+			confusionSet.get(charcater).addAll(confusions);
 		else 
 			confusionSet.put(charcater, confusions);
 	}

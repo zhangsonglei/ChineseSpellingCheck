@@ -1,6 +1,6 @@
 package hust.tools.csc.detecet;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  *<ul>
@@ -15,9 +15,9 @@ public class DetectResult {
 	/**
 	 * 检测的拼写错误列表
 	 */
-	private List<SpellError> errorList;
+	private ArrayList<SpellError> errorList;
 		
-	public DetectResult(List<SpellError> errorList) {
+	public DetectResult(ArrayList<SpellError> errorList) {
 		this.errorList = errorList;
 	}
 
@@ -42,7 +42,7 @@ public class DetectResult {
 	 * 返回拼写错误的集合
 	 * @return	拼写错误的集合
 	 */
-	public List<SpellError> getErrors() {
+	public ArrayList<SpellError> getErrors() {
 		return errorList;
 	}
 }
