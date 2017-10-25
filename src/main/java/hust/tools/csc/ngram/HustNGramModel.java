@@ -3,11 +3,8 @@ package hust.tools.csc.ngram;
 import java.io.IOException;
 
 import hust.tools.csc.util.Sentence;
-import hust.tools.ngram.model.AbstractLanguageModelTrainer;
-import hust.tools.ngram.model.KneserNeyLanguageModelTrainer;
 import hust.tools.ngram.model.NGramLanguageModel;
 import hust.tools.ngram.utils.Gram;
-import hust.tools.ngram.utils.GramSentenceStream;
 import hust.tools.ngram.utils.NGram;
 import hust.tools.ngram.utils.StringGram;
 
@@ -23,9 +20,8 @@ public class HustNGramModel implements NGramModel {
 	
 	NGramLanguageModel nGramModel;
 	
-	public HustNGramModel(GramSentenceStream gramSentenceStream, int  n) throws IOException {
-		AbstractLanguageModelTrainer trainer = new KneserNeyLanguageModelTrainer(gramSentenceStream, n);
-		nGramModel = trainer.trainModel();
+	public HustNGramModel(NGramLanguageModel nGramModel) throws IOException {
+		this.nGramModel = nGramModel;
 	}
 
 	@Override

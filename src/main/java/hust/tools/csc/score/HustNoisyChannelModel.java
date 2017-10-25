@@ -3,6 +3,7 @@ package hust.tools.csc.score;
 import java.io.IOException;
 
 import hust.tools.csc.ngram.HustNGramModel;
+import hust.tools.csc.ngram.NGramModel;
 import hust.tools.csc.util.ConfusionSet;
 import hust.tools.csc.util.Dictionary;
 import hust.tools.csc.util.Sentence;
@@ -24,9 +25,8 @@ public class HustNoisyChannelModel extends AbstractNoisyChannelModel {
 	private String[][] V;
 	private String[] trigrams;
 	
-	public HustNoisyChannelModel(GramSentenceStream gramSentenceStream, int order, ConfusionSet confusionSet, 
-			Dictionary dictionary) throws IOException {
-		nGramModel = new HustNGramModel(gramSentenceStream, 3);
+	public HustNoisyChannelModel(NGramModel nGramModel, ConfusionSet confusionSet, Dictionary dictionary) throws IOException {
+		this.nGramModel = nGramModel;
 		this.confusionSet = confusionSet;
 		this.dictionary = dictionary;
 	}
