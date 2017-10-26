@@ -1,5 +1,6 @@
 package hust.tools.csc.correct;
 
+import hust.tools.csc.detecet.SpellError;
 import hust.tools.csc.util.Sentence;
 
 /**
@@ -11,17 +12,30 @@ import hust.tools.csc.util.Sentence;
  *</ul>
  */
 public interface Corrector {
-	
+
 	/**
-	 * 返回检测出错位置的所有可能的纠正词优先队列
-	 * @return 所有检测出错位置的所有可能的纠正词
+	 * 返回所有检测出的错误字的候选字
+	 * @return	所有检测出的错误字的候选字
 	 */
-	SuggestionQueue[] getSuggestions();
+	public String[][] getSuggestions();
+
+	/**
+	 * 返回指定检测出的错误字的候选字
+	 * @param spellError	指定的检测出的错误字
+	 * @return				指定检测出的错误字的候选字
+	 */
+	public String[] getSuggestions(SpellError spellError);
 	
 	/**
 	 * 系统自动纠正给定句子中的错字
 	 * @param sentence	待纠正的句子
 	 * @return			纠正后的句子
 	 */
-	Sentence correct();
+	public CorrectResult correct();
+	
+	/**
+	 * 系统自动返回一个纠正句
+	 * @return	
+	 */
+	public Sentence autoCorrect();
 }

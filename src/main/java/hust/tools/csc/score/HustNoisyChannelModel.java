@@ -19,7 +19,7 @@ import hust.tools.ngram.utils.GramSentenceStream;
  */
 public class HustNoisyChannelModel extends AbstractNoisyChannelModel {
 	private ConfusionSet confusionSet;
-	private double INIT_Parameter = 0.5;
+	private double INIT_Parameter = 35;
 	private Dictionary dictionary;
 	private double[][][] dp;
 	private String[][] V;
@@ -38,7 +38,7 @@ public class HustNoisyChannelModel extends AbstractNoisyChannelModel {
 		trigrams = null;
 		Sentence candidate = null;
 		
-		trigramDP();
+		trigramDP(sentence);
 		getNoisyChannelModelLogScore(candidate);
 		return candidate;
 	}
@@ -71,35 +71,33 @@ public class HustNoisyChannelModel extends AbstractNoisyChannelModel {
 	/**
 	 * 动态规划
 	 */
-	private void trigramDP() {
-		for(String string : trigrams) {
-			String c0 = null;
-			String c1 = null;
-			for(int k = 0; k < V[0].length; k++) {
-				for(int l = 0; l < V[1].length; l++) {
-					if(V[0][k] == c0) 
-						dp[1][k][l] = INIT_Parameter;
+	private void trigramDP(Sentence sentence) {
+			String c0 = sentence.getToken(0);
+			String c1 = sentence.getToken(1);
+
+			//初始化得分数组
+			for(int i = 0; i < V[0].length; i++) {		//遍历句子第一个字个所有候选字
+				for(int j = 0; j < V[1].length; j++) {	//遍历句子第二个字个所有候选字
+					if(V[0][i] == c0) 
+						dp[1][i][j] = INIT_Parameter;
 					else
-						dp[1][k][l] = 1.0;
+						dp[1][i][j] = 1.0;
 					
-					if(V[1][l] == c1)
-						dp[1][k][l] = dp[1][k][l] * INIT_Parameter; 		
+					if(V[1][j] == c1)
+						dp[1][i][j] = dp[1][i][j] * INIT_Parameter;
 				}
 			}
 			
-	////////////////////
-			
-			for(int i = 2; i < string.length(); i++) {
+			//动态规划计算最佳得分
+			for(int i = 2; i < sentence.size(); i++) {	//遍历句子的每一个字
 				for(int j = 0; j < V[i - 2].length; j++) {
 					for(int k = 0; k < V[i - 1].length; k++) {
 						for(int l = 0; l < V[i].length; l++) {
 							double score = getLogScore(V[i - 2][k] + V[i - 1][j] + V[i][l]);
 							dp[i][k][l] = Math.max(dp[i][k][l], dp[i-1][j][k] * score);
-						}
-					}
-				}
-			}
-		}
+						}//end for(l)
+					}//end for(k)
+				}//end for(j)
+			}//end for(i)
 	}
-
 }

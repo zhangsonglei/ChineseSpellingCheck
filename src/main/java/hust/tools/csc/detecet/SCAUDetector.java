@@ -19,6 +19,7 @@ public class SCAUDetector implements Detector {
 	
 	private NoisyChannelModel noisyChannelModel;
 	private Sentence sentence;
+	
 	public SCAUDetector(Sentence sentence) {
 		this.sentence = sentence;
 	}

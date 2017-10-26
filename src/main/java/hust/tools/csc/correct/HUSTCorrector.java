@@ -1,9 +1,11 @@
 package hust.tools.csc.correct;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
 import hust.tools.csc.detecet.Detector;
+import hust.tools.csc.detecet.SpellError;
 import hust.tools.csc.score.NoisyChannelModel;
 import hust.tools.csc.util.ConfusionSet;
 import hust.tools.csc.util.Dictionary;
@@ -41,30 +43,40 @@ public class HUSTCorrector implements Corrector {
 	}
 	
 	@Override
-	public SuggestionQueue[] getSuggestions() {
+	public CorrectResult correct() {
 		int[] locations = detector.getErrorLocation();
 		String[] characters = detector.getErrorCharacter();
 		
-		SuggestionQueue[] res = new SuggestionQueue[locations.length];
+		HashMap<Integer, Suggestions> map = new HashMap<>();
 		
 		for(int i = 0; i < locations.length; i++) {
 			HashSet<String> set = confusionSet.getConfusions(characters[i]);
 			Iterator<String> iterator = set.iterator();
 			
-			Suggestion[] suggestions = new Suggestion[set.size()];
+			Suggestions suggestions = new Suggestions();
 			for(int j = 0; j < set.size(); j++) {
 				String character = iterator.next();
-				suggestions[j] = new Suggestion(character, dictionary.getCount(character), locations[i]);
+				suggestions.add(new Correction(character, dictionary.getCount(character), locations[i]));
 			}
 			
-			res[i] =  new SuggestionQueue(suggestions);
+			map.put(locations[i], suggestions);
 		}
 		
-		return res;
+		return new CorrectResult(map);
 	}
 	
 	@Override
-	public Sentence correct() {
+	public Sentence autoCorrect() {
 		return noisyChannelModel.getCorrectSentence(sentence);
+	}
+
+	@Override
+	public String[][] getSuggestions() {
+		return null;
+	}
+
+	@Override
+	public String[] getSuggestions(SpellError spellError) {
+		return null;
 	}
 }
