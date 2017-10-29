@@ -1,6 +1,8 @@
 package hust.tools.csc.wordseg;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -24,16 +26,16 @@ import tw.cheyingwu.ckip.WordSegmentationService;
  */
 public class CKIPWordSegment extends AbstractWordSegment {
 	
-	public CKIPWordSegment(Sentence sentence) {
-		super(sentence);
+	public CKIPWordSegment() {
+	
 	}
 
 	@Override
-	public String[] segment() {
+	public ArrayList<String> segment(Sentence sentence) {
 		WordSegmentationService service = new CKIP("140.109.19.104", 1501, "zsl", "zsl");
 		service.setRawText(sentence.toString());
 		service.send();
-		
+
 		return parseToWords(service.getReturnText());
 	}
 	
@@ -42,8 +44,9 @@ public class CKIPWordSegment extends AbstractWordSegment {
 	 * @param text	CKIP分词标注的返回结果
 	 * @return		词组
 	 */
-	private String[] parseToWords(String xmlText) {
+	private ArrayList<String> parseToWords(String xmlText) {
 		String[] words = null;
+		ArrayList<String> res = new ArrayList<>();
 		
 		//解析CKIP分词标注器的返回结果
 		try {
@@ -58,13 +61,13 @@ public class CKIPWordSegment extends AbstractWordSegment {
 	        sen = FormatConvert.ToDBC(sen).trim();	//将全角格式转为半角格式
 	        words = sen.split("\\s+");
 	        
-	        for(int i = 0; i < words.length; i++) 
-	        	words[i] = words[i].split("\\(")[0];
+	        for(int i = 1; i < words.length; i++) 
+	        	res.add(words[i].split("\\(")[0]);
 	       
-		} catch (Exception e) {   
-			e.printStackTrace();   
+		} catch (Exception e) {  
+			e.printStackTrace();
 		}
 		
-		return words;
+		return res;
 	}
 }

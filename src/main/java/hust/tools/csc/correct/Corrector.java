@@ -31,11 +31,11 @@ public interface Corrector {
 	 * @param sentence	待纠正的句子
 	 * @return			纠正后的句子
 	 */
-	public CorrectResult correct();
+	public CorrectResult correct(Sentence sentence);
 	
 	/**
 	 * 系统自动返回一个纠正句
 	 * @return	
 	 */
-	public Sentence autoCorrect();
+	public Sentence autoCorrect(Sentence sentence);
 }

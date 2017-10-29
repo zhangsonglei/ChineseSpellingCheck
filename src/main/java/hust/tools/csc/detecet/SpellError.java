@@ -63,6 +63,6 @@ public class SpellError {
 
 	@Override
 	public String toString() {
-		return location + "[" + character + "]";
+		return "[" + location + ","+ character + "]";
 	}
 }

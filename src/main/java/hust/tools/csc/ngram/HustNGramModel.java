@@ -18,7 +18,7 @@ import hust.tools.ngram.utils.StringGram;
  */
 public class HustNGramModel implements NGramModel {
 	
-	NGramLanguageModel nGramModel;
+	private NGramLanguageModel nGramModel;
 	
 	public HustNGramModel(NGramLanguageModel nGramModel) throws IOException {
 		this.nGramModel = nGramModel;

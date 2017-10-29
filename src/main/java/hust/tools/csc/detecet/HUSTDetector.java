@@ -4,28 +4,16 @@ import java.util.ArrayList;
 
 import hust.tools.csc.score.NoisyChannelModel;
 import hust.tools.csc.util.Sentence;
-import hust.tools.csc.wordseg.AbstractWordSegment;
-import hust.tools.csc.wordseg.CKIPWordSegment;
 
-/**
- *<ul>
- *<li>Description: 由SCAU提出的基于n元模型的中文拼写检测器 
- *<li>Company: HUST
- *<li>@author Sonly
- *<li>Date: 2017年10月18日
- *</ul>
- */
-public class SCAUDetector implements Detector {
+public class HUSTDetector implements Detector{
 	
 	private NoisyChannelModel noisyChannelModel;
-	private Sentence sentence;
 	
-	public SCAUDetector(Sentence sentence) {
-		this.sentence = sentence;
+	public HUSTDetector(NoisyChannelModel noisyChannelModel) {
+		this.noisyChannelModel = noisyChannelModel;
 	}
-
-	@Override
-	public DetectResult detect() {
+	
+	public DetectResult detect(Sentence sentence) {
 		ArrayList<SpellError> errorList = new ArrayList<>();
 		
 		Sentence correct = noisyChannelModel.getCorrectSentence(sentence);
@@ -41,10 +29,12 @@ public class SCAUDetector implements Detector {
 		
 		return new DetectResult(errorList);
 	}
-
-	@Override
-	public String[] getErrorCharacter() {
-		DetectResult result = detect();
+	
+	/**
+	 * 返回所有检测出的错误的字
+	 * @return	所有检测出的错误的字
+	 */
+	public String[] getErrorCharacter(DetectResult result) {
 		int size = result.errorCounts();
 		String[] errorCharacters = new String[size];
 		
@@ -53,30 +43,18 @@ public class SCAUDetector implements Detector {
 		
 		return errorCharacters;
 	}
-
-	@Override
-	public int[] getErrorLocation() {
-		DetectResult result = detect();
+	
+	/**
+	 * 返回所有检测出的错误字的位置
+	 * @return	所有检测出的错误字的位置
+	 */
+	public int[] getErrorLocation(DetectResult result) {
 		int size = result.errorCounts();
 		int[] errorLoactions = new int[size];
 		
 		for(int i = 0; i < size; i++)
 			errorLoactions[i] = result.getErrors().get(i).getLocation();
 		
-		return errorLoactions;
-	}
-	
-	/**
-	 * 返回句子分词后的词串
-	 * @param sentence	待分词的句子
-	 * @return			分词后的词串
-	 */
-	public String[] wordSegment(Sentence sentence) {
-		if(sentence != null && sentence.size() > 0) {
-			AbstractWordSegment wordSegment = new CKIPWordSegment(sentence);
-			return wordSegment.segment();
-		}
-		
-		return null;
+		return errorLoactions;		
 	}
 }

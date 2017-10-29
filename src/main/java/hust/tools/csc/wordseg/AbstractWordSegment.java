@@ -1,5 +1,7 @@
 package hust.tools.csc.wordseg;
 
+import java.util.ArrayList;
+
 import hust.tools.csc.util.Sentence;
 
 /**
@@ -11,12 +13,10 @@ import hust.tools.csc.util.Sentence;
  *</ul>
  */
 public abstract class AbstractWordSegment {
-	
-	protected Sentence sentence;
-	
-	public AbstractWordSegment(Sentence sentence) {
-		this.sentence = sentence;
+		
+	public AbstractWordSegment() {
+		
 	}
 	
-	public abstract String[] segment();
+	public abstract ArrayList<String> segment(Sentence sentence);
 }

@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import hust.tools.csc.detecet.Detector;
+import hust.tools.csc.detecet.DetectResult;
+import hust.tools.csc.detecet.HUSTDetector;
 import hust.tools.csc.detecet.SpellError;
 import hust.tools.csc.score.NoisyChannelModel;
 import hust.tools.csc.util.ConfusionSet;
@@ -23,29 +24,27 @@ public class HUSTCorrector implements Corrector {
 
 	private Dictionary dictionary;
 	private ConfusionSet confusionSet;
-	protected Sentence sentence;
 	private NoisyChannelModel noisyChannelModel;
-	private Detector detector;
+	private HUSTDetector detector;
 	
-	public HUSTCorrector(ConfusionSet confusionSet, Dictionary dictionary, Detector detector, Sentence sentence) {
+	public HUSTCorrector(ConfusionSet confusionSet, Dictionary dictionary, HUSTDetector detector) {
 		this.confusionSet = confusionSet;
 		this.dictionary = dictionary;
-		this.sentence = sentence;
 		this.detector = detector;
 		this.noisyChannelModel = null;
 	}
 	
-	public HUSTCorrector(NoisyChannelModel noisyChannelModel, Sentence sentence) {
+	public HUSTCorrector(NoisyChannelModel noisyChannelModel) {
 		this.noisyChannelModel = noisyChannelModel;
-		this.sentence = sentence;
 		this.confusionSet = null;
 		this.dictionary = null;
 	}
 	
 	@Override
-	public CorrectResult correct() {
-		int[] locations = detector.getErrorLocation();
-		String[] characters = detector.getErrorCharacter();
+	public CorrectResult correct(Sentence sentence) {
+		DetectResult result = detector.detect(sentence);
+		int[] locations = detector.getErrorLocation(result);
+		String[] characters = detector.getErrorCharacter(result);
 		
 		HashMap<Integer, Suggestions> map = new HashMap<>();
 		
@@ -66,7 +65,7 @@ public class HUSTCorrector implements Corrector {
 	}
 	
 	@Override
-	public Sentence autoCorrect() {
+	public Sentence autoCorrect(Sentence sentence) {
 		return noisyChannelModel.getCorrectSentence(sentence);
 	}
 

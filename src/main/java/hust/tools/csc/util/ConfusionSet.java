@@ -26,26 +26,7 @@ public class ConfusionSet {
 //		constructConfusionSet(file);
 //	}
 //	
-//	/**
-//	 * 根据困惑集语料构造困惑矩阵
-//	 * @param stream	困惑集语料
-//	 */
-//	private void constructConfusionSet(BufferedReader stream) {
-//		confusionSet = new HashMap<String, HashSet<String>>();
-//		String line = "";
-//		try {
-//			while ((line = stream.readLine())!= null) {
-//				line = FormatConvert.ToDBC(line).replace("\\s+", "").trim();
-//				if(!line.equals("")) {
-//					String[] strings = line.split("");
-//					add(strings);
-//				}
-//			}
-//			stream.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
+
 
 	/**
 	 * 返回给定字的候选字数量
@@ -64,9 +45,9 @@ public class ConfusionSet {
 	 * @param charcater	给定的字
 	 * @return		给定字的所有候选字的列表
 	 */
-	public HashSet<String> getConfusions(String charcater) {
-		if(contains(charcater))
-			return confusionSet.get(charcater);
+	public HashSet<String> getConfusions(String character) {
+		if(contains(character))
+			return confusionSet.get(character);
 		
 		return null;
 	}

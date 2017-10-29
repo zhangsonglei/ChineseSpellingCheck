@@ -45,4 +45,16 @@ public class DetectResult {
 	public ArrayList<SpellError> getErrors() {
 		return errorList;
 	}
+	
+	@Override
+	public String toString() {
+		String string = "{";
+		
+		for(SpellError error : errorList) 
+			string += error+"  ";
+		
+		string = string.trim() + "}";
+		
+		return string;
+	}
 }

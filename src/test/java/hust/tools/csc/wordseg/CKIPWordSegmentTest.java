@@ -2,6 +2,8 @@ package hust.tools.csc.wordseg;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,17 +20,17 @@ public class CKIPWordSegmentTest {
 		words = new String[]{"網路", "交友", "是", "一", "件", "很", "浪費", "時間", "并", "危險", "的", "行為", "。"};
 		
 		sentence = new Sentence("網路交友是一件很浪費時間并危險的行為。");
-		wordSeg = new CKIPWordSegment(sentence);
+		wordSeg = new CKIPWordSegment();
 	}
 	
 	@Test
 	public void testSegment() {
-		String[] segs = wordSeg.segment();
-		
+		ArrayList<String> segs = wordSeg.segment(sentence);
+
 		for(int i = 0; i< words.length; i++) 
-			assertEquals(words[i], segs[i]);
+			assertEquals(words[i], segs.get(i));
 		
-		assertEquals(words.length, segs.length);
+		assertEquals(words.length, segs.size());
 	}
 
 }
