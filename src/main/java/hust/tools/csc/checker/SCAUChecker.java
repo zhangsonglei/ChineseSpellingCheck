@@ -35,12 +35,14 @@ public class SCAUChecker {
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		String dictFile = "";
-		String confusionFile = "";
+		String similarityPronunciation = "similarityPronunciation.txt";
+		String similarityShape = "similarityShape.txt";
+		
 		String lmFile = "";
 		String testFile = "";
 		
 		constructDict(new File(dictFile));
-		constructConfusionSet(new File(confusionFile));
+		constructConfusionSet(new File(similarityPronunciation), new File(similarityShape));
 		nGramModel = loadModel(lmFile);
 		wordSegment = new CKIPWordSegment();
 		
@@ -89,26 +91,47 @@ public class SCAUChecker {
 	 * @throws FileNotFoundException 
 	 * @throws IOException
 	 */
-	private static void constructConfusionSet(File file) throws IOException {
-		HashMap<String, HashSet<String>> map = new HashMap<>();
-		confusionSet = new ConfusionSet(map);
+	private static void constructConfusionSet(File similarityPronunciation, File similarityShape) throws IOException {
+		HashMap<String, HashSet<String>> Pronunciation = new HashMap<>();
+		HashMap<String, HashSet<String>> Shape = new HashMap<>();
+		confusionSet = new ConfusionSet(Pronunciation, Shape);
 		
-		InputStreamReader in = new InputStreamReader(new FileInputStream(file));
-		BufferedReader bReader = new BufferedReader(in);
+		InputStreamReader pronunciation = new InputStreamReader(new FileInputStream(similarityPronunciation));
+		InputStreamReader shape = new InputStreamReader(new FileInputStream(similarityPronunciation));
+		BufferedReader proReader = new BufferedReader(pronunciation);
+		BufferedReader shapeReader = new BufferedReader(shape);
 		
 		String line = "";
 		try {
-			while ((line = bReader.readLine())!= null) {
+			while ((line = proReader.readLine())!= null) {
 				line = FormatConvert.ToDBC(line).replace("\\s+", "").trim();
 				if(!line.equals("")) {
 					String[] strings = line.split("");
-					confusionSet.add(strings);
+					confusionSet.addSimilarityPronunciations(strings);
 				}
 			}
-			bReader.close();
+			proReader.close();
+			
+			while ((line = shapeReader.readLine())!= null) {
+				line = FormatConvert.ToDBC(line).replace("\\s+", "").trim();
+				if(!line.equals("")) {
+					String[] sentence = FormatConvert.ToDBC(line).split(",");
+					String key = sentence[0];
+					String[] values = sentence[1].split("");
+					HashSet<String> set = new HashSet<>();
+					for(int i = 0; i < values.length; i++) 
+						set.add(values[i]);
+					
+					confusionSet.addSimilarityShapes(key, set);
+				}
+			}
+			shapeReader.close();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		
 	}
 	
 	/**

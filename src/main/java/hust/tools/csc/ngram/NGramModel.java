@@ -31,5 +31,5 @@ public interface NGramModel {
 	 * @param grams	待求概率的串
 	 * @return		n元串的概率
 	 */
-	public double getNGramLogProb(String[] grams);
+	public double getNGramLogProb(String[] grams, int n);
 }

@@ -16,13 +16,25 @@ public interface Detector {
 	 * 返回所有检测出的错误的字
 	 * @return	所有检测出的错误的字
 	 */
-	String[] getErrorCharacter(DetectResult result);
+	String[][] getErrorCharacter(DetectResult result);
 	
 	/**
 	 * 返回所有检测出的错误字的位置
 	 * @return	所有检测出的错误字的位置
 	 */
-	int[] getErrorLocation(DetectResult result);
+	int[][] getErrorLocation(DetectResult result);
+	
+	/**
+	 * 返回所有检测出的错误的字
+	 * @return	所有检测出的错误的字
+	 */
+	String[] getErrorCharacter(DetectResult result, int n);
+	
+	/**
+	 * 返回所有检测出的错误字的位置
+	 * @return	所有检测出的错误字的位置
+	 */
+	int[] getErrorLocation(DetectResult result, int n);
 	
 	/**
 	 * 返回给定句子检测错误的结果

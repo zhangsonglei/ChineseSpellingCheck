@@ -1,5 +1,7 @@
 package hust.tools.csc.score;
 
+import java.util.ArrayList;
+
 import hust.tools.csc.util.Sentence;
 
 /**
@@ -17,5 +19,5 @@ public interface NoisyChannelModel {
 	 * @param sentence	原始句子	
 	 * @return			原始句子的正确结果
 	 */
-	public Sentence getCorrectSentence(Sentence sentence);
+	public ArrayList<Sentence> getCorrectSentence(Sentence sentence);
 }

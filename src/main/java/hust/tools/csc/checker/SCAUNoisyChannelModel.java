@@ -21,9 +21,9 @@ import hust.tools.csc.wordseg.AbstractWordSegment;
 public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	
 	private ConfusionSet confusionSet;
-	private double INIT_Parameter = 35;
+	private final double INIT_Parameter = 35;
+	private final double Lamda = 35;
 	private AbstractWordSegment wordSegment;
-	private Sentence correctSentence;
 	
 	public SCAUNoisyChannelModel(NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment) throws IOException {
 		this.nGramModel = nGramModel;
@@ -32,11 +32,13 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	}
 
 	@Override
-	public Sentence getCorrectSentence(Sentence sentence) {
+	public ArrayList<Sentence> getCorrectSentence(Sentence sentence) {
 		ArrayList<String> words = wordSegment.segment(sentence);
+		ArrayList<Sentence> candSens = new ArrayList<>();
 		
 		if(words.size() < 2) {//分词后，词的个数小于2的不作处理，不作处理直接返回原句
-			return sentence;
+			candSens.add(sentence);
+			return candSens;
 		}
 		
 		ArrayList<Integer> locations = locationsOfSingleWords(words);
@@ -50,15 +52,16 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 			 */
 			int maxLength = maxContinueSingleWordsLength(locations);
 			if(maxLength == 2) {
-				correctSentence = bigramDP(sentence, candidateCharacters);
+				candSens = trigramDP(sentence, candidateCharacters, 2);
 			}else {
-				correctSentence = trigramDP(sentence, candidateCharacters);
+				candSens = trigramDP(sentence, candidateCharacters, 3);
 			}			
 			
-			return correctSentence;
+			return candSens;
 		}
 		
-		return sentence;
+		candSens.add(sentence);
+		return candSens;
 	}
 
 	/**
@@ -70,12 +73,13 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 		
 		for(int i = 0; i < sentence.size(); i++) {
 			String character = sentence.getToken(i);
-			HashSet<String> set = confusionSet.getConfusions(character);
+			HashSet<String> pronunciations = confusionSet.getSimilarityPronunciations(character);
+			HashSet<String> shapes = confusionSet.getSimilarityShapes(character);
 			
-			if(set != null) 
-				candidateCharacters[i] = set.toArray(new String[set.size()]);
-			else
-				candidateCharacters[i] = null;
+//			if(pronunciations != null) 
+//				candidateCharacters[i] = pronunciations.toArray(new String[pronunciations.size()]);
+//			else
+//				candidateCharacters[i] = null;
 		}
 		
 		return candidateCharacters;
@@ -115,7 +119,7 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 		ArrayList<Integer> locations = new ArrayList<>();
 		int index = 0;
 		for(String word : words) {
-			if(word.length() == 1) 
+			if(word.length() == 1)
 				locations.add(index);
 			
 			index += word.length();
@@ -125,41 +129,9 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	}
 	
 	/**
-	 * 二元动态规划
-	 */
-	private Sentence bigramDP(Sentence sentence, String[][] candidateCharacters) {
-		String c0 = sentence.getToken(0);
-		double[][][] dp = null;
-
-		//初始化得分数组
-		for(int i = 0; i < candidateCharacters[0].length; i++) {		//遍历句子第一个字个所有候选字
-			for(int j = 0; j < candidateCharacters[1].length; j++) {	//遍历句子第二个字个所有候选字
-				if(candidateCharacters[0][i] == c0)
-					dp[1][i][j] = INIT_Parameter;
-				else
-					dp[1][i][j] = 1.0;
-			}
-		}
-			
-		//动态规划计算最佳得分
-		for(int i = 2; i < sentence.size(); i++) {	//遍历句子的每一个字
-			for(int j = 0; j < candidateCharacters[i - 2].length; j++) {
-				for(int k = 0; k < candidateCharacters[i - 1].length; k++) {
-					for(int l = 0; l < candidateCharacters[i].length; l++) {
-						double score = getLogScore(candidateCharacters[i - 2][k] + candidateCharacters[i - 1][j] + candidateCharacters[i][l]);
-						dp[i][k][l] = Math.max(dp[i][k][l], dp[i-1][j][k] * score);
-					}//end for(l)
-				}//end for(k)
-			}//end for(j)
-		}//end for(i)
-		
-		return null;
-	}
-	
-	/**
 	 * 三元动态规划
 	 */
-	private Sentence trigramDP(Sentence sentence, String[][] candidateCharacters) {
+	private ArrayList<Sentence> trigramDP(Sentence sentence, String[][] candidateCharacters, int order) {
 		double[][][] dp = null;
 		
 		String c0 = sentence.getToken(0);
@@ -183,7 +155,12 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 			for(int j = 0; j < candidateCharacters[i - 2].length; j++) {
 				for(int k = 0; k < candidateCharacters[i - 1].length; k++) {
 					for(int l = 0; l < candidateCharacters[i].length; l++) {
-						double score = getLogScore(candidateCharacters[i - 2][k] + candidateCharacters[i - 1][j] + candidateCharacters[i][l]);
+						double score = getLogScore(new String[]{candidateCharacters[i - 2][k], 
+								candidateCharacters[i - 1][j], candidateCharacters[i][l]}, order);
+						
+						if(candidateCharacters[i][l] == sentence.getToken(i))
+							score *= Lamda;
+						
 						dp[i][k][l] = Math.max(dp[i][k][l], dp[i-1][j][k] * score);
 					}//end for(l)
 				}//end for(k)
@@ -203,7 +180,7 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	 * @param strings	待返回概率的n元
 	 * @return			n元的概率
 	 */
-	private double getLogScore(String... strings) {
-		return nGramModel.getNGramLogProb(strings);
+	private double getLogScore(String[] strings, int order) {
+		return nGramModel.getNGramLogProb(strings, order);
 	}
 }

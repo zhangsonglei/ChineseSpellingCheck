@@ -43,30 +43,30 @@ public class HUSTCorrector implements Corrector {
 	@Override
 	public CorrectResult correct(Sentence sentence) {
 		DetectResult result = detector.detect(sentence);
-		int[] locations = detector.getErrorLocation(result);
-		String[] characters = detector.getErrorCharacter(result);
+		int[][] locations = detector.getErrorLocation(result);
+		String[][] characters = detector.getErrorCharacter(result);
 		
 		HashMap<Integer, Suggestions> map = new HashMap<>();
-		
-		for(int i = 0; i < locations.length; i++) {
-			HashSet<String> set = confusionSet.getConfusions(characters[i]);
-			Iterator<String> iterator = set.iterator();
-			
-			Suggestions suggestions = new Suggestions();
-			for(int j = 0; j < set.size(); j++) {
-				String character = iterator.next();
-				suggestions.add(new Correction(character, dictionary.getCount(character), locations[i]));
-			}
-			
-			map.put(locations[i], suggestions);
-		}
+//		
+//		for(int i = 0; i < locations.length; i++) {
+//			HashSet<String> set = confusionSet.getConfusions(characters[i]);
+//			Iterator<String> iterator = set.iterator();
+//			
+//			Suggestions suggestions = new Suggestions();
+//			for(int j = 0; j < set.size(); j++) {
+//				String character = iterator.next();
+//				suggestions.add(new Correction(character, dictionary.getCount(character), locations[i]));
+//			}
+//			
+//			map.put(locations[i], suggestions);
+//		}
 		
 		return new CorrectResult(map);
 	}
 	
 	@Override
 	public Sentence autoCorrect(Sentence sentence) {
-		return noisyChannelModel.getCorrectSentence(sentence);
+		return noisyChannelModel.getCorrectSentence(sentence).get(0);
 	}
 
 	@Override

@@ -39,7 +39,7 @@ public class HustNGramModel implements NGramModel {
 	}
 
 	@Override
-	public double getNGramLogProb(String[] strs) {
+	public double getNGramLogProb(String[] strs, int n) {
 		Gram[] grams = new StringGram[strs.length];
 		for(int i=0; i< strs.length; i++)
 			grams[i] = new StringGram(strs[i]);

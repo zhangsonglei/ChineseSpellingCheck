@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 /**
  *<ul>
- *<li>Description: 候选词，音同、音近、形近...
+ *<li>Description: 候选词(音同、音近、形近)
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年10月15日
@@ -14,130 +14,262 @@ import java.util.HashSet;
 public class ConfusionSet {
 	
 	/**
-	 * 词与其所有候选词（音同、音近、形近...的）的映射
+	 * 字与其所有候选词（音同、音近）的映射
 	 */
-	private HashMap<String, HashSet<String>> confusionSet;
+	private HashMap<String, HashSet<String>> similarityPronunciation;
 	
-	public ConfusionSet(HashMap<String, HashSet<String>> confusionSet) {
-		this.confusionSet = confusionSet;
+	/**
+	 * 字与其所有候选词（形近）的映射
+	 */
+	private HashMap<String, HashSet<String>> similarityShape;
+	
+	public ConfusionSet(HashMap<String, HashSet<String>> similarityPronunciation, HashMap<String, HashSet<String>> similarityShape) {
+		this.similarityPronunciation = similarityPronunciation;
+		this.similarityShape = similarityShape;
 	}
 	
-//	public ConfusionSet(BufferedReader file) {
-//		constructConfusionSet(file);
-//	}
-//	
-
-
 	/**
-	 * 返回给定字的候选字数量
+	 * 返回给定字的所有候选字数量（包括音近，形近）
 	 * @param charcater	给定的字
 	 * @return		给定字的候选字数量
 	 */
 	public int getConfusionCounts(String charcater) {
-		if(contains(charcater))
-			return getConfusions(charcater).size();
+		int count = 0;
+		
+		if(containSimilarityPronunciation(charcater)) 
+			count += getSimilarityPronunciations(charcater).size();
+		
+		if(containSimilarityShape(charcater)) 
+			count += getSimilarityShapes(charcater).size();
+		
+		return count;
+	}
+	
+	/**
+	 * 返回给定字的形近候选字数量
+	 * @param charcater	给定的字
+	 * @return			给定字的形近候选字数量
+	 */
+	public int getSimilarityShapeCounts(String charcater) {
+		if(containSimilarityShape(charcater))
+			return getSimilarityShapes(charcater).size();
 		
 		return 0;
 	}
 	
 	/**
-	 * 返回给定字的所有候选字的列表
+	 * 返回给定字的音近候选字数量
 	 * @param charcater	给定的字
-	 * @return		给定字的所有候选字的列表
+	 * @return			给定字的音近候选字数量
 	 */
-	public HashSet<String> getConfusions(String character) {
-		if(contains(character))
-			return confusionSet.get(character);
+	public int getSimilarityPronunciationCounts(String charcater) {
+		if(containSimilarityPronunciation(charcater))
+			return getSimilarityPronunciations(charcater).size();
+		
+		return 0;
+	}
+	
+	/**
+	 * 返回给定字的所有音近候选字的集合
+	 * @param charcater	给定的字
+	 * @return			给定字的所有音近候选字的集合
+	 */
+	public HashSet<String> getSimilarityPronunciations(String character) {
+		if(containSimilarityPronunciation(character))
+			return similarityPronunciation.get(character);
 		
 		return null;
 	}
 	
 	/**
-	 * 为给定字添加一个候选字
-	 * @param charcater	待添加的字
-	 * @param confusion	待添加的候选字
+	 * 返回给定字的所有形近候选字的集合
+	 * @param charcater	给定的字
+	 * @return			给定字的所有形近候选字的集合
 	 */
-	public void add(String charcater, String confusion) {
-		if(contains(charcater)) 
-			confusionSet.get(charcater).add(confusion);
+	public HashSet<String> getSimilarityShapes(String character) {
+		if(containSimilarityShape(character))
+			return similarityShape.get(character);
+		
+		return null;
+	}
+	
+	/**
+	 * 为给定字添加一个音近候选字
+	 * @param charcater	待添加的字
+	 * @param confusion	待添加的音近候选字
+	 */
+	public void addSimilarityPronunciations(String charcater, String confusion) {
+		if(containSimilarityPronunciation(charcater)) 
+			similarityPronunciation.get(charcater).add(confusion);
 		else {
 			HashSet<String> confusions = new HashSet<>();
 			confusions.add(confusion);
-			confusionSet.put(charcater, confusions);
+			similarityPronunciation.put(charcater, confusions);
 		}
 	}
 	
 	/**
-	 * 为给定字添加一组候选字
+	 * 为给定字添加一个形近候选字
 	 * @param charcater	待添加的字
-	 * @param confusions待添加的候选字
+	 * @param confusion	待添加的形近候选字
 	 */
-	public void add(String charcater, HashSet<String> confusions) {
-		if(contains(charcater))
-			confusionSet.get(charcater).addAll(confusions);
-		else 
-			confusionSet.put(charcater, confusions);
+	public void addSimilarityShapes(String charcater, String confusion) {
+		if(containSimilarityShape(charcater)) 
+			similarityShape.get(charcater).add(confusion);
+		else {
+			HashSet<String> confusions = new HashSet<>();
+			confusions.add(confusion);
+			similarityShape.put(charcater, confusions);
+		}
 	}
 	
 	/**
-	 * 添加一组候选字
-	 * @param confusions	
+	 * 为给定字添加一组音近候选字
+	 * @param charcater	待添加的字
+	 * @param confusions待添加的音近候选字
 	 */
-	public void add(String... confusions) {
+	public void addSimilarityPronunciations(String charcater, HashSet<String> confusions) {
+		if(containSimilarityPronunciation(charcater))
+			similarityPronunciation.get(charcater).addAll(confusions);
+		else 
+			similarityPronunciation.put(charcater, confusions);
+	}
+	
+	/**
+	 * 为给定字添加一组形近候选字
+	 * @param charcater	待添加的字
+	 * @param confusions待添加的形近候选字
+	 */
+	public void addSimilarityShapes(String charcater, HashSet<String> confusions) {
+		if(containSimilarityShape(charcater))
+			similarityShape.get(charcater).addAll(confusions);
+		else 
+			similarityShape.put(charcater, confusions);
+	}
+	
+	/**
+	 * 添加一组形近候选字，数组第一个为关键字
+	 * @param confusions	待添加的字
+	 */
+	public void addSimilarityShapes(String... confusions) {
 		if(confusions.length > 1) {
 			for(int i = 1; i < confusions.length; i++)
-				add(confusions[0], confusions[i]);
+				addSimilarityShapes(confusions[0], confusions[i]);
 		}		
 	}
 	
 	/**
-	 * 从候选字集中删除给定字
-	 * @param charcater	待删除的字
-	 * @return			待删除的词的所有候选字
+	 * 添加一组形音候选字，数组第一个为关键字
+	 * @param confusions	待添加的字
 	 */
-	public HashSet<String> remove(String charcater) {
+	public void addSimilarityPronunciations(String... confusions) {
+		if(confusions.length > 1) {
+			for(int i = 1; i < confusions.length; i++)
+				addSimilarityPronunciations(confusions[0], confusions[i]);
+		}		
+	}
+	
+	/**
+	 * 从音近候选字集中删除给定字
+	 * @param charcater	待删除的字
+	 * @return			待删除的词的所有音近候选字
+	 */
+	public HashSet<String> removeSimilarityPronunciations(String charcater) {
 		HashSet<String> confusions = null;
 		
-		if(contains(charcater)) {
-			confusions = getConfusions(charcater);
-			confusionSet.remove(charcater);
+		if(containSimilarityPronunciation(charcater)) {
+			confusions = getSimilarityPronunciations(charcater);
+			similarityPronunciation.remove(charcater);
 		}
 		
 		return confusions;
 	}
 	
 	/**
-	 * 从给定字的候选字集中删除给定的候选字
+	 * 从形近候选字集中删除给定字
 	 * @param charcater	待删除的字
-	 * @param confusion	待删除的字的候选字
+	 * @return			待删除的词的所有形近候选字
 	 */
-	public void remove(String charcater, String confusion) {
-		if(contains(charcater)) 
-			if(getConfusions(charcater).contains(confusion))
-				getConfusions(charcater).remove(confusion);
+	public HashSet<String> removeSimilarityShapes(String charcater) {
+		HashSet<String> confusions = null;
+		
+		if(containSimilarityPronunciation(charcater)) {
+			confusions = getSimilarityShapes(charcater);
+			similarityShape.remove(charcater);
+		}
+		
+		return confusions;
 	}
 	
 	/**
-	 * 判断候选字集中是否包含给定字
-	 * @param charcater	给定字
+	 * 从给定字的形近候选字集中删除给定的候选字
+	 * @param charcater	待删除的字
+	 * @param confusion	待删除的字的形近候选字
+	 */
+	public void removeSimilarityShape(String charcater, String confusion) {
+		if(containSimilarityShape(charcater))
+			if(getSimilarityShapes(charcater).contains(confusion))
+				getSimilarityShapes(charcater).remove(confusion);
+	}
+	
+	/**
+	 * 从给定字的音近候选字集中删除给定的候选字
+	 * @param charcater	待删除的字
+	 * @param confusion	待删除的字的音近候选字
+	 */
+	public void removeSimilarityPronunciations(String charcater, String confusion) {
+		if(containSimilarityShape(charcater)) 
+			if(getSimilarityShapes(charcater).contains(confusion))
+				getSimilarityPronunciations(charcater).remove(confusion);
+	}
+	
+	/**
+	 * 判断音近候选字集中是否包含给定关键字
+	 * @param charcater	给定关键字
 	 * @return			true-包含/false-不包含
 	 */
-	public boolean contains(String charcater) {
-		if(confusionSet.containsKey(charcater))
+	public boolean containSimilarityPronunciation(String charcater) {
+		if(similarityPronunciation.containsKey(charcater))
 			return true;
 		
 		return false;
 	}
 	
 	/**
-	 * 判断给定字的候选字集中是否包含给定候选字
-	 * @param charcater	给定字
-	 * @param confusion	给定候选字
+	 * 判断形近候选字集中是否包含给定关键字
+	 * @param charcater	给定关键字
 	 * @return			true-包含/false-不包含
 	 */
-	public boolean contains(String charcater, String confusion) {
-		if(contains(charcater))
-			if(getConfusions(charcater).contains(confusion))
+	public boolean containSimilarityShape(String charcater) {
+		if(similarityShape.containsKey(charcater))
+			return true;
+		
+		return false;
+	}
+	
+	/**
+	 * 判断给定字的音近候选字集中是否包含给定音近候选字
+	 * @param charcater	给定音近关键字
+	 * @param confusion	给定音近候选字
+	 * @return			true-包含/false-不包含
+	 */
+	public boolean containSimilarityPronunciation(String charcater, String confusion) {
+		if(containSimilarityPronunciation(charcater))
+			if(getSimilarityPronunciations(charcater).contains(confusion))
+				return true;
+		
+		return false;
+	}
+	
+	/**
+	 * 判断给定字的形近候选字集中是否包含给定形近候选字
+	 * @param charcater	给定形近关键字字
+	 * @param confusion	给定形近候选字
+	 * @return			true-包含/false-不包含
+	 */
+	public boolean containSimilarityShape(String charcater, String confusion) {
+		if(containSimilarityShape(charcater))
+			if(getSimilarityShapes(charcater).contains(confusion))
 				return true;
 		
 		return false;

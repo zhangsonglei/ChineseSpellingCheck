@@ -15,9 +15,9 @@ public class DetectResult {
 	/**
 	 * 检测的拼写错误列表
 	 */
-	private ArrayList<SpellError> errorList;
+	private ArrayList<SpellError[]> errorList;
 		
-	public DetectResult(ArrayList<SpellError> errorList) {
+	public DetectResult(ArrayList<SpellError[]> errorList) {
 		this.errorList = errorList;
 	}
 
@@ -25,7 +25,7 @@ public class DetectResult {
 	 * 添加一个拼写错误
 	 * @param error
 	 */
-	public void add(SpellError error) {
+	public void add(SpellError[] error) {
 		if(!errorList.contains(error))
 			errorList.add(error);
 	}
@@ -34,6 +34,10 @@ public class DetectResult {
 	 * 返回拼写错误的个数
 	 * @return	拼写错误的个数
 	 */
+	public int errorCounts(int n) {
+		return errorList.get(n).length;
+	}
+	
 	public int errorCounts() {
 		return errorList.size();
 	}
@@ -42,18 +46,24 @@ public class DetectResult {
 	 * 返回拼写错误的集合
 	 * @return	拼写错误的集合
 	 */
-	public ArrayList<SpellError> getErrors() {
-		return errorList;
+	public SpellError[] getErrors(int index) {
+		return errorList.get(index);
 	}
 	
 	@Override
 	public String toString() {
 		String string = "{";
 		
-		for(SpellError error : errorList) 
-			string += error+"  ";
+		for(SpellError[] errors : errorList) {
+			string += "[";
+			for(SpellError error : errors) {
+				string += error+" ";
+			}
+			string = string.trim();
+			string += "]";
+		}
 		
-		string = string.trim() + "}";
+		string += "}";
 		
 		return string;
 	}
