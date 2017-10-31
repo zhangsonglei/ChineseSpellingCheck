@@ -23,6 +23,24 @@ public class ConfusionSet {
 	 */
 	private HashMap<String, HashSet<String>> similarityShape;
 	
+	public ConfusionSet() {
+	
+	}
+	
+	/**
+	 * 混淆集中只有音近的候选字
+	 * @param similarityPronunciation	音近的候选字集
+	 */
+	public ConfusionSet(HashMap<String, HashSet<String>> similarityPronunciation) {
+		this.similarityPronunciation = similarityPronunciation;
+		similarityShape = new HashMap<>();
+	}
+	
+	/**
+	 * 同时使用音近,形近的候选字
+	 * @param similarityPronunciation	音近候选字集
+	 * @param similarityShape			形近候选字集
+	 */
 	public ConfusionSet(HashMap<String, HashSet<String>> similarityPronunciation, HashMap<String, HashSet<String>> similarityShape) {
 		this.similarityPronunciation = similarityPronunciation;
 		this.similarityShape = similarityShape;

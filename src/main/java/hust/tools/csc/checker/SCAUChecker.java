@@ -130,8 +130,6 @@ public class SCAUChecker {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		
 	}
 	
 	/**

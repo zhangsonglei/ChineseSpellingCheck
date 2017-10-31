@@ -94,9 +94,11 @@ public class Sentence implements Iterable<String>, Comparable<Sentence> {
 	 * 替换给定索引的元素
 	 * @param index	待替换的位置索引
 	 */
-	public void setToken(int index, String token) {
+	public Sentence setToken(int index, String token) {
 		if(index > -1 && index < size())
 			tokens[index] = token;
+		
+		return new Sentence(tokens);
 	}
 	
 	@Override

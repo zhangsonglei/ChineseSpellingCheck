@@ -3,6 +3,9 @@ package hust.tools.csc.checker;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 import hust.tools.csc.ngram.NGramModel;
 import hust.tools.csc.score.AbstractNoisyChannelModel;
@@ -21,10 +24,8 @@ import hust.tools.csc.wordseg.AbstractWordSegment;
 public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	
 	private ConfusionSet confusionSet;
-	private final double INIT_Parameter = 35;
-	private final double Lamda = 35;
 	private AbstractWordSegment wordSegment;
-	
+		
 	public SCAUNoisyChannelModel(NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment) throws IOException {
 		this.nGramModel = nGramModel;
 		this.confusionSet = confusionSet;
@@ -45,16 +46,15 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 		
 		//连续单字词的最大个数小于2，不作处理直接返回原句
 		if(locations.size() > 1) {
-			String[][] candidateCharacters = initCandidateCharacters(sentence);
 			
 			/**
 			 * 连续单字词的个数最大等于2的使用bigram，大于2的使用trigram
 			 */
 			int maxLength = maxContinueSingleWordsLength(locations);
 			if(maxLength == 2) {
-				candSens = trigramDP(sentence, candidateCharacters, 2);
+				candSens = beamSearch(sentence, 2, 6);
 			}else {
-				candSens = trigramDP(sentence, candidateCharacters, 3);
+				candSens = beamSearch(sentence, 3, 6);
 			}			
 			
 			return candSens;
@@ -62,27 +62,6 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 		
 		candSens.add(sentence);
 		return candSens;
-	}
-
-	/**
-	 * 根据单字词初始化并建立候选字数组
-	 * @param sentence	句子
-	 */
-	private String[][] initCandidateCharacters(Sentence sentence) {
-		String[][] candidateCharacters = new String[sentence.size()][];
-		
-		for(int i = 0; i < sentence.size(); i++) {
-			String character = sentence.getToken(i);
-			HashSet<String> pronunciations = confusionSet.getSimilarityPronunciations(character);
-			HashSet<String> shapes = confusionSet.getSimilarityShapes(character);
-			
-//			if(pronunciations != null) 
-//				candidateCharacters[i] = pronunciations.toArray(new String[pronunciations.size()]);
-//			else
-//				candidateCharacters[i] = null;
-		}
-		
-		return candidateCharacters;
 	}
 	
 	/**
@@ -129,58 +108,60 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	}
 	
 	/**
-	 * 三元动态规划
+	 *
 	 */
-	private ArrayList<Sentence> trigramDP(Sentence sentence, String[][] candidateCharacters, int order) {
-		double[][][] dp = null;
+	/**
+	 *  根据给定句子，给出得分最高的前size个候选句子
+	 * @param sentence				待搜索的原始句子
+	 * @param candidateCharacters	句子中字的候选集
+	 * @param order					语言模型的阶数
+	 * @param size					搜索束的大小
+	 * @return						得分最高的前size个候选句子
+	 */
+	private ArrayList<Sentence> beamSearch(Sentence sentence, int order, int size) {
+		Queue<Sequence> prev = new PriorityQueue<>(size);
+	    Queue<Sequence> next = new PriorityQueue<>(size);
+	    Queue<Sequence> tmp;
+	    prev.add(new Sequence(sentence, nGramModel.getSentenceLogProb(sentence, order)));
+	    	
+	    for(int i = 0; i < sentence.size(); i++) {//遍历句子的每一个字
+	    	int sz = Math.min(size, prev.size());
+
+	    	for (int sc = 0; prev.size() > 0 && sc < sz; sc++) {
+	    		Sequence top = prev.remove();
+	    		
+	    		//音近、形近候选字获取并合并
+	    		String character = top.getSentence().getToken(i);
+	    		HashSet<String> tmpPronCands = confusionSet.getSimilarityPronunciations(character);
+	    		tmpPronCands.addAll(confusionSet.getSimilarityShapes(character));
+
+	    		Iterator<String> iterator = tmpPronCands.iterator();
+	    		while(iterator.hasNext()) {
+	    			String candCharater = iterator.next();
+	    			Sentence candSen = top.getSentence().setToken(i, candCharater);
+	    			double score = nGramModel.getSentenceLogProb(candSen, order);
+	  
+	    			next.add(new Sequence(candSen, score));
+	    		}
+	        }
+
+	        prev.clear();
+	        tmp = prev;
+	        prev = next;
+	        next = tmp;
+	      }
+	    
+	    
+	    ArrayList<Sentence> result = new ArrayList<>();
+	    int num = prev.size();
+	    for (int index = 0; index < num; index++)
+	      result.add(prev.remove().getSentence());
 		
-		String c0 = sentence.getToken(0);
-		String c1 = sentence.getToken(1);
-		
-		//初始化得分数组
-		for(int i = 0; i < candidateCharacters[0].length; i++) {		//遍历句子第一个字个所有候选字
-			for(int j = 0; j < candidateCharacters[1].length; j++) {	//遍历句子第二个字个所有候选字
-				if(candidateCharacters[0][i] == c0)
-					dp[1][i][j] = INIT_Parameter;
-				else
-					dp[1][i][j] = 1.0;
-				
-				if(candidateCharacters[1][j] == c1)
-					dp[1][i][j] = dp[1][i][j] * INIT_Parameter;
-			}
-		}
-			
-		//动态规划计算最佳得分
-		for(int i = 2; i < sentence.size(); i++) {	//遍历句子的每一个字
-			for(int j = 0; j < candidateCharacters[i - 2].length; j++) {
-				for(int k = 0; k < candidateCharacters[i - 1].length; k++) {
-					for(int l = 0; l < candidateCharacters[i].length; l++) {
-						double score = getLogScore(new String[]{candidateCharacters[i - 2][k], 
-								candidateCharacters[i - 1][j], candidateCharacters[i][l]}, order);
-						
-						if(candidateCharacters[i][l] == sentence.getToken(i))
-							score *= Lamda;
-						
-						dp[i][k][l] = Math.max(dp[i][k][l], dp[i-1][j][k] * score);
-					}//end for(l)
-				}//end for(k)
-			}//end for(j)
-		}//end for(i)
-		
-		return null;
+		return result;
 	}
 	
 	@Override
 	public double getChannelModelLogScore(Sentence sentence) {
 		return 1.0;
-	}
-	
-	/**
-	 * 返回给定n元的概率
-	 * @param strings	待返回概率的n元
-	 * @return			n元的概率
-	 */
-	private double getLogScore(String[] strings, int order) {
-		return nGramModel.getNGramLogProb(strings, order);
 	}
 }

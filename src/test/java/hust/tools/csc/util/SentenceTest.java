@@ -39,7 +39,7 @@ public class SentenceTest {
 	@Test
 	public void testUpdate() {
 		sentence.setToken(3, "华");
-		assertEquals("[我,爱,中,华,。]", sentence.toString());
+		assertEquals(new Sentence(new String[]{"我","爱","中","华","。"}), sentence);
 	}
 
 	@Test
