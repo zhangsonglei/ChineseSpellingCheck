@@ -76,13 +76,4 @@ public class FormatConvert {
          
         return new String(c);
     }
-    
-    /**
-     * 判断给定的字符串是否为汉字
-     * @param string	待判断的字符串
-     * @return			true-是/false-否
-     */
-    public static boolean isHanzi(String string) {
-    	return true;
-    }
 }
