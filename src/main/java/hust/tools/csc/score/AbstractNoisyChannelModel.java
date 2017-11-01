@@ -1,6 +1,5 @@
 package hust.tools.csc.score;
 
-import hust.tools.csc.ngram.NGramModel;
 import hust.tools.csc.util.Sentence;
 
 /**
@@ -12,9 +11,7 @@ import hust.tools.csc.util.Sentence;
  *</ul>
  */
 public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
-	
-	protected NGramModel nGramModel;
-	
+		
 	public AbstractNoisyChannelModel() {
 
 	}
@@ -24,9 +21,7 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	 * @param candidate	候选句子
 	 * @return	p(c)
 	 */
-	public double getSourceModelLogScore(Sentence candidate) {
-		return nGramModel.getSentenceLogProb(candidate , nGramModel.getOrder());
-	}
+	public abstract double getSourceModelLogScore(Sentence candidate);
 	
 	/**
 	 * 返回noisy channel model：p(s|c)*p(c)中的p(s|c)

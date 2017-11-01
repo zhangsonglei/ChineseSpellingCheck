@@ -27,6 +27,10 @@ public class Sequence implements Comparable<Sequence>{
 		return 0;
 	}
 
+	public double getScore() {
+		return score;
+	}
+	
 	public Sentence getSentence() {
 		return sentence;
 	}

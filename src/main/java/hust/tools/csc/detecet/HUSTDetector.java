@@ -28,9 +28,9 @@ public class HUSTDetector implements Detector{
 					}//end for
 					
 					errorList.add(errors.toArray(new SpellError[errors.size()]));
-				}
-			}
-		}
+				}//end if
+			}//end for
+		}//end if
 		
 		return new DetectResult(errorList);
 	}

@@ -5,7 +5,6 @@ import java.io.IOException;
 import hust.tools.csc.util.Sentence;
 import hust.tools.ngram.model.NGramLanguageModel;
 import hust.tools.ngram.utils.Gram;
-import hust.tools.ngram.utils.NGram;
 import hust.tools.ngram.utils.StringGram;
 
 /**
@@ -39,11 +38,11 @@ public class HustNGramModel implements NGramModel {
 	}
 
 	@Override
-	public double getNGramLogProb(String[] strs, int n) {
+	public double getNGramLogProb(String[] strs, int order) {
 		Gram[] grams = new StringGram[strs.length];
 		for(int i=0; i< strs.length; i++)
 			grams[i] = new StringGram(strs[i]);
 		
-		return nGramModel.getNGramLogProbability(new NGram(grams));
+		return nGramModel.getSequenceLogProbability(grams, order, false);
 	}
 }

@@ -25,6 +25,9 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	
 	private ConfusionSet confusionSet;
 	private AbstractWordSegment wordSegment;
+	private NGramModel nGramModel;
+	private int order;
+	private int beamSize = 5;
 		
 	public SCAUNoisyChannelModel(NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment) throws IOException {
 		this.nGramModel = nGramModel;
@@ -34,9 +37,9 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 
 	@Override
 	public ArrayList<Sentence> getCorrectSentence(Sentence sentence) {
-		ArrayList<String> words = wordSegment.segment(sentence);
 		ArrayList<Sentence> candSens = new ArrayList<>();
 		
+		ArrayList<String> words = wordSegment.segment(sentence);
 		if(words.size() < 2) {//分词后，词的个数小于2的不作处理，不作处理直接返回原句
 			candSens.add(sentence);
 			return candSens;
@@ -52,15 +55,19 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 			 */
 			int maxLength = maxContinueSingleWordsLength(locations);
 			if(maxLength == 2) {
-				candSens = beamSearch(sentence, 2, 6);
+				order = 2;
+				candSens = beamSearch(sentence, beamSize);
 			}else {
-				candSens = beamSearch(sentence, 3, 6);
+				order = 3;
+				candSens = beamSearch(sentence, beamSize);
 			}			
+			
 			
 			return candSens;
 		}
 		
 		candSens.add(sentence);
+		System.out.println(candSens);
 		return candSens;
 	}
 	
@@ -103,7 +110,7 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 			
 			index += word.length();
 		}
-		
+		System.out.println("单字词所在位置：\t"+locations);
 		return locations;
 	}
 	
@@ -118,29 +125,38 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	 * @param size					搜索束的大小
 	 * @return						得分最高的前size个候选句子
 	 */
-	private ArrayList<Sentence> beamSearch(Sentence sentence, int order, int size) {
+	private ArrayList<Sentence> beamSearch(Sentence sentence, int size) {		
 		Queue<Sequence> prev = new PriorityQueue<>(size);
 	    Queue<Sequence> next = new PriorityQueue<>(size);
 	    Queue<Sequence> tmp;
-	    prev.add(new Sequence(sentence, nGramModel.getSentenceLogProb(sentence, order)));
+	    prev.add(new Sequence(sentence, getSourceModelLogScore(sentence) * getChannelModelLogScore(sentence)));
 	    	
 	    for(int i = 0; i < sentence.size(); i++) {//遍历句子的每一个字
 	    	int sz = Math.min(size, prev.size());
 
 	    	for (int sc = 0; prev.size() > 0 && sc < sz; sc++) {
 	    		Sequence top = prev.remove();
-	    		
+	    		next.add(top);
+	    		System.out.println(top.getSentence()+"\t"+top.getScore());
 	    		//音近、形近候选字获取并合并
 	    		String character = top.getSentence().getToken(i);
 	    		HashSet<String> tmpPronCands = confusionSet.getSimilarityPronunciations(character);
-	    		tmpPronCands.addAll(confusionSet.getSimilarityShapes(character));
-
-	    		Iterator<String> iterator = tmpPronCands.iterator();
+	    		HashSet<String> tmpShapeCands = confusionSet.getSimilarityShapes(character);
+	    		HashSet<String> tmpCands = new HashSet<>();
+	    		if(tmpPronCands != null)
+	    			tmpCands.addAll(tmpPronCands);
+	    		if(tmpShapeCands != null)
+	    			tmpCands.addAll(tmpShapeCands);
+	    		
+	    		Iterator<String> iterator = tmpCands.iterator();
 	    		while(iterator.hasNext()) {
 	    			String candCharater = iterator.next();
 	    			Sentence candSen = top.getSentence().setToken(i, candCharater);
-	    			double score = nGramModel.getSentenceLogProb(candSen, order);
-	  
+	    			
+	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(candSen);
+	    			if(i <= 1)
+	    				System.out.println(candSen+"\t"+score);
+	    			
 	    			next.add(new Sequence(candSen, score));
 	    		}
 	        }
@@ -153,7 +169,8 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	    
 	    
 	    ArrayList<Sentence> result = new ArrayList<>();
-	    int num = prev.size();
+	    int num = Math.min(size, prev.size());
+
 	    for (int index = 0; index < num; index++)
 	      result.add(prev.remove().getSentence());
 		
@@ -163,5 +180,10 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	@Override
 	public double getChannelModelLogScore(Sentence sentence) {
 		return 1.0;
+	}
+
+	@Override
+	public double getSourceModelLogScore(Sentence candidate) {
+		return nGramModel.getSentenceLogProb(candidate, order);
 	}
 }

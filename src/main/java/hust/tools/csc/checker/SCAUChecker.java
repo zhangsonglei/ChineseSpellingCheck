@@ -1,11 +1,15 @@
 package hust.tools.csc.checker;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +20,6 @@ import hust.tools.csc.ngram.HustNGramModel;
 import hust.tools.csc.ngram.NGramModel;
 import hust.tools.csc.score.AbstractNoisyChannelModel;
 import hust.tools.csc.util.ConfusionSet;
-import hust.tools.csc.util.Dictionary;
 import hust.tools.csc.util.FormatConvert;
 import hust.tools.csc.util.Sentence;
 import hust.tools.csc.wordseg.AbstractWordSegment;
@@ -28,20 +31,18 @@ import hust.tools.ngram.model.AbstractNGramModelReader;
 
 public class SCAUChecker {
 
-	private static Dictionary dictionary;
 	private static ConfusionSet confusionSet;
 	private static NGramModel nGramModel;
 	private static AbstractWordSegment wordSegment;
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
-		String dictFile = "";
-		String similarityPronunciation = "similarityPronunciation.txt";
-		String similarityShape = "similarityShape.txt";
+		String similarityPronunciation = "E:\\JOB\\TestData\\pro.txt";
+		String similarityShape = "E:\\JOB\\TestData\\shape.txt";
 		
-		String lmFile = "";
-		String testFile = "";
+		String lmFile = "E:\\JOB\\TestData\\kn3.bin";
+		String testFile = "E:\\JOB\\TestData\\test.txt";
+		String result = "E:\\JOB\\TestData\\result.txt";
 		
-		constructDict(new File(dictFile));
 		constructConfusionSet(new File(similarityPronunciation), new File(similarityShape));
 		nGramModel = loadModel(lmFile);
 		wordSegment = new CKIPWordSegment();
@@ -49,39 +50,14 @@ public class SCAUChecker {
 		AbstractNoisyChannelModel noisyChannelModel = new SCAUNoisyChannelModel(nGramModel, confusionSet, wordSegment);
 		Detector detector = new HUSTDetector(noisyChannelModel);
 		
-		List<Sentence> sentences = FileOperator.readFile(testFile, "utf-8");
-		
+		List<Sentence> sentences = readFile(testFile, "utf-8");
+		OutputStreamWriter oWriter = new OutputStreamWriter(new FileOutputStream(new File(result)), "utf-8");
+		BufferedWriter writer = new BufferedWriter(oWriter);
 		
 		for(Sentence sentence : sentences) {
-			System.out.println(detector.detect(sentence));
+			writer.write(detector.detect(sentence).toString());
 		}
-	}
-	
-	/**
-	 * 根据训练语料统计字频
-	 * @param file			训练语料文件
-	 * @return				字频
-	 * @throws IOException
-	 */
-	private static void constructDict(File file) throws IOException {
-		HashMap<String, Integer> map = new HashMap<>();
-		dictionary = new Dictionary(map);
-		
-		InputStreamReader in = new InputStreamReader(new FileInputStream(file));
-		BufferedReader bReader = new BufferedReader(in);
-		
-		String line = "";
-		while ((line = bReader.readLine()) != null) {
-			line = FormatConvert.ToDBC(line).replace("\\s+", "").trim();
-			if(!line.equals("")) {
-				String[] characters = line.split("");
-				
-				for(String character : characters)
-					if(FormatConvert.isHanzi(character))
-						dictionary.add(character);
-			}
-		}
-		bReader.close();
+		writer.close();
 	}
 	
 	/**
@@ -96,16 +72,17 @@ public class SCAUChecker {
 		HashMap<String, HashSet<String>> Shape = new HashMap<>();
 		confusionSet = new ConfusionSet(Pronunciation, Shape);
 		
-		InputStreamReader pronunciation = new InputStreamReader(new FileInputStream(similarityPronunciation));
-		InputStreamReader shape = new InputStreamReader(new FileInputStream(similarityPronunciation));
+		InputStreamReader pronunciation = new InputStreamReader(new FileInputStream(similarityPronunciation), "utf-8");
+		InputStreamReader shape = new InputStreamReader(new FileInputStream(similarityShape), "utf-8");
 		BufferedReader proReader = new BufferedReader(pronunciation);
 		BufferedReader shapeReader = new BufferedReader(shape);
 		
 		String line = "";
 		try {
 			while ((line = proReader.readLine())!= null) {
-				line = FormatConvert.ToDBC(line).replace("\\s+", "").trim();
-				if(!line.equals("")) {
+				line = FormatConvert.ToDBC(line);		//全角转为半角
+				line = line.replace("\t", "").trim();	//去除多于的空格
+				if(!line.equals("")) {					//过滤空行
 					String[] strings = line.split("");
 					confusionSet.addSimilarityPronunciations(strings);
 				}
@@ -113,8 +90,9 @@ public class SCAUChecker {
 			proReader.close();
 			
 			while ((line = shapeReader.readLine())!= null) {
-				line = FormatConvert.ToDBC(line).replace("\\s+", "").trim();
-				if(!line.equals("")) {
+				line = FormatConvert.ToDBC(line);		//全角转为半角
+				line = line.replace("\\s+", "").trim();	//去除多于的空格
+				if(!line.equals("")) {					//过滤空行
 					String[] sentence = FormatConvert.ToDBC(line).split(",");
 					String key = sentence[0];
 					String[] values = sentence[1].split("");
@@ -149,5 +127,36 @@ public class SCAUChecker {
 			modelReader = new TextFileNGramModelReader(new File(modelFile));
 		 
 		return new HustNGramModel(modelReader.constructModel());
+	}
+	
+	/**
+	 * 按行读取文件并以Sentence为元素保存到List中
+	 * @param path			文件路径
+	 * @param encoding		文件编码
+	 * @return				
+	 * @throws IOException
+	 */
+	public static List<Sentence> readFile(String path, String encoding) throws IOException {
+		List<Sentence> list = new ArrayList<>();
+		File file = new File(path);
+		
+		if(file.isFile() && file.exists()) {
+			InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), encoding);
+			BufferedReader reader = new BufferedReader(inputStreamReader);
+			
+			String line = "";
+			while((line = reader.readLine()) != null) {
+				line = line.trim();
+				if(!line.equals("")) {
+					String[] sentence = FormatConvert.ToDBC(line).split("");
+					list.add(new Sentence(sentence));
+				}
+			}
+			reader.close();
+		}else {
+			System.err.println("File:\""+path+"\" read failed!");
+		}
+		
+		return list;	
 	}
 }
