@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 /**
  *<ul>
- *<li>Description: 纠正建议字优先队列
+ *<li>Description: 给定位置的纠正候选字列表
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年10月24日
@@ -14,7 +14,7 @@ import java.util.Iterator;
 public class CorrectResult {
 	
 	private HashMap<Integer, Suggestions> map;
-			
+	
 	public CorrectResult(HashMap<Integer, Suggestions> map) {
 		this.map = map;
 	}
@@ -25,7 +25,7 @@ public class CorrectResult {
 	 */
 	public void add(int location, Suggestions suggestion) {
 		if(!map.containsKey(location)) {
-			Iterator<Correction> iterator = suggestion.iterator();
+			Iterator<String> iterator = suggestion.iterator();
 			while(iterator.hasNext()) {
 				map.get(location).add(iterator.next());
 			}

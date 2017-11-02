@@ -47,6 +47,9 @@ public class DetectResult {
 	 * @return	拼写错误的集合
 	 */
 	public SpellError[] getErrors(int index) {
+		if(index >= 0 && index < errorList.size())
+			return null;
+		
 		return errorList.get(index);
 	}
 	

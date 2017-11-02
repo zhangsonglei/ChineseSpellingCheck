@@ -40,11 +40,15 @@ public class HUSTDetector implements Detector{
 	 * @return	所有检测出的错误的字
 	 */
 	public String[] getErrorCharacter(DetectResult result, int n) {
-		int size = result.getErrors(n).length;
+		SpellError[] errors = result.getErrors(n);
+		if(errors == null)
+			return null;
+
+		int size = errors.length;
 		String[] errorCharacters = new String[size];
 		
 		for(int i = 0; i < size; i++)
-			errorCharacters[i] = result.getErrors(n)[i].getCharacter();
+			errorCharacters[i] = errors[i].getCharacter();
 		
 		return errorCharacters;
 	}
@@ -54,11 +58,15 @@ public class HUSTDetector implements Detector{
 	 * @return	所有检测出的错误字的位置
 	 */
 	public int[] getErrorLocation(DetectResult result, int n) {
-		int size = result.getErrors(n).length;
+		SpellError[] errors = result.getErrors(n);
+		if(errors == null)
+			return null;
+
+		int size = errors.length;
 		int[] errorLoactions = new int[size];
 		
 		for(int i = 0; i < size; i++)
-			errorLoactions[i] = result.getErrors(n)[i].getLocation();
+			errorLoactions[i] = errors[i].getLocation();
 		
 		return errorLoactions;		
 	}

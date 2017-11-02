@@ -34,7 +34,7 @@ public interface Corrector {
 	public CorrectResult correct(Sentence sentence);
 	
 	/**
-	 * 系统自动返回一个纠正句
+	 * 系统自动最佳候选纠正句
 	 * @return	
 	 */
 	public Sentence autoCorrect(Sentence sentence);

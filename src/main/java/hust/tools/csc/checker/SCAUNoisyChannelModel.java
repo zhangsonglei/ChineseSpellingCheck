@@ -10,6 +10,7 @@ import java.util.Queue;
 import hust.tools.csc.ngram.NGramModel;
 import hust.tools.csc.score.AbstractNoisyChannelModel;
 import hust.tools.csc.util.ConfusionSet;
+import hust.tools.csc.util.Dictionary;
 import hust.tools.csc.util.Sentence;
 import hust.tools.csc.wordseg.AbstractWordSegment;
 
@@ -23,13 +24,15 @@ import hust.tools.csc.wordseg.AbstractWordSegment;
  */
 public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	
+	private Dictionary dictionary;
 	private ConfusionSet confusionSet;
 	private AbstractWordSegment wordSegment;
 	private NGramModel nGramModel;
 	private int order;
-	private int beamSize = 5;
-		
-	public SCAUNoisyChannelModel(NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment) throws IOException {
+	private int beamSize = 100;
+	
+	public SCAUNoisyChannelModel(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment) throws IOException {
+		this.dictionary = dictionary;
 		this.nGramModel = nGramModel;
 		this.confusionSet = confusionSet;
 		this.wordSegment = wordSegment;
@@ -38,8 +41,9 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	@Override
 	public ArrayList<Sentence> getCorrectSentence(Sentence sentence) {
 		ArrayList<Sentence> candSens = new ArrayList<>();
-		
+		System.out.println("待分词的句子："+sentence);
 		ArrayList<String> words = wordSegment.segment(sentence);
+		System.out.println("分词结果："+words);
 		if(words.size() < 2) {//分词后，词的个数小于2的不作处理，不作处理直接返回原句
 			candSens.add(sentence);
 			return candSens;
@@ -54,13 +58,14 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 			 * 连续单字词的个数最大等于2的使用bigram，大于2的使用trigram
 			 */
 			int maxLength = maxContinueSingleWordsLength(locations);
-			if(maxLength == 2) {
+			System.out.println("order= "+ maxLength);
+			if(maxLength <= 2) {
 				order = 2;
 				candSens = beamSearch(sentence, beamSize);
 			}else {
 				order = 3;
 				candSens = beamSearch(sentence, beamSize);
-			}			
+			}
 			
 			
 			return candSens;
@@ -137,25 +142,26 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	    	for (int sc = 0; prev.size() > 0 && sc < sz; sc++) {
 	    		Sequence top = prev.remove();
 	    		next.add(top);
-	    		System.out.println(top.getSentence()+"\t"+top.getScore());
+	    		
 	    		//音近、形近候选字获取并合并
 	    		String character = top.getSentence().getToken(i);
 	    		HashSet<String> tmpPronCands = confusionSet.getSimilarityPronunciations(character);
-	    		HashSet<String> tmpShapeCands = confusionSet.getSimilarityShapes(character);
+//	    		HashSet<String> tmpShapeCands = confusionSet.getSimilarityShapes(character);
 	    		HashSet<String> tmpCands = new HashSet<>();
 	    		if(tmpPronCands != null)
 	    			tmpCands.addAll(tmpPronCands);
-	    		if(tmpShapeCands != null)
-	    			tmpCands.addAll(tmpShapeCands);
+//	    		if(tmpShapeCands != null)
+//	    			tmpCands.addAll(tmpShapeCands);
 	    		
 	    		Iterator<String> iterator = tmpCands.iterator();
 	    		while(iterator.hasNext()) {
 	    			String candCharater = iterator.next();
+//	    			int count = dictionary.getCount(candCharater);
+	    			int count = 1;
 	    			Sentence candSen = top.getSentence().setToken(i, candCharater);
 	    			
-	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(candSen);
-	    			if(i <= 1)
-	    				System.out.println(candSen+"\t"+score);
+	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(candSen) * count;
+//	    			System.out.println(candSen+"\t"+score);
 	    			
 	    			next.add(new Sequence(candSen, score));
 	    		}
@@ -169,7 +175,7 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	    
 	    
 	    ArrayList<Sentence> result = new ArrayList<>();
-	    int num = Math.min(size, prev.size());
+	    int num = Math.min(5, prev.size());
 
 	    for (int index = 0; index < num; index++)
 	      result.add(prev.remove().getSentence());

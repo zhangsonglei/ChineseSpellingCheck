@@ -17,6 +17,10 @@ public class Dictionary {
 	 */
 	private HashMap<String, Integer> dict;
 	
+	public Dictionary() {
+		dict = new HashMap<>();
+	}
+	
 	public Dictionary(HashMap<String, Integer> dict) {
 		this.dict = dict;
 	}
@@ -54,6 +58,18 @@ public class Dictionary {
 			dict.put(character, dict.get(character)+ 1);
 		else
 			dict.put(character, 1);
+	}
+	
+	/**
+	 * 为字典中的字的数量加上给定的值
+	 * @param character	待加的字
+	 * @param count		所加的值
+	 */
+	public void add(String character, int count) {
+		if(contains(character)) 
+			dict.put(character, getCount(character) + count);
+		else
+			dict.put(character, count);
 	}
 	
 	/**

@@ -58,7 +58,9 @@ public class CKIPWordSegment extends AbstractWordSegment {
 	        NodeList books = root.getChildNodes();  
 	        
 	        String sen = books.item(1).getChildNodes().item(0).getFirstChild().getNodeValue().trim();
+	        System.out.println(sen);
 	        sen = FormatConvert.ToDBC(sen).trim();	//将全角格式转为半角格式
+	       
 	        words = sen.split("\\s+");
 	        
 	        for(int i = 1; i < words.length; i++) 
