@@ -1,6 +1,8 @@
 package hust.tools.csc.evaluation;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+
 import hust.tools.csc.util.Sentence;
 
 /**
@@ -58,42 +60,175 @@ public class CSCEvaluator extends AbstractEvaluation {
 	}
 
 	@Override
-	protected int getDTP() { 		
-		return 0;
+	protected HashSet<Integer> getDTP() {
+		HashSet<Integer> temp = new HashSet<>();
+		for(int index : errorSentencesLocations) {	//遍历黄金标准中的错误句
+			Sentence sentence = original.get(index);
+			Sentence errorSentence = gold.get(index);
+			Sentence resultSentence = result.get(index);
+			
+			ArrayList<Integer> errorLocations = new ArrayList<>();	//找出错误字的位置并存储
+			for(int i = 0; i < errorSentence.size(); i++) {	//遍历错误句的每一个字
+				if(!errorSentence.getToken(i).equals(sentence.getToken(i))) 
+					errorLocations.add(i);
+			}
+			
+			int count = 0;
+			for(int j : errorLocations) {	//记录该句子所有错误字的位置，被系统检测出个数
+				if(!resultSentence.getToken(j).equals(sentence.getToken(j)))
+					count++;
+			}
+
+			if(count == errorLocations.size())
+				temp.add(index);
+		}
+		
+		return temp;
 	}
 
 	@Override
-	protected int getDFP() {
-		return 0;
+	protected HashSet<Integer> getDFP() {
+		HashSet<Integer> temp = new HashSet<>();
+		for(int index : correctedSentencesLocations) {	//遍历系统检测结果中的错误句
+			Sentence sentence = original.get(index);
+			Sentence errorSentence = gold.get(index);
+			Sentence resultSentence = result.get(index);
+			
+			ArrayList<Integer> reslutLocations = new ArrayList<>();	//找出错误字的位置并存储
+			for(int i = 0; i < resultSentence.size(); i++) {	//遍历错误句的每一个字
+				if(!resultSentence.getToken(i).equals(sentence.getToken(i))) 
+					reslutLocations.add(i);
+			}	
+			
+			int count = 0;
+			for(int j : reslutLocations) {	//记录系统给出的所有错误字的位置，黄金标准是否也认为有错的个数
+				if(!errorSentence.getToken(j).equals(sentence.getToken(j)))
+				count++;
+			}
+
+			if(count != reslutLocations.size())
+				temp.add(index);
+		}
+		
+		return temp;
 	}
 
 	@Override
-	protected int getDTN() {
-		return 0;
+	protected HashSet<Integer> getDTN() {
+		HashSet<Integer> temp = new HashSet<>();
+		for(int index = 0; index < original.size(); index++) {
+			if(errorSentencesLocations.contains(index))
+				continue;
+			
+			if(result.get(index).equals(original.get(index)))
+				temp.add(index);
+		}
+		
+		return temp;
 	}
 
 	@Override
-	protected int getDFN() {
-		return 0;
+	protected HashSet<Integer> getDFN() {
+		HashSet<Integer> temp = new HashSet<>();
+		for(int index : errorSentencesLocations) {	//遍历黄金标准中的错误句
+			Sentence sentence = original.get(index);
+			Sentence errorSentence = gold.get(index);
+			Sentence resultSentence = result.get(index);
+			
+			ArrayList<Integer> errorLocations = new ArrayList<>();	//找出错误字的位置并存储
+			for(int i = 0; i < errorSentence.size(); i++) {	//遍历错误句的每一个字
+				if(!errorSentence.getToken(i).equals(sentence.getToken(i))) 
+					errorLocations.add(i);
+			}
+			
+			int count = 0;
+			for(int j : errorLocations) {	//记录该句子所有错误字的位置，被系统检测出个数
+				if(resultSentence.getToken(j).equals(sentence.getToken(j)))
+					count++;
+			}
+
+			if(count > 0)
+				temp.add(index);
+		}
+		
+		return temp;
 	}
 
 	@Override
-	protected int getCTP() {
-		return 0;
+	protected HashSet<Integer> getCTP() {
+		HashSet<Integer> temp = new HashSet<>();
+		for(int index : errorSentencesLocations) {
+			if(result.get(index).equals(gold.get(index)))
+				count++;
+		}
+		
+		return temp;
+	}
+	
+	@Override
+	protected HashSet<Integer> getCFP() {
+		HashSet<Integer> temp = new HashSet<>();
+		for(int index = 0; index < original.size(); index++) {
+			if(errorSentencesLocations.contains(index))
+				continue;
+			
+			if(!original.get(index).equals(result.get(index)))
+				count++;
+		}
+		
+		return temp;
 	}
 
 	@Override
-	protected int getCFP() {
-		return 0;
+	protected HashSet<Integer> getCTN() {
+		HashSet<Integer> temp = new HashSet<>();
+		for(int index = 0; index < original.size(); index++) {
+			if(errorSentencesLocations.contains(index))
+				continue;
+			
+			if(original.get(index).equals(result.get(index)))
+				count++;
+		}
+		
+		return temp;
 	}
 
 	@Override
-	protected int getCTN() {
-		return 0;
+	protected HashSet<Integer> getCFN() {
+		HashSet<Integer> temp = new HashSet<>();
+		for(int index : errorSentencesLocations) {
+			if(!gold.get(index).equals(result.get(index)))
+				count++;
+		}
+	
+		return temp;
 	}
 
 	@Override
-	protected int getCFN() {
-		return 0;
+	protected HashSet<Integer> getFP() {
+		HashSet<Integer> temp = new HashSet<>();
+		for(int index = 0; index < original.size(); index++) {
+			if(errorSentencesLocations.contains(index))
+				continue;
+			
+			if(!original.get(index).equals(result.get(index)))
+				count++;
+		}
+		
+		return temp;
+	}
+
+	@Override
+	protected HashSet<Integer> getTN() {
+		HashSet<Integer> temp = new HashSet<>();
+		for(int index = 0; index < original.size(); index++) {
+			if(errorSentencesLocations.contains(index))
+				continue;
+			
+			if(original.get(index).equals(result.get(index)))
+				count++;
+		}
+		
+		return temp;
 	}
 }

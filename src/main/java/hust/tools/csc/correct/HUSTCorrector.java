@@ -24,9 +24,9 @@ public class HUSTCorrector implements Corrector {
 	
 	@Override
 	public CorrectResult correct(Sentence sentence) {
-		DetectResult result = detector.detect(sentence);
-		int[][] locations = detector.getErrorLocation(result);
-		String[][] characters = detector.getErrorCharacter(result);
+//		DetectResult result = detector.detect(sentence);
+//		int[][] locations = detector.getErrorLocation(result);
+//		String[][] characters = detector.getErrorCharacter(result);
 		
 		HashMap<Integer, Suggestions> map = new HashMap<>();
 //		
