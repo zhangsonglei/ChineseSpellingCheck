@@ -157,9 +157,9 @@ public class CSCEvaluator extends AbstractEvaluation {
 	@Override
 	protected HashSet<Integer> getCTP() {
 		HashSet<Integer> temp = new HashSet<>();
-		for(int index : errorSentencesLocations) {
+		for(int index : correctedSentencesLocations) {
 			if(result.get(index).equals(gold.get(index)))
-				count++;
+				temp.add(index);
 		}
 		
 		return temp;
@@ -168,12 +168,9 @@ public class CSCEvaluator extends AbstractEvaluation {
 	@Override
 	protected HashSet<Integer> getCFP() {
 		HashSet<Integer> temp = new HashSet<>();
-		for(int index = 0; index < original.size(); index++) {
-			if(errorSentencesLocations.contains(index))
-				continue;
-			
-			if(!original.get(index).equals(result.get(index)))
-				count++;
+		for(int index : correctedSentencesLocations) {
+			if(!result.get(index).equals(gold.get(index)))
+				temp.add(index);
 		}
 		
 		return temp;
@@ -187,7 +184,7 @@ public class CSCEvaluator extends AbstractEvaluation {
 				continue;
 			
 			if(original.get(index).equals(result.get(index)))
-				count++;
+				temp.add(index);
 		}
 		
 		return temp;
@@ -198,7 +195,7 @@ public class CSCEvaluator extends AbstractEvaluation {
 		HashSet<Integer> temp = new HashSet<>();
 		for(int index : errorSentencesLocations) {
 			if(!gold.get(index).equals(result.get(index)))
-				count++;
+				temp.add(index);
 		}
 	
 		return temp;
@@ -207,12 +204,9 @@ public class CSCEvaluator extends AbstractEvaluation {
 	@Override
 	protected HashSet<Integer> getFP() {
 		HashSet<Integer> temp = new HashSet<>();
-		for(int index = 0; index < original.size(); index++) {
-			if(errorSentencesLocations.contains(index))
-				continue;
-			
-			if(!original.get(index).equals(result.get(index)))
-				count++;
+		for(int index : correctedSentencesLocations) {
+			if(gold.get(index).equals(original.get(index)))
+				temp.add(index);
 		}
 		
 		return temp;
@@ -220,15 +214,6 @@ public class CSCEvaluator extends AbstractEvaluation {
 
 	@Override
 	protected HashSet<Integer> getTN() {
-		HashSet<Integer> temp = new HashSet<>();
-		for(int index = 0; index < original.size(); index++) {
-			if(errorSentencesLocations.contains(index))
-				continue;
-			
-			if(original.get(index).equals(result.get(index)))
-				count++;
-		}
-		
-		return temp;
+		return getCTN();
 	}
 }

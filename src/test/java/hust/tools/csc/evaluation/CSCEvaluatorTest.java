@@ -59,16 +59,28 @@ public class CSCEvaluatorTest {
 		evaluator = new CSCEvaluator(original, gold, result);
 	}
 	
+	@Test
+	public void testGetFalsePositiveRate() {
+		assertTrue(evaluator.getFalsePositiveRate() == 0.5);
+	}
 	
-//	@Test
-//	public void testGetFP() {
-//		assertEquals(2, evaluator.getFP());
-//	}
-//	
-//	@Test
-//	public void testGetTN() {
-//		assertEquals(1, evaluator.getTN());
-//	}
+	@Test
+	public void testGetFP() {
+		HashSet<Integer> result = evaluator.getFP();
+		HashSet<Integer> set = new HashSet<>();
+		set.add(0);
+		
+		assertTrue(set.equals(result) );
+	}
+	
+	@Test
+	public void testGetTN() {
+		HashSet<Integer> result = evaluator.getTN();
+		HashSet<Integer> set = new HashSet<>();
+		set.add(3);
+		
+		assertTrue(set.equals(result) );
+	}
 	
 	///////////////////////////////////////////////////	
 	@Test
@@ -108,40 +120,48 @@ public class CSCEvaluatorTest {
 
 		assertTrue(set.equals(result) );
 	}
-//	
-//	///////////////////////////////////////////////////
-//	@Test
-//	public void testGetCTP() {
-//		assertEquals(1, evaluator.getCTP());
-//	}
-//	
-//	@Test
-//	public void testGetCFP() {
-//		assertEquals(3, evaluator.getFP());
-//	}
-//
-//	@Test
-//	public void testGetCTN() {
-//		assertEquals(1, evaluator.getTN());
-//	}
-//	
-//	@Test
-//	public void testGetCFN() {
-//		assertEquals(2, evaluator.getCFN());
-//	}
-//	
-//	///////////////////////////////////////////////////
-//	@Test
-//	public void testGetFalsePositiveRate() {
-//		assertTrue(evaluator.getFalsePositiveRate() == 0.5);
-//	}
-//	
-//	///////////////////////////////////////////////////
-//	@Test
-//	public void testGetDetectAccuracy() {
-//		assertTrue(evaluator.getDetectAccuracy() == 0.6);
-//	}
+	
+	///////////////////////////////////////////////////
+	@Test
+	public void testGetCTP() {
+		HashSet<Integer> result = evaluator.getCTP();
+		HashSet<Integer> set = new HashSet<>();
+		set.add(2);
 
+		assertTrue(set.equals(result) );
+	}
+	
+	@Test
+	public void testGetCFP() {
+		HashSet<Integer> result = evaluator.getCFP();
+		HashSet<Integer> set = new HashSet<>();
+		set.add(0);
+		set.add(1);
+		set.add(4);
+		
+		assertTrue(set.equals(result) );
+	}
+
+	@Test
+	public void testGetCTN() {
+		HashSet<Integer> result = evaluator.getCTN();
+		HashSet<Integer> set = new HashSet<>();
+		set.add(3);
+		
+		assertTrue(set.equals(result) );
+	}
+	
+	@Test
+	public void testGetCFN() {
+		HashSet<Integer> result = evaluator.getCFN();
+		HashSet<Integer> set = new HashSet<>();
+		set.add(1);
+		set.add(4);
+
+		assertTrue(set.equals(result) );
+	}
+	
+	/////////////////////////////////////////////////////
 	@Test
 	public void testGetDetectPrecision() {
 		assertTrue(evaluator.getDetectPrecision() == 0.5);
@@ -158,24 +178,23 @@ public class CSCEvaluatorTest {
 	}
 	
 	///////////////////////////////////////////////////
+	@Test
+	public void testGetCorrectAccuracy() {
+		assertTrue(evaluator.getCorrectAccuracy() == 0.4);
+	}
 
-//	@Test
-//	public void testGetCorrectAccuracy() {
-//		assertTrue(evaluator.getCorrectAccuracy() == 0.4);
-//	}
-//
-//	@Test
-//	public void testGetCorrectPrecision() {
-//		assertTrue(evaluator.getCorrectPrecision() == 0.25);
-//	}
-//
-//	@Test
-//	public void testGetCorrectRecall() {
-//		assertTrue(evaluator.getCorrectRecall() == 1.0/3);
-//	}
-//
-//	@Test
-//	public void testGetCorrectF() {
-//		assertTrue(evaluator.getCorrectF() == 2.0/7);
-//	}
+	@Test
+	public void testGetCorrectPrecision() {
+		assertTrue(evaluator.getCorrectPrecision() == 0.25);
+	}
+
+	@Test
+	public void testGetCorrectRecall() {
+		assertTrue(evaluator.getCorrectRecall() == 1.0/3);
+	}
+
+	@Test
+	public void testGetCorrectF() {
+		assertEquals(2.0/7, evaluator.getCorrectF(), 0.000000000000001);
+	}
 }

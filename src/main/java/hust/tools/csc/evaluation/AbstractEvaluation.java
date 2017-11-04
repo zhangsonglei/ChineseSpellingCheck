@@ -106,57 +106,65 @@ public abstract class AbstractEvaluation implements Evaluation {
 	
 	//////////////////////////////////////////////////////错误率指标混淆矩阵
 	
+	/**
+	 * 返回黄金标准没有纠正的句子中，系统也没有纠正的句子位置索引（等同于CTN）
+	 * @return	黄金标准没有纠正的句子中，系统也没有纠正的句子位置索引
+	 */	
 	protected abstract HashSet<Integer> getTN();
 
+	/**
+	 * 返回系统进行纠正的句子中，黄金标准没有进行纠正的句子位置索引
+	 * @return	系统进行纠正的句子中，黄金标准没有进行纠正的句子位置索引
+	 */
 	protected abstract HashSet<Integer> getFP();
 	
 	//////////////////////////////////////////////////////检测指标混淆矩阵
 	/**
-	 * 返回所有有错句子中错字被全部正确标记的个数
-	 * @return	所有有错句子中错字被全部正确标记的个数
+	 * 返回所有有错句子中错字被全部正确标记的句子位置索引
+	 * @return	所有有错句子中错字被全部正确标记的句子位置索引
 	 */
 	protected abstract HashSet<Integer> getDTP();
 	
 	/**
-	 * 返回所有句子中无错被标记为错误的个数
-	 * @return	所有句子中无错被标记为错误的个数
+	 * 返回所有句子中无错被标记为错误的句子位置索引
+	 * @return	所有句子中无错被标记为错误的句子位置索引
 	 */
 	protected abstract HashSet<Integer> getDFP();
 	
 	/**
-	 * 返回所有无错句子中被标记为无错的个数
-	 * @return	所有无错句子中被标记为无错的个数
+	 * 返回所有无错句子中被标记为无错的句子位置索引
+	 * @return	所有无错句子中被标记为无错的句子位置索引
 	 */
 	protected abstract HashSet<Integer> getDTN();
 	
 	/**
-	 * 返回所有有错句子中的错字被标记为无错的句子个数
-	 * @return	所有有错句子中的错字被标记为无错的句子个数
+	 * 返回所有有错句子中的错字被标记为无错的句子位置索引
+	 * @return	所有有错句子中的错字被标记为无错的句子位置索引
 	 */
 	protected abstract HashSet<Integer> getDFN();
 	
 	//////////////////////////////////////////////////////纠正指标混淆矩阵
 	/**
-	 * 返回有错的句子被正确纠正的个数
-	 * @return	有错的句子被正确纠正的个数
+	 * 返回系统进行了纠正的句子中与黄金标准一样的句子位置索引
+	 * @return	系统进行了纠正的句子中与黄金标准一样的句子位置索引
 	 */
 	protected abstract HashSet<Integer> getCTP();
 	
 	/**
-	 * 返回无错句子被修改的个数
-	 * @return	无错句子被标记为错误的个数
+	 * 返回系统进行了纠正的句子中与黄金标准不一样的句子位置索引
+	 * @return	系统进行了纠正的句子中与黄金标准不一样的句子位置索引
 	 */
 	protected abstract HashSet<Integer> getCFP();
 	
 	/**
-	 * 返回无错句子没有被纠正的个数
-	 * @return	无错句子没有被纠正的个数
-	 */
-	protected abstract HashSet<Integer> getCTN();
-	
-	/**
-	 * 返回有错的句子被纠正错误的个数
-	 * @return	有错的句子被纠正错误的个数
+	 * 返回黄金标准进行了纠正的句子中与系统不一样的句子位置索引
+	 * @return	黄金标准进行了纠正的句子中与系统不一样的句子位置索引
 	 */
 	protected abstract HashSet<Integer> getCFN();
+	
+	/**
+	 * 返回黄金标准没有纠正的句子中系统同样没有纠正的的句子位置索引
+	 * @return	黄金标准没有纠正的句子中系统同样没有纠正的的句子位置索引
+	 */
+	protected abstract HashSet<Integer> getCTN();
 }
