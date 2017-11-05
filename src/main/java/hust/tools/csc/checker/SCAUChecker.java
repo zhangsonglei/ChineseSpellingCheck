@@ -17,6 +17,8 @@ import java.util.HashSet;
 import java.util.List;
 
 import hust.tools.csc.detecet.HUSTDetector;
+import hust.tools.csc.detecet.SpellError;
+import hust.tools.csc.detecet.DetectResult;
 import hust.tools.csc.detecet.Detector;
 import hust.tools.csc.ngram.HustNGramModel;
 import hust.tools.csc.ngram.NGramModel;
@@ -44,8 +46,8 @@ public class SCAUChecker {
 		String similarityShape = "E:\\JOB\\TestData\\shape.txt";
 		
 		String lmFile = "E:\\JOB\\TestData\\kn3.bin";
-		String testFile = "E:\\JOB\\TestData\\test.txt";
-		String result = "E:\\JOB\\TestData\\result.txt";
+		String testFile = "E:\\JOB\\TestData\\testFile.txt";
+		String result = "E:\\JOB\\TestData\\SCAUresult.txt";
 		
 		constructDict(new File(dict));
 		constructConfusionSet(new File(similarityPronunciation), new File(similarityShape));
@@ -59,11 +61,23 @@ public class SCAUChecker {
 		OutputStreamWriter oWriter = new OutputStreamWriter(new FileOutputStream(new File(result)), "utf-8");
 		BufferedWriter writer = new BufferedWriter(oWriter);
 		
+		int no = 1;
 		for(Sentence sentence : sentences) {
-			writer.write(detector.detect(sentence).toString());
+			System.out.println(no++);
+			DetectResult detectResult = detector.detect(sentence);
+			SpellError[] errors = detectResult.getErrors(0);
+			if(errors != null) {
+				for(SpellError error : errors) {
+					String character = error.getCharacter();
+					int location = error.getLocation();
+					sentence = sentence.setToken(location, character);
+				}
+			}
+			
+			writer.write(sentence.toString());
+			writer.newLine();
 		}
 		writer.close();
-		
 	}
 	
 	/**

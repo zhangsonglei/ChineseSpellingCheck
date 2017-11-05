@@ -54,7 +54,7 @@ public class CSCEvaluator extends AbstractEvaluation {
 				System.exit(0);
 			}
 		}else {		
-			System.err.println("有空值！\noriginalSize = " + originalSize + "goldSize = " + goldSize + "resultSize = " + resultSize);
+			System.err.println("有空值！\noriginalSize = " + originalSize + "\tgoldSize = " + goldSize + "\tresultSize = " + resultSize);
 			System.exit(0);
 		}
 	}

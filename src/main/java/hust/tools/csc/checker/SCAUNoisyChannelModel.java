@@ -14,6 +14,7 @@ import hust.tools.csc.ngram.NGramModel;
 import hust.tools.csc.score.AbstractNoisyChannelModel;
 import hust.tools.csc.util.ConfusionSet;
 import hust.tools.csc.util.Dictionary;
+import hust.tools.csc.util.FormatConvert;
 import hust.tools.csc.util.Sentence;
 import hust.tools.csc.wordseg.AbstractWordSegment;
 
@@ -45,9 +46,8 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	@Override
 	public ArrayList<Sentence> getCorrectSentence(Sentence sentence) {
 		ArrayList<Sentence> candSens = new ArrayList<>();
-		System.out.println("待分词的句子："+sentence);
 		ArrayList<String> words = wordSegment.segment(sentence);
-		System.out.println("分词结果："+words);
+
 		if(words.size() < 2) {//分词后，词的个数小于2的不作处理，不作处理直接返回原句
 			candSens.add(sentence);
 			return candSens;
@@ -62,7 +62,7 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 			 * 连续单字词的个数最大等于2的使用bigram，大于2的使用trigram
 			 */
 			int maxLength = maxContinueSingleWordsLength(locations);
-			System.out.println("order= "+ maxLength);
+
 			if(maxLength <= 2) {
 				order = 2;
 				candSens = beamSearch(sentence, beamSize);
@@ -118,7 +118,7 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 			
 			index += word.length();
 		}
-		System.out.println("单字词所在位置：\t"+locations);
+//		System.out.println("单字词所在位置：\t"+locations);
 		return locations;
 	}
 	
@@ -148,6 +148,8 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	    		log.info(top.getSentence()+"'Score = " + top.getScore());
 	    		//音近、形近候选字获取并合并
 	    		String character = top.getSentence().getToken(i);
+	    		if(!FormatConvert.isHanZi(character))
+	    			continue;
 	    		HashSet<String> tmpPronCands = confusionSet.getSimilarityPronunciations(character);
 //	    		HashSet<String> tmpShapeCands = confusionSet.getSimilarityShapes(character);
 	    		HashSet<String> tmpCands = new HashSet<>();

@@ -37,7 +37,7 @@ public class Process {
 		for(Entry<String, Sentence> entry : tests.entrySet()) {
 			String pid = entry.getKey();
 			Sentence sentence = entry.getValue();
-			testwriter.write(pid+"\t"+sentence);
+			testwriter.write(sentence.toString());
 			testwriter.newLine();
 			if(res.containsKey(pid)) {
 				ArrayList<SpellError> errors = res.get(pid);
@@ -46,7 +46,7 @@ public class Process {
 					sentence = sentence.setToken(error.getLocation() - 1, error.getCharacter());
 				}
 			}
-			resultwriter.write(pid+"\t"+sentence);
+			resultwriter.write(sentence.toString());
 			resultwriter.newLine();
 		}
 		resultwriter.close();

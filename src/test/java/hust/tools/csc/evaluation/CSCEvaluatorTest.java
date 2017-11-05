@@ -2,18 +2,12 @@ package hust.tools.csc.evaluation;
 
 import static org.junit.Assert.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import hust.tools.csc.util.FormatConvert;
 import hust.tools.csc.util.Sentence;
 
 public class CSCEvaluatorTest {
@@ -202,49 +196,5 @@ public class CSCEvaluatorTest {
 	@Test
 	public void testGetCorrectF() {
 		assertEquals(2.0/7, evaluator.getCorrectF(), 0.000000000000001);
-	}
-	
-	@Test
-	public void testGoldAndGold() throws IOException {
-		String originalFile = "E:\\JOB\\TestData\\testFile.txt";
-		String goldFile = "E:\\JOB\\TestData\\goldFile.txt";
-		
-		original = readFile(originalFile, "utf-8");
-		gold = readFile(goldFile, "utf-8");
-		result = gold;
-		evaluator = new CSCEvaluator(original, gold, result);
-		
-		assertTrue(0.0 == evaluator.getFalsePositiveRate());
-		assertTrue(1.0 == evaluator.getDetectAccuracy());
-		assertTrue(1.0 == evaluator.getDetectPrecision());
-		assertTrue(1.0 == evaluator.getDetectRecall());
-		assertTrue(1.0 == evaluator.getDetectF());
-		assertTrue(1.0 == evaluator.getCorrectAccuracy());
-		assertTrue(1.0 == evaluator.getCorrectPrecision());
-		assertTrue(1.0 == evaluator.getCorrectRecall());
-		assertTrue(1.0 == evaluator.getCorrectF());
-	}
-	
-	private ArrayList<Sentence> readFile(String path, String encoding) throws IOException {
-		ArrayList<Sentence> list = new ArrayList<Sentence>();
-		File file = new File(path);
-		
-		if(file.isFile() && file.exists()) {
-			InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), encoding);
-			BufferedReader reader = new BufferedReader(inputStreamReader);
-			
-			String line = "";
-			while((line = reader.readLine()) != null) {
-				line = FormatConvert.ToDBC(line).trim();
-				String[] chs = line.split("\t")[1].split("");
-				
-				list.add(new Sentence(chs));
-			}
-			reader.close();
-		}else {
-			System.err.println("File:\""+path+"\" read failed!");
-		}
-		
-		return list;	
 	}
 }

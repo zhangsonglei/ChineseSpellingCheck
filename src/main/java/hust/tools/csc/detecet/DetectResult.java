@@ -20,7 +20,7 @@ public class DetectResult {
 	public DetectResult(ArrayList<SpellError[]> errorList) {
 		this.errorList = errorList;
 	}
-
+	
 	/**
 	 * 添加一个拼写错误
 	 * @param error
