@@ -37,7 +37,7 @@ public class SCAUChecker {
 	private static ConfusionSet confusionSet;
 	private static NGramModel nGramModel;
 	private static AbstractWordSegment wordSegment;
-	
+		
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		String dict = "E:\\JOB\\TestData\\dict.bin";
 		String similarityPronunciation = "E:\\JOB\\TestData\\pro.txt";
@@ -100,9 +100,6 @@ public class SCAUChecker {
 		InputStreamReader shape = new InputStreamReader(new FileInputStream(similarityShape), "utf-8");
 		BufferedReader proReader = new BufferedReader(pronunciation);
 		BufferedReader shapeReader = new BufferedReader(shape);
-		int max = 0;
-		int lineNo = 0;
-		int maxLineNo = 0;
 		String line = "";
 		try {
 			while ((line = proReader.readLine())!= null) {
@@ -110,12 +107,7 @@ public class SCAUChecker {
 				line = FormatConvert.ToDBC(line);		//全角转为半角
 				line = line.replace("\t", "").trim();	//去除多于的空格
 				if(!line.equals("")) {					//过滤空行
-					lineNo ++;
 					String[] strings = line.split("");
-					if(max < strings.length) {
-						maxLineNo = lineNo;
-						max = strings.length;
-					}
 					confusionSet.addSimilarityPronunciations(strings);
 				}
 			}
@@ -140,8 +132,6 @@ public class SCAUChecker {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		System.out.println(maxLineNo+" :number: "+max);
 	}
 	
 	/**

@@ -26,6 +26,16 @@
        <artifactId>jpinyin</artifactId>
        <version>1.1.8</version>
     </dependency>
+     <dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-api</artifactId>
+    <version>2.9.1</version>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-core</artifactId>
+    <version>2.9.1</version>
+  </dependency>
    <dependency>
 	<groupId>dom4j</groupId>
 	<artifactId>dom4j</artifactId>

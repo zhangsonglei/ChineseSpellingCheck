@@ -31,7 +31,7 @@ public abstract class AbstractEvaluation implements Evaluation {
 		numerator.addAll(getDTP());
 		
 		HashSet<Integer> denominator = new HashSet<>();	//分母
-		numerator.addAll(numerator);
+		denominator.addAll(numerator);
 		denominator.addAll(getDFN());
 		denominator.addAll(getDFP());
 				

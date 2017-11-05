@@ -7,6 +7,9 @@ import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import hust.tools.csc.ngram.NGramModel;
 import hust.tools.csc.score.AbstractNoisyChannelModel;
 import hust.tools.csc.util.ConfusionSet;
@@ -30,6 +33,7 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	private NGramModel nGramModel;
 	private int order;
 	private int beamSize = 100;
+	private final Logger log = LogManager.getLogger(SCAUNoisyChannelModel.class);
 	
 	public SCAUNoisyChannelModel(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment) throws IOException {
 		this.dictionary = dictionary;
@@ -72,7 +76,6 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 		}
 		
 		candSens.add(sentence);
-		System.out.println(candSens);
 		return candSens;
 	}
 	
@@ -142,7 +145,7 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	    	for (int sc = 0; prev.size() > 0 && sc < sz; sc++) {
 	    		Sequence top = prev.remove();
 	    		next.add(top);
-	    		
+	    		log.info(top.getSentence()+"'Score = " + top.getScore());
 	    		//音近、形近候选字获取并合并
 	    		String character = top.getSentence().getToken(i);
 	    		HashSet<String> tmpPronCands = confusionSet.getSimilarityPronunciations(character);
@@ -161,8 +164,7 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	    			Sentence candSen = top.getSentence().setToken(i, candCharater);
 	    			
 	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(candSen) * count;
-//	    			System.out.println(candSen+"\t"+score);
-	    			
+	    			log.info(candSen+"'Score = " + score);
 	    			next.add(new Sequence(candSen, score));
 	    		}
 	        }

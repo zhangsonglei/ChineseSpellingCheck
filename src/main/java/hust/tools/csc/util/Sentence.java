@@ -145,12 +145,9 @@ public class Sentence implements Iterable<String>, Comparable<Sentence> {
 	public String toString() {
 		StringBuilder string = new StringBuilder();
 		
-		string.append("[");
 		for (int i = 0; i < size(); i++) 
 			string.append(getToken(i));
 		
-		string.append("]");
-
 		return string.toString();
 	}
 }
