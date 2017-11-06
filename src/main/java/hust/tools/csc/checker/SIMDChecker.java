@@ -1,7 +1,9 @@
 package hust.tools.csc.checker;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,34 +20,34 @@ import hust.tools.csc.ngram.HustNGramModel;
 import hust.tools.csc.ngram.NGramModel;
 import hust.tools.csc.score.AbstractNoisyChannelModel;
 import hust.tools.csc.util.ConfusionSet;
+import hust.tools.csc.util.Dictionary;
 import hust.tools.csc.util.FormatConvert;
 import hust.tools.csc.util.Sentence;
-import hust.tools.csc.wordseg.AbstractWordSegment;
-import hust.tools.csc.wordseg.CKIPWordSegment;
 import hust.tools.ngram.io.ARPATextFileNGramModleReader;
 import hust.tools.ngram.io.BinaryFileNGramModelReader;
 import hust.tools.ngram.io.TextFileNGramModelReader;
 import hust.tools.ngram.model.AbstractNGramModelReader;
 
-public class SCAUChecker {
+public class SIMDChecker {
 	
+	private static Dictionary dictionary;
 	private static ConfusionSet confusionSet;
 	private static NGramModel nGramModel;
-	private static AbstractWordSegment wordSegment;
 		
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
+		String dict = "E:\\JOB\\TestData\\trigram.bin";
 		String similarityPronunciation = "E:\\JOB\\TestData\\pro.txt";
 		String similarityShape = "E:\\JOB\\TestData\\shape.txt";
 		
 		String lmFile = "E:\\JOB\\TestData\\kn3.bin";
-		String testFile = "E:\\JOB\\TestData\\TestInput.txt";
-		String result = "E:\\JOB\\TestData\\SCAUresult.txt";
+		String testFile = "E:\\JOB\\TestData\\TestInput.txt";//所有数据集
+		String result = "E:\\JOB\\TestData\\SIMDresult.txt";
 		
+		constructDict(new File(dict));
 		constructConfusionSet(new File(similarityPronunciation), new File(similarityShape));
 		nGramModel = loadModel(lmFile);
-		wordSegment = new CKIPWordSegment();
 		
-		AbstractNoisyChannelModel noisyChannelModel = new SCAUNoisyChannelModel(nGramModel, confusionSet, wordSegment);
+		AbstractNoisyChannelModel noisyChannelModel = new SIMDNoisyChannelModel(dictionary, nGramModel, confusionSet);
 		
 		List<Sentence> sentences = readFile(testFile, "utf-8");
 		OutputStreamWriter oWriter = new OutputStreamWriter(new FileOutputStream(new File(result)), "utf-8");
@@ -54,13 +56,36 @@ public class SCAUChecker {
 		int no = 1;
 		for(Sentence sentence : sentences) {
 			System.out.println(no++);
-			ArrayList<Sentence> cands = noisyChannelModel.getCorrectSentence(sentence);
-			Sentence bestSentence = cands.get(0);
-			
-			writer.write(bestSentence.toString());
-			writer.newLine();
+			ArrayList<Sentence> list = noisyChannelModel.getCorrectSentence(sentence);
+			if(list != null && list.size() > 0) {
+				writer.write(list.get(0).toString());
+				writer.newLine();
+			}
 		}
 		writer.close();
+	}
+	
+	/**
+	 * 建立字典
+	 * @param file	字典文件	
+	 * @throws IOException
+	 */
+	private static void constructDict(File file) throws IOException {
+		DataInputStream reader = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+		dictionary = new Dictionary();
+		int count = reader.readInt();
+		for(int i = 0; i < count; i++) {
+			String[] entry = reader.readUTF().split("\t");
+			if(entry.length == 2) {
+				String ngrams = FormatConvert.ToDBC(entry[0]);
+				ngrams = ngrams.replaceAll("\\s+", "").trim();
+				if(ngrams.length() > 1) {
+					int num = Integer.parseInt(entry[1]);
+					dictionary.add(ngrams, num);
+				}
+			}
+		}
+		reader.close();
 	}
 	
 	/**

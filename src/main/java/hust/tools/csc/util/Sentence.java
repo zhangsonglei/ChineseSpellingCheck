@@ -95,10 +95,14 @@ public class Sentence implements Iterable<String>, Comparable<Sentence> {
 	 * @param index	待替换的位置索引
 	 */
 	public Sentence setToken(int index, String token) {
-		if(index > -1 && index < size())
-			tokens[index] = token;
+		String[] newTokens = new String[size()];
+		for(int i = 0; i < size(); i++)
+			newTokens[i] = tokens[i];
 		
-		return new Sentence(tokens);
+		if(index > -1 && index < size())
+			newTokens[index] = token;
+		
+		return new Sentence(newTokens);
 	}
 	
 	@Override

@@ -1,6 +1,4 @@
-package hust.tools.csc.checker;
-
-import hust.tools.csc.util.Sentence;
+package hust.tools.csc.util;
 
 /**
  *<ul>

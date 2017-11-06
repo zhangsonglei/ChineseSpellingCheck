@@ -51,7 +51,6 @@ public class CSCEvaluatorTest {
 		Sentence sentence5 = new Sentence("做人要时事求是。".split(""));
 		Sentence sentence51 = new Sentence("做人要实事求是。".split(""));
 		Sentence sentence52 = new Sentence("做人要时实求是。".split(""));
-		
 		original.add(sentence5);
 		gold.add(sentence51);
 		result.add(sentence52);

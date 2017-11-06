@@ -48,9 +48,9 @@ public class DetectResult {
 	 */
 	public SpellError[] getErrors(int index) {
 		if(index >= 0 && index < errorList.size())
-			return null;
+			return errorList.get(index);
 		
-		return errorList.get(index);
+		return null;
 	}
 	
 	@Override

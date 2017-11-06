@@ -38,13 +38,13 @@ public class SentenceTest {
 
 	@Test
 	public void testUpdate() {
-		sentence.setToken(3, "华");
-		assertEquals(new Sentence(new String[]{"我","爱","中","华","。"}), sentence);
+		Sentence newSen = sentence.setToken(3, "华");
+		assertEquals(new Sentence(new String[]{"我","爱","中","华","。"}), newSen);
+		System.out.println(sentence);
 	}
 
 	@Test
 	public void testEqualsObject() {
-		
 		assertTrue(sentence.equals(sentence1));
 		assertFalse(sentence.equals(sentence2));
 	}
