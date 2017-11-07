@@ -170,11 +170,9 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	    		Iterator<String> iterator = tmpCands.iterator();
 	    		while(iterator.hasNext()) {
 	    			String candCharater = iterator.next();
-//	    			int count = dictionary.getCount(candCharater);
-	    			int count = 1;
 	    			Sentence candSen = top.getSentence().setToken(index, candCharater);
 	    			
-	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(candSen) * count;
+	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(candSen);
 //	    			log.info(candSen+"'Score = " + score);
 	    			next.add(new Sequence(candSen, score));
 	    		}

@@ -40,7 +40,7 @@ public class SIMDChecker {
 		String similarityShape = "E:\\JOB\\TestData\\shape.txt";
 		
 		String lmFile = "E:\\JOB\\TestData\\kn3.bin";
-		String testFile = "E:\\JOB\\TestData\\TestInput.txt";//所有数据集
+		String testFile = "E:\\JOB\\TestData\\testFile.txt";//所有数据集
 		String result = "E:\\JOB\\TestData\\SIMDresult.txt";
 		
 		constructDict(new File(dict));

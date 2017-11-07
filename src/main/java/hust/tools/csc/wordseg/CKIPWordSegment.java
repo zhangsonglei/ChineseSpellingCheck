@@ -27,13 +27,14 @@ import tw.cheyingwu.ckip.WordSegmentationService;
  */
 public class CKIPWordSegment extends AbstractWordSegment {
 	
-	public CKIPWordSegment() {
+	private WordSegmentationService service;
 	
+	public CKIPWordSegment() {
+		service = new CKIP("140.109.19.104", 1501, "zsl", "zsl");
 	}
 
 	@Override
 	public ArrayList<String> segment(Sentence sentence) {
-		WordSegmentationService service = new CKIP("140.109.19.104", 1501, "zsl", "zsl");
 		service.setRawText(sentence.toString());
 		service.send();
 

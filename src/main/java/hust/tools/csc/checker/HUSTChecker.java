@@ -23,6 +23,8 @@ import hust.tools.csc.util.ConfusionSet;
 import hust.tools.csc.util.Dictionary;
 import hust.tools.csc.util.FormatConvert;
 import hust.tools.csc.util.Sentence;
+import hust.tools.csc.wordseg.AbstractWordSegment;
+import hust.tools.csc.wordseg.CKIPWordSegment;
 import hust.tools.ngram.io.ARPATextFileNGramModleReader;
 import hust.tools.ngram.io.BinaryFileNGramModelReader;
 import hust.tools.ngram.io.TextFileNGramModelReader;
@@ -33,29 +35,33 @@ public class HUSTChecker {
 	private static Dictionary dictionary;
 	private static ConfusionSet confusionSet;
 	private static NGramModel nGramModel;
+	private static AbstractWordSegment wordSegment;
 		
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
-		String dictFile = "E:\\JOB\\TestData\\dict.bin";
+		
+		long start = System.currentTimeMillis();
+		String dictFile = "E:\\JOB\\TestData\\trigram.bin";
 		String similarityPronunciation = "E:\\JOB\\TestData\\pro.txt";
-		String similarityShape = "E:\\JOB\\TestData\\shape.txt";
 		
 		String lmFile = "E:\\JOB\\TestData\\kn3.bin";
 		String testFile = "E:\\JOB\\TestData\\TestInput.txt";
 		String result = "E:\\JOB\\TestData\\HUSTresult.txt";
 		
-		constructDict(new File(dictFile));
-		constructConfusionSet(new File(similarityPronunciation), new File(similarityShape));
-		nGramModel = loadModel(lmFile);
-		
-		AbstractNoisyChannelModel noisyChannelModel = new HUSTBNoisyChannelModel(dictionary, nGramModel, confusionSet);
-		
 		List<Sentence> sentences = readFile(testFile, "utf-8");
 		OutputStreamWriter oWriter = new OutputStreamWriter(new FileOutputStream(new File(result)), "utf-8");
 		BufferedWriter writer = new BufferedWriter(oWriter);
 		
+		constructDict(new File(dictFile));
+		constructConfusionSet(new File(similarityPronunciation));
+		nGramModel = loadModel(lmFile);
+		wordSegment = new CKIPWordSegment();
+		
+		AbstractNoisyChannelModel noisyChannelModel = new HUSTBNoisyChannelModel(dictionary, nGramModel, confusionSet, wordSegment);
+		
 		int no = 1;
 		for(Sentence sentence : sentences) {
-			System.out.println(no++);
+			if(no++ % 100 == 0)
+				System.out.println(no);
 			ArrayList<Sentence> cands = noisyChannelModel.getCorrectSentence(sentence);
 			Sentence bestSentence = cands.get(0);
 			
@@ -63,6 +69,11 @@ public class HUSTChecker {
 			writer.newLine();
 		}
 		writer.close();
+		
+
+		long end = System.currentTimeMillis();
+		
+		System.out.println("耗时：" + (end - start) + "ms");
 	}
 	
 	/**
@@ -76,8 +87,13 @@ public class HUSTChecker {
 		int count = reader.readInt();
 		for(int i = 0; i < count; i++) {
 			String[] entry = reader.readUTF().split("\t");
-			if(entry.length == 2 && FormatConvert.isHanZi(entry[0])) {
-				dictionary.add(entry[0], Integer.parseInt(entry[1]));
+			if(entry.length == 2) {
+				String ngrams = FormatConvert.ToDBC(entry[0]);
+				ngrams = ngrams.replaceAll("\\s+", "").trim();
+				if(!ngrams.equals("")) {
+					int num = Integer.parseInt(entry[1]);
+					dictionary.add(ngrams, num);
+				}
 			}
 		}
 		reader.close();
@@ -90,15 +106,15 @@ public class HUSTChecker {
 	 * @throws FileNotFoundException 
 	 * @throws IOException
 	 */
-	private static void constructConfusionSet(File similarityPronunciation, File similarityShape) throws IOException {
+	private static void constructConfusionSet(File similarityPronunciation) throws IOException {
 		HashMap<String, HashSet<String>> Pronunciation = new HashMap<>();
 		HashMap<String, HashSet<String>> Shape = new HashMap<>();
 		confusionSet = new ConfusionSet(Pronunciation, Shape);
 		
 		InputStreamReader pronunciation = new InputStreamReader(new FileInputStream(similarityPronunciation), "utf-8");
-		InputStreamReader shape = new InputStreamReader(new FileInputStream(similarityShape), "utf-8");
+//		InputStreamReader shape = new InputStreamReader(new FileInputStream(similarityShape), "utf-8");
 		BufferedReader proReader = new BufferedReader(pronunciation);
-		BufferedReader shapeReader = new BufferedReader(shape);
+//		BufferedReader shapeReader = new BufferedReader(shape);
 		String line = "";
 		try {
 			while ((line = proReader.readLine())!= null) {
@@ -112,21 +128,21 @@ public class HUSTChecker {
 			}
 			proReader.close();
 			
-			while ((line = shapeReader.readLine())!= null) {
-				line = FormatConvert.ToDBC(line);		//全角转为半角
-				line = line.replace("\\s+", "").trim();	//去除多于的空格
-				if(!line.equals("")) {					//过滤空行
-					String[] sentence = FormatConvert.ToDBC(line).split(",");
-					String key = sentence[0];
-					String[] values = sentence[1].split("");
-					HashSet<String> set = new HashSet<>();
-					for(int i = 0; i < values.length; i++) 
-						set.add(values[i]);
-					
-					confusionSet.addSimilarityShapes(key, set);
-				}
-			}
-			shapeReader.close();
+//			while ((line = shapeReader.readLine())!= null) {
+//				line = FormatConvert.ToDBC(line);		//全角转为半角
+//				line = line.replace("\\s+", "").trim();	//去除多于的空格
+//				if(!line.equals("")) {					//过滤空行
+//					String[] sentence = FormatConvert.ToDBC(line).split(",");
+//					String key = sentence[0];
+//					String[] values = sentence[1].split("");
+//					HashSet<String> set = new HashSet<>();
+//					for(int i = 0; i < values.length; i++) 
+//						set.add(values[i]);
+//					
+//					confusionSet.addSimilarityShapes(key, set);
+//				}
+//			}
+//			shapeReader.close();
 			
 		} catch (IOException e) {
 			e.printStackTrace();
