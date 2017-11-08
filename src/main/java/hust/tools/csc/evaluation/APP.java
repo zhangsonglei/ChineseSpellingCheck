@@ -15,8 +15,8 @@ public class APP {
 	public static void main(String[] args) throws IOException {
 //		String originalFile = "E:\\JOB\\TestData\\testFile.txt";
 //		String goldFile = "E:\\JOB\\TestData\\goldFile.txt";
-//		String resultFile = "E:\\JOB\\TestData\\SCAUresult.txt";
-		String resultFile = "E:\\JOB\\TestData\\HUSTresult.txt";
+		String resultFile = "E:\\JOB\\TestData\\SCAUresult.txt";
+//		String resultFile = "E:\\JOB\\TestData\\HUSTresult.txt";
 		
 		String originalFile = "E:\\JOB\\TestData\\TestInput.txt";
 		String goldFile = "E:\\JOB\\TestData\\TestTruth.txt";

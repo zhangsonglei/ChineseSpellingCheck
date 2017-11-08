@@ -38,7 +38,6 @@ public class SIMDChecker {
 		String dict = "E:\\JOB\\TestData\\trigram.bin";
 		String similarityPronunciation = "E:\\JOB\\TestData\\pro.txt";
 		String similarityShape = "E:\\JOB\\TestData\\shape.txt";
-		
 		String lmFile = "E:\\JOB\\TestData\\kn3.bin";
 		String testFile = "E:\\JOB\\TestData\\testFile.txt";//所有数据集
 		String result = "E:\\JOB\\TestData\\SIMDresult.txt";

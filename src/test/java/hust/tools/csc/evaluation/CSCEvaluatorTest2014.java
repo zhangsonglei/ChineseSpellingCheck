@@ -10,7 +10,15 @@ import org.junit.Test;
 
 import hust.tools.csc.util.Sentence;
 
-public class CSCEvaluatorTest {
+/**
+ *<ul>
+ *<li>Description: 根据SIGHAN2014年指标和例子测试评价程序的各个指标 
+ *<li>Company: HUST
+ *<li>@author Sonly
+ *<li>Date: 2017年11月8日
+ *</ul>
+ */
+public class CSCEvaluatorTest2014 {
 	
 	private ArrayList<Sentence> original;
 	private ArrayList<Sentence> gold;
@@ -24,36 +32,36 @@ public class CSCEvaluatorTest {
 		gold = new ArrayList<>();
 		result = new ArrayList<>();
 				
-		Sentence sentence1 = new Sentence("今天共进晚餐。".split(""));
-		Sentence sentence11 = new Sentence("今天共进玩餐。".split(""));
+		Sentence sentence1 = new Sentence("今天是个好天气，对吗？".split(""));
 		original.add(sentence1);
 		gold.add(sentence1);
-		result.add(sentence11);
+		result.add(sentence1);
 		
-		Sentence sentence2 = new Sentence("身心减抗才能事半功倍。".split(""));
-		Sentence sentence21 = new Sentence("身心健康才能事半功倍。".split(""));
-		Sentence sentence22 = new Sentence("身心件康才能事半功倍。".split(""));
+		Sentence sentence2 = new Sentence("你在不走，我就告诉国家你要造饭。".split(""));
+		Sentence sentence21 = new Sentence("你再不走，我就告诉国家你要造反。".split(""));
+		Sentence sentence22 = new Sentence("你再不走，我就告诉国家你要造返。".split(""));
 		original.add(sentence2);
 		gold.add(sentence21);
 		result.add(sentence22);
 		
-		Sentence sentence3 = new Sentence("你的话对他有吴导，我不希望这种晴况再发生。".split(""));
-		Sentence sentence31 = new Sentence("你的话对他有误导，我不希望这种情况再发生。".split(""));
+		Sentence sentence3 = new Sentence("不要放弃，如果你现在放气，你会申败名裂的。".split(""));
+		Sentence sentence31 = new Sentence("不要放弃，如果你现在放弃，你会身败名裂的。".split(""));
+		Sentence sentence32 = new Sentence("不要放气，如果你现在放气，你会身败名裂德。".split(""));
 		original.add(sentence3);
 		gold.add(sentence31);
-		result.add(sentence31);
+		result.add(sentence32);
 		
-		Sentence sentence4 = new Sentence("我爱自然语言处理。".split(""));
+		Sentence sentence4 = new Sentence("它是我的，你别想得到它。".split(""));
+		Sentence sentence41 = new Sentence("它是我的，你别想的到它。".split(""));
 		original.add(sentence4);
 		gold.add(sentence4);
-		result.add(sentence4);
+		result.add(sentence41);
 
-		Sentence sentence5 = new Sentence("做人要时事求是。".split(""));
-		Sentence sentence51 = new Sentence("做人要实事求是。".split(""));
-		Sentence sentence52 = new Sentence("做人要时实求是。".split(""));
+		Sentence sentence5 = new Sentence("远处有一个小船，若隐若线。".split(""));
+		Sentence sentence51 = new Sentence("远处有一个小船，若隐若现。".split(""));
 		original.add(sentence5);
 		gold.add(sentence51);
-		result.add(sentence52);
+		result.add(sentence51);
 		
 		evaluator = new CSCEvaluator(original, gold, result);
 	}
@@ -67,7 +75,7 @@ public class CSCEvaluatorTest {
 	public void testGetFP() {
 		HashSet<Integer> result = evaluator.getFP();
 		HashSet<Integer> set = new HashSet<>();
-		set.add(0);
+		set.add(3);
 		
 		assertTrue(set.equals(result) );
 	}
@@ -76,7 +84,7 @@ public class CSCEvaluatorTest {
 	public void testGetTN() {
 		HashSet<Integer> result = evaluator.getTN();
 		HashSet<Integer> set = new HashSet<>();
-		set.add(3);
+		set.add(0);
 		
 		assertTrue(set.equals(result) );
 	}
@@ -87,7 +95,7 @@ public class CSCEvaluatorTest {
 		HashSet<Integer> result = evaluator.getDTP();
 		HashSet<Integer> set = new HashSet<>();
 		set.add(1);
-		set.add(2);
+		set.add(4);
 
 		assertTrue(set.equals(result) );
 	}
@@ -96,8 +104,8 @@ public class CSCEvaluatorTest {
 	public void testGetDFP() {
 		HashSet<Integer> result = evaluator.getDFP();
 		HashSet<Integer> set = new HashSet<>();
-		set.add(0);
-		set.add(4);
+		set.add(2);
+		set.add(3);
 
 		assertTrue(set.equals(result) );
 	}
@@ -106,7 +114,7 @@ public class CSCEvaluatorTest {
 	public void testGetDTN() {
 		HashSet<Integer> result = evaluator.getDTN();
 		HashSet<Integer> set = new HashSet<>();
-		set.add(3);
+		set.add(0);
 
 		assertTrue(set.equals(result) );
 	}
@@ -115,7 +123,7 @@ public class CSCEvaluatorTest {
 	public void testGetDFN() {
 		HashSet<Integer> result = evaluator.getDFN();
 		HashSet<Integer> set = new HashSet<>();
-		set.add(4);
+		set.add(2);
 
 		assertTrue(set.equals(result) );
 	}
@@ -125,7 +133,7 @@ public class CSCEvaluatorTest {
 	public void testGetCTP() {
 		HashSet<Integer> result = evaluator.getCTP();
 		HashSet<Integer> set = new HashSet<>();
-		set.add(2);
+		set.add(4);
 
 		assertTrue(set.equals(result) );
 	}
@@ -134,9 +142,9 @@ public class CSCEvaluatorTest {
 	public void testGetCFP() {
 		HashSet<Integer> result = evaluator.getCFP();
 		HashSet<Integer> set = new HashSet<>();
-		set.add(0);
 		set.add(1);
-		set.add(4);
+		set.add(2);
+		set.add(3);
 		
 		assertTrue(set.equals(result) );
 	}
@@ -145,7 +153,7 @@ public class CSCEvaluatorTest {
 	public void testGetCTN() {
 		HashSet<Integer> result = evaluator.getCTN();
 		HashSet<Integer> set = new HashSet<>();
-		set.add(3);
+		set.add(0);
 		
 		assertTrue(set.equals(result) );
 	}
@@ -155,12 +163,18 @@ public class CSCEvaluatorTest {
 		HashSet<Integer> result = evaluator.getCFN();
 		HashSet<Integer> set = new HashSet<>();
 		set.add(1);
-		set.add(4);
+		set.add(2);
 
 		assertTrue(set.equals(result) );
 	}
 	
 	/////////////////////////////////////////////////////
+	
+	@Test
+	public void testGetDetectAccuracy() {
+		assertTrue(evaluator.getDetectAccuracy() == 0.6);
+	}
+	
 	@Test
 	public void testGetDetectPrecision() {
 		assertTrue(evaluator.getDetectPrecision() == 0.5);

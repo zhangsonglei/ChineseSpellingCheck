@@ -42,7 +42,6 @@ public class HUSTChecker {
 		long start = System.currentTimeMillis();
 		String dictFile = "E:\\JOB\\TestData\\trigram.bin";
 		String similarityPronunciation = "E:\\JOB\\TestData\\pro.txt";
-		
 		String lmFile = "E:\\JOB\\TestData\\kn3.bin";
 		String testFile = "E:\\JOB\\TestData\\TestInput.txt";
 		String result = "E:\\JOB\\TestData\\HUSTresult.txt";
@@ -50,7 +49,7 @@ public class HUSTChecker {
 		List<Sentence> sentences = readFile(testFile, "utf-8");
 		OutputStreamWriter oWriter = new OutputStreamWriter(new FileOutputStream(new File(result)), "utf-8");
 		BufferedWriter writer = new BufferedWriter(oWriter);
-		
+		 
 		constructDict(new File(dictFile));
 		constructConfusionSet(new File(similarityPronunciation));
 		nGramModel = loadModel(lmFile);
@@ -59,12 +58,15 @@ public class HUSTChecker {
 		AbstractNoisyChannelModel noisyChannelModel = new HUSTBNoisyChannelModel(dictionary, nGramModel, confusionSet, wordSegment);
 		
 		int no = 1;
+		Sentence bestSentence = null;
 		for(Sentence sentence : sentences) {
 			if(no++ % 100 == 0)
 				System.out.println(no);
 			ArrayList<Sentence> cands = noisyChannelModel.getCorrectSentence(sentence);
-			Sentence bestSentence = cands.get(0);
+			if(cands.size() == 0 || cands == null) 
+				continue;
 			
+			bestSentence = cands.get(0);
 			writer.write(bestSentence.toString());
 			writer.newLine();
 		}

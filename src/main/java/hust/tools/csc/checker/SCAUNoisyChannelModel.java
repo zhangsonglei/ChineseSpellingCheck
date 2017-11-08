@@ -2,17 +2,12 @@ package hust.tools.csc.checker;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.PriorityQueue;
-import java.util.Queue;
-
 import hust.tools.csc.ngram.NGramModel;
 import hust.tools.csc.score.AbstractNoisyChannelModel;
 import hust.tools.csc.util.ConfusionSet;
+import hust.tools.csc.util.Dictionary;
 import hust.tools.csc.util.FormatConvert;
 import hust.tools.csc.util.Sentence;
-import hust.tools.csc.util.Sequence;
 import hust.tools.csc.wordseg.AbstractWordSegment;
 
 /**
@@ -25,17 +20,19 @@ import hust.tools.csc.wordseg.AbstractWordSegment;
  */
 public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	
+	private Dictionary dictionary;
 	private ConfusionSet confusionSet;
 	private AbstractWordSegment wordSegment;
 	private NGramModel nGramModel;
 	private int order;
-	private int beamSize = 100;
+	private int beamSize = 130;
 //	private final Logger log = LogManager.getLogger(SCAUNoisyChannelModel.class);
 	
 	public SCAUNoisyChannelModel(NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment) throws IOException {
 		this.nGramModel = nGramModel;
 		this.confusionSet = confusionSet;
 		this.wordSegment = wordSegment;
+		dictionary = new Dictionary();
 	}
 
 	@Override
@@ -53,25 +50,18 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 		//连续单字词的最大个数小于2，不作处理直接返回原句
 		if(locations.size() > 1) {
 			
-			/**
-			 * 连续单字词的个数最大等于2的使用bigram，大于2的使用trigram
-			 */
+			//连续单字词的个数最大等于2的使用bigram，大于2的使用trigram
 			int maxLength = maxContinueSingleWordsLength(locations);
-
-			if(maxLength <= 2) {
+			if(maxLength <= 2) 
 				order = 2;
-				candSens = beamSearch(sentence, locations);
-			}else {
+			else
 				order = 3;
-				candSens = beamSearch(sentence, locations);
-			}
-
+			
+			candSens = beamSearch(dictionary, confusionSet, beamSize, sentence, locations);
 			return candSens;
 		}
 		
 		candSens.add(sentence);
-		
-		
 		return candSens;
 	}
 	
@@ -91,13 +81,6 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 			if(locations.get(i) - locations.get(i - 1) == 1)
 				len++;
 			else {
-				if(i == 1) 
-					readDeleteLocations.add(locations.get(i - 1));
-				else if(i + 1 == locations.size()) 
-					readDeleteLocations.add(locations.get(i));
-				else if(locations.get(i+1) - locations.get(i) != 1)
-					readDeleteLocations.add(locations.get(i));
-
 				max = max > len ? max : len;
 				len = 1;
 			}
@@ -133,67 +116,6 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 		return locations;
 	}
 
-	/**
-	 * 根据给定句子，给出得分最高的前size个候选句子
-	 * @param sentence	待搜索的原始句子
-	 * @param size		搜索束的大小
-	 * @param locations	错误字的位置
-	 * @return			给出得分最高的前size个候选句子
-	 */
-	private ArrayList<Sentence> beamSearch(Sentence sentence, ArrayList<Integer> locations) {		
-		Queue<Sequence> prev = new PriorityQueue<>(beamSize);
-	    Queue<Sequence> next = new PriorityQueue<>(beamSize);
-	    Queue<Sequence> tmp;
-	    prev.add(new Sequence(sentence, getSourceModelLogScore(sentence) * getChannelModelLogScore(sentence)));
-	    	
-	    for(int index : locations) {//遍历每一个单字词
-	    	int sz = Math.min(beamSize, prev.size());
-
-	    	for(int sc = 0; prev.size() > 0 && sc < sz; sc++) {
-	    		Sequence top = prev.remove();
-	    		next.add(top);
-//	    		log.info(top.getSentence()+"'Score = " + top.getScore());
-	    		//音近、形近候选字获取并合并
-	    		String character = top.getSentence().getToken(index);
-	    		
-	    		if(!FormatConvert.isHanZi(character))
-	    			continue;
-	    		
-	    		HashSet<String> tmpPronCands = confusionSet.getSimilarityPronunciations(character);
-//	    		HashSet<String> tmpShapeCands = confusionSet.getSimilarityShapes(character);
-	    		HashSet<String> tmpCands = new HashSet<>();
-	    		if(tmpPronCands != null)
-	    			tmpCands.addAll(tmpPronCands);
-//	    		if(tmpShapeCands != null)
-//	    			tmpCands.addAll(tmpShapeCands);
-	    		
-	    		Iterator<String> iterator = tmpCands.iterator();
-	    		while(iterator.hasNext()) {
-	    			String candCharater = iterator.next();
-	    			Sentence candSen = top.getSentence().setToken(index, candCharater);
-	    			
-	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(candSen);
-//	    			log.info(candSen+"'Score = " + score);
-	    			next.add(new Sequence(candSen, score));
-	    		}
-	        }
-
-	        prev.clear();
-	        tmp = prev;
-	        prev = next;
-	        next = tmp;
-	      }
-	    
-	    
-	    ArrayList<Sentence> result = new ArrayList<>();
-	    int num = Math.min(5, prev.size());
-
-	    for (int i = 0; i < num; i++)
-	      result.add(prev.remove().getSentence());
-		
-		return result;
-	}
-	
 	@Override
 	public double getChannelModelLogScore(Sentence sentence) {
 		return 1.0;
