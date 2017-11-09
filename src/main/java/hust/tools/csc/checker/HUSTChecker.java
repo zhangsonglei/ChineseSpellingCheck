@@ -40,9 +40,9 @@ public class HUSTChecker {
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		
 		long start = System.currentTimeMillis();
-		String dictFile = "E:\\JOB\\TestData\\trigram.bin";
+		String dictFile = "E:\\JOB\\TestData\\trigramCount.bin";
 		String similarityPronunciation = "E:\\JOB\\TestData\\pro.txt";
-		String lmFile = "E:\\JOB\\TestData\\kn3.bin";
+		String lmFile = "E:\\JOB\\TestData\\knLM.bin";
 		String testFile = "E:\\JOB\\TestData\\TestInput.txt";
 		String result = "E:\\JOB\\TestData\\HUSTresult.txt";
 		
@@ -60,8 +60,7 @@ public class HUSTChecker {
 		int no = 1;
 		Sentence bestSentence = null;
 		for(Sentence sentence : sentences) {
-			if(no++ % 100 == 0)
-				System.out.println(no);
+			System.out.println(no++);
 			ArrayList<Sentence> cands = noisyChannelModel.getCorrectSentence(sentence);
 			if(cands.size() == 0 || cands == null) 
 				continue;

@@ -11,7 +11,7 @@ package hust.tools.csc.evaluation;
 public interface Evaluation {
 
 	/**
-	 * 
+	 * 错误率(没有错的句子被修改的概率)
 	 * @return
 	 */
 	public double getFalsePositiveRate();

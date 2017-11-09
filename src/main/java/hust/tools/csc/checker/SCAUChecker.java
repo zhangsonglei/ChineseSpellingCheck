@@ -36,7 +36,7 @@ public class SCAUChecker {
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		String similarityPronunciation = "E:\\JOB\\TestData\\pro.txt";
 		String similarityShape = "E:\\JOB\\TestData\\shape.txt";
-		String lmFile = "E:\\JOB\\TestData\\kn3.bin";
+		String lmFile = "E:\\JOB\\TestData\\knLM.bin";
 		String testFile = "E:\\JOB\\TestData\\TestInput.txt";
 		String result = "E:\\JOB\\TestData\\SCAUresult.txt";
 		

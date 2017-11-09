@@ -24,30 +24,6 @@ public class Dictionary {
 	public Dictionary(HashMap<String, Integer> dict) {
 		this.dict = dict;
 	}
-	
-//	public Dictionary(BufferedReader stream) throws IOException {
-//		constractDictionary(stream);
-//	}
-//	
-//	/**
-//	 * 根据给定的训练语料构建字典
-//	 * @param stream	训练语料
-//	 * @throws IOException 
-//	 */
-//	private void constractDictionary(BufferedReader stream) throws IOException {
-//		
-//		String line = "";
-//		while ((line = stream.readLine()) != null) {
-//			line = FormatConvert.ToDBC(line).replace("\\s+", "").trim();
-//			if(!line.equals("")) {
-//				String[] characters = line.split("");
-//				
-//				for(String character : characters)
-//					if(FormatConvert.isHanzi(character))
-//						add(character);
-//			}
-//		}
-//	}
 
 	/**
 	 * 向字典中添加一个字
@@ -116,5 +92,16 @@ public class Dictionary {
 	 */
 	public void update(String character, int count) {
 		dict.put(character, count);
+	}
+	
+	/**
+	 * 返回字典大小
+	 * @return	字典大小
+	 */
+	public int size() {
+		if(dict != null)
+			return dict.size();
+		
+		return 0;
 	}
 }

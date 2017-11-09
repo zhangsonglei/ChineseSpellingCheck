@@ -25,8 +25,7 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	private AbstractWordSegment wordSegment;
 	private NGramModel nGramModel;
 	private int order;
-	private int beamSize = 130;
-//	private final Logger log = LogManager.getLogger(SCAUNoisyChannelModel.class);
+	private int beamSize = 100;
 	
 	public SCAUNoisyChannelModel(NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment) throws IOException {
 		this.nGramModel = nGramModel;
@@ -74,7 +73,6 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 		if(locations.size() < 2) 
 			return locations.size();
 		
-		ArrayList<Integer> readDeleteLocations = new ArrayList<>();
 		int max = 0;
 		int len = 1;
 		for(int i = 1; i < locations.size(); i++) {
@@ -84,12 +82,6 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 				max = max > len ? max : len;
 				len = 1;
 			}
-		}
-		
-		//删除孤立的单字词位置索引
-		for(int location : readDeleteLocations) {
-			int index = locations.indexOf(location);
-			locations.remove(index);
 		}
 		
 		max = max > len ? max : len;
@@ -112,7 +104,7 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 			
 			index += word.length();
 		}
-//		System.out.println("单字词所在位置：\t"+locations);
+
 		return locations;
 	}
 

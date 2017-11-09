@@ -17,7 +17,7 @@ public class HUSTBNoisyChannelModel extends AbstractNoisyChannelModel {
 	private ConfusionSet confusionSet;
 	private NGramModel nGramModel;
 	private AbstractWordSegment wordSegment;
-	private int order;
+	private final int order = 3;
 	private final int beamSize = 130;
  
 	public HUSTBNoisyChannelModel(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet,
@@ -44,53 +44,12 @@ public class HUSTBNoisyChannelModel extends AbstractNoisyChannelModel {
 		
 		//单字词的最大个数小于2，不作处理直接返回原句
 		if(locations.size() > 1) {
-
-			//连续单字词的个数最大等于2的使用bigram，大于2的使用trigram
-			int maxLength = maxContinueSingleWordsLength(locations);
-			if(maxLength <= 2) 
-				order = 2;
-			else 
-				order = 3;
-
 			candSens = beamSearch(dictionary, confusionSet, beamSize, sentence, locations);
-			
 			return candSens;
 		}
 		
 		candSens.add(sentence);
-		
 		return candSens;
-	}
-	
-	/**
-	 * 返回连续的单字词的最大长度，并将孤立的单字词位置索引剔除
-	 * @param words	词组
-	 * @return		连续的单字词的最大长度
-	 */
-	private int maxContinueSingleWordsLength(ArrayList<Integer> locations) {		
-		if(locations.size() < 2) 
-			return locations.size();
-		
-		ArrayList<Integer> readDeleteLocations = new ArrayList<>();
-		int max = 0;
-		int len = 1;
-		for(int i = 1; i < locations.size(); i++) {
-			if(locations.get(i) - locations.get(i - 1) == 1)
-				len++;
-			else {
-				max = max > len ? max : len;
-				len = 1;
-			}
-		}
-		
-		//删除孤立的单字词位置索引
-		for(int location : readDeleteLocations) {
-			int index = locations.indexOf(location);
-			locations.remove(index);
-		}
-		
-		max = max > len ? max : len;
-		return max;
 	}
 	
 	/**

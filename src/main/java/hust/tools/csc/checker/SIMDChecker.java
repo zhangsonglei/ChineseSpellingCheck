@@ -35,10 +35,10 @@ public class SIMDChecker {
 	private static NGramModel nGramModel;
 		
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
-		String dict = "E:\\JOB\\TestData\\trigram.bin";
+		String dict = "E:\\JOB\\TestData\\trigramCount.bin";
 		String similarityPronunciation = "E:\\JOB\\TestData\\pro.txt";
 		String similarityShape = "E:\\JOB\\TestData\\shape.txt";
-		String lmFile = "E:\\JOB\\TestData\\kn3.bin";
+		String lmFile = "E:\\JOB\\TestData\\knLM.bin";
 		String testFile = "E:\\JOB\\TestData\\testFile.txt";//所有数据集
 		String result = "E:\\JOB\\TestData\\SIMDresult.txt";
 		
