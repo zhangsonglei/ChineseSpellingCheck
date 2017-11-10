@@ -6,7 +6,6 @@ import hust.tools.csc.ngram.NGramModel;
 import hust.tools.csc.score.AbstractNoisyChannelModel;
 import hust.tools.csc.util.ConfusionSet;
 import hust.tools.csc.util.Dictionary;
-import hust.tools.csc.util.FormatConvert;
 import hust.tools.csc.util.Sentence;
 import hust.tools.csc.wordseg.AbstractWordSegment;
 
@@ -25,7 +24,7 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	private AbstractWordSegment wordSegment;
 	private NGramModel nGramModel;
 	private int order;
-	private int beamSize = 100;
+	private int beamSize = 150;
 	
 	public SCAUNoisyChannelModel(NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment) throws IOException {
 		this.nGramModel = nGramModel;
@@ -48,7 +47,6 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 		
 		//连续单字词的最大个数小于2，不作处理直接返回原句
 		if(locations.size() > 1) {
-			
 			//连续单字词的个数最大等于2的使用bigram，大于2的使用trigram
 			int maxLength = maxContinueSingleWordsLength(locations);
 			if(maxLength <= 2) 
@@ -62,50 +60,6 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 		
 		candSens.add(sentence);
 		return candSens;
-	}
-	
-	/**
-	 * 返回连续的单字词的最大长度，并将孤立的单字词位置索引剔除
-	 * @param words	词组
-	 * @return		连续的单字词的最大长度
-	 */
-	private int maxContinueSingleWordsLength(ArrayList<Integer> locations) {		
-		if(locations.size() < 2) 
-			return locations.size();
-		
-		int max = 0;
-		int len = 1;
-		for(int i = 1; i < locations.size(); i++) {
-			if(locations.get(i) - locations.get(i - 1) == 1)
-				len++;
-			else {
-				max = max > len ? max : len;
-				len = 1;
-			}
-		}
-		
-		max = max > len ? max : len;
-		return max;
-	}
-	
-	/**
-	 * 返回单个字的词在句子中的索引
-	 * @param words	句子分词后的词
-	 * @return		单个字的词在句子中的位置
-	 */
-	private ArrayList<Integer> locationsOfSingleWords(ArrayList<String> words) {
-		ArrayList<Integer> locations = new ArrayList<>();
-		int index = 0;
-		for(String word : words) {
-			if(word.length() == 1) {
-				if(FormatConvert.isHanZi(word))
-					locations.add(index);
-			}
-			
-			index += word.length();
-		}
-
-		return locations;
 	}
 
 	@Override

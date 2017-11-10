@@ -39,7 +39,7 @@ public class SIMDChecker {
 		String similarityPronunciation = "E:\\JOB\\TestData\\pro.txt";
 		String similarityShape = "E:\\JOB\\TestData\\shape.txt";
 		String lmFile = "E:\\JOB\\TestData\\knLM.bin";
-		String testFile = "E:\\JOB\\TestData\\testFile.txt";//所有数据集
+		String testFile = "E:\\JOB\\TestData\\TestInput.txt";//所有数据集
 		String result = "E:\\JOB\\TestData\\SIMDresult.txt";
 		
 		constructDict(new File(dict));
