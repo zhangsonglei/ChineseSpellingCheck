@@ -38,7 +38,7 @@ public class SIMDChecker {
 		String dict = "E:\\JOB\\TestData\\trigramCount.bin";
 		String similarityPronunciation = "E:\\JOB\\TestData\\pro.txt";
 		String similarityShape = "E:\\JOB\\TestData\\shape.txt";
-		String lmFile = "E:\\JOB\\TestData\\knLM.bin";
+		String lmFile = "E:\\JOB\\TestData\\smallknLM.bin";
 		String testFile = "E:\\JOB\\TestData\\TestInput.txt";//所有数据集
 		String result = "E:\\JOB\\TestData\\SIMDresult.txt";
 		

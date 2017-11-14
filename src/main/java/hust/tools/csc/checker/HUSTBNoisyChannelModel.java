@@ -11,7 +11,6 @@ import hust.tools.csc.util.Sentence;
 import hust.tools.csc.wordseg.AbstractWordSegment;
 
 public class HUSTBNoisyChannelModel extends AbstractNoisyChannelModel {
-	
 	private Dictionary dictionary;
 	private ConfusionSet confusionSet;
 	private NGramModel nGramModel;

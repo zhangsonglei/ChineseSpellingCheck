@@ -55,36 +55,29 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 //    		if(tmpShapeCands != null)
 //    			tmpCands.addAll(tmpShapeCands);
 	    	
-    		double total = 0.0;
-    		double totalPre = 0.0;
-    		double totalNext = 0.0;
+//    		double total = 1.0;
+//    		double totalPre = 1.0;
+//    		double totalNext = 1.0;
     		Iterator<String> iterator = tmpCands.iterator();
-    		while(iterator.hasNext()) {
-    			String cand = iterator.next();
-    			int count = 1;
-    			int preCount = 1;
-    			int nextCount = 1;
-    			
-    			String preToken = "";
-    			String nextToken = "";
-    			
-    			if(index > 0)
-    				preToken = sentence.getToken(index - 1);
-    			if(index < sentence.size() - 1)
-    				nextToken = sentence.getToken(index + 1);
+//    		while(iterator.hasNext()) {
+//    			String cand = iterator.next();
+//    			String preToken = "";
+//    			String nextToken = "";
 //    			
-    			String preBigram = preToken + cand;
-    			String nextBigram = cand + nextToken;
-    			if(dictionary.contains(cand))
-    				count += dictionary.getCount(cand);
-    			if(dictionary.contains(preBigram))
-    				preCount += dictionary.getCount(preBigram);
-    			if(dictionary.contains(nextBigram))
-    				nextCount += dictionary.getCount(nextBigram);
-    			total += count;
-    			totalPre += preCount;
-    			totalNext += nextCount;
-    		}
+//    			if(index > 0)
+//    				preToken = sentence.getToken(index - 1);
+//    			if(index < sentence.size() - 1)
+//    				nextToken = sentence.getToken(index + 1);
+//    			
+//    			String preBigram = preToken + cand;
+//    			String nextBigram = cand + nextToken;
+////    			if(dictionary.contains(cand))
+////    				total += dictionary.getCount(cand);
+//    			if(dictionary.contains(preBigram))
+//    				totalPre += dictionary.getCount(preBigram);
+//    			if(dictionary.contains(nextBigram))
+//    				totalNext += dictionary.getCount(nextBigram);
+//    		}
     		
 	    	int sz = Math.min(beamSize, prev.size());
 	    	for(int sc = 0; prev.size() > 0 && sc < sz; sc++) {
@@ -92,35 +85,36 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	    		next.add(top);
 //	    		log.info(top.getSentence()+"'Score = " + top.getScore());
 	    		//音近、形近候选字获取并合并
-	    		
-	    		
+	    				
 	    		iterator = tmpCands.iterator();
 	    		while(iterator.hasNext()) {
 	    			String candCharacter = iterator.next();
-	    			double count = 1.0;
-	    			double preCount = 1.0;
-	    			double nextCount = 1.0;
+//	    			double count = 1.0;
+//	    			double preCount = 1.0;
+//	    			double nextCount = 1.0;
+////	    			
+//	    			String preToken = "";
+//	    			String nextToken = "";
 //	    			
-	    			String preToken = "";
-	    			String nextToken = "";
-	    			
-	    			if(index > 0)
-	    				preToken = sentence.getToken(index - 1);
-	    			if(index < sentence.size() - 1)
-	    				nextToken = sentence.getToken(index + 1);
-	    			
-	    			String preBigram = preToken + candCharacter;
-	    			String nextBigram = candCharacter + nextToken;
-	    			if(dictionary.contains(candCharacter))
-	    				count += dictionary.getCount(candCharacter);
-	    			if(dictionary.contains(preBigram))
-	    				preCount += dictionary.getCount(preBigram);
-	    			if(dictionary.contains(nextBigram))
-	    				nextCount += dictionary.getCount(nextBigram);
+//	    			if(index > 0)
+//	    				preToken = sentence.getToken(index - 1);
+//	    			if(index < sentence.size() - 1)
+//	    				nextToken = sentence.getToken(index + 1);
+//	    			
+//	    			String preBigram = preToken + candCharacter;
+//	    			String nextBigram = candCharacter + nextToken;
+//	    			if(dictionary.contains(candCharacter))
+//	    				count = dictionary.getCount(candCharacter);
+//	    			if(dictionary.contains(preBigram))
+//	    				preCount += dictionary.getCount(preBigram);
+//	    			if(dictionary.contains(nextBigram))
+//	    				nextCount += dictionary.getCount(nextBigram);
 
 	    			Sentence candSen = top.getSentence().setToken(index, candCharacter);
-	    			
-	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(candSen) * preCount / totalPre * nextCount / totalNext * count / total;
+	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(candSen);
+//	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(candSen) * count / total;
+//	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(candSen) * preCount / totalPre * nextCount / totalNext;
+//	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(candSen) * preCount / totalPre * nextCount / totalNext * count / total;
 //	    			log.info(candSen+"'Score = " + score);
 	    			next.add(new Sequence(candSen, score));
 	    		}

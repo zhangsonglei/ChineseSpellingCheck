@@ -54,7 +54,7 @@ public class CKIPWordSegment extends AbstractWordSegment {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();   
 			DocumentBuilder builder = factory.newDocumentBuilder();   
 			Document doc = builder.parse(new InputSource(new StringReader(xmlText)));   
-	  
+
 	        Element root = doc.getDocumentElement();
 	        NodeList nodeList = root.getChildNodes().item(1).getChildNodes();
 	        

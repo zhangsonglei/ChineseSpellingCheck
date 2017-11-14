@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import hust.tools.csc.detecet.SpellError;
 import hust.tools.csc.util.FormatConvert;
 import hust.tools.csc.util.Sentence;
@@ -85,6 +87,38 @@ public class FileOperator {
 						list.put(strings[0], errors);
 					}
 					
+				}
+			}
+			reader.close();
+		}else {
+			System.err.println("File:\""+path+"\" read failed!");
+		}
+		
+		return list;	
+	}
+	
+	
+
+	/**
+	 * 读取SIGHAN2015拼写纠错测试语料（SIGHAN15_CSC_TestInput.txt）
+	 * @param path		语料路径
+	 * @param encoding	语料格式
+	 * @return			句子pid与句子内容的映射
+	 * @throws IOException
+	 */
+	public static List<String> readSGMLFile(String path, String encoding) throws IOException {
+		List<String> list = new ArrayList<>();
+		File file = new File(path);
+		
+		if(file.isFile() && file.exists()) {
+			InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), encoding);
+			BufferedReader reader = new BufferedReader(inputStreamReader);
+			
+			String line = "";
+			while((line = reader.readLine()) != null) {
+				line = FormatConvert.ToDBC(line).trim();
+				if(!line.equals("")) {
+					list.add(line);
 				}
 			}
 			reader.close();

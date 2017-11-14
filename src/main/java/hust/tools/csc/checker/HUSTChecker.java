@@ -42,7 +42,7 @@ public class HUSTChecker {
 		long start = System.currentTimeMillis();
 		String dictFile = "E:\\JOB\\TestData\\trigramCount.bin";
 		String similarityPronunciation = "E:\\JOB\\TestData\\pro.txt";
-		String lmFile = "E:\\JOB\\TestData\\knLM.bin";
+		String lmFile = "E:\\JOB\\TestData\\smallknLM.bin";
 		String testFile = "E:\\JOB\\TestData\\TestInput.txt";
 		String result = "E:\\JOB\\TestData\\HUSTresult.txt";
 		
@@ -76,6 +76,45 @@ public class HUSTChecker {
 		
 		System.out.println("耗时：" + (end - start) + "ms");
 	}
+	
+//	private static HashMap<String, Double> consDict(File file) throws IOException {
+//		InputStreamReader ireader = new InputStreamReader(new FileInputStream(file));
+//		BufferedReader reader = new BufferedReader(ireader);
+//		HashMap<String, Double> map = new HashMap<>();
+//		String line = "";
+//		while((line = reader.readLine()) != null) {
+//			line = line.trim();
+//			if(line.equals(""))
+//				continue;
+//			
+//			String[] strings = line.split("\\s+");
+//			map.put(strings[0], Double.parseDouble(strings[1]));
+//		}
+//		reader.close();
+//		
+//		return map;
+//	}
+//	
+//	private static Dictionary constructDict(String path) throws IOException {
+//		File file = new File(path);
+//		DataInputStream reader = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+//		Dictionary dictionary = new Dictionary();
+//		int count = reader.readInt();
+//		for(int i = 0; i < count; i++) {
+//			String[] entry = reader.readUTF().split("\t");
+//			if(entry.length == 2) {
+//				String ngrams = FormatConvert.ToDBC(entry[0]);
+//				ngrams = ngrams.replaceAll("\t", "").trim();
+//				if(!ngrams.equals("")) {
+//					int num = Integer.parseInt(entry[1]);
+//					dictionary.add(ngrams, num);
+//				}
+//			}
+//		}
+//		reader.close();
+//		
+//		return dictionary;
+//	}
 	
 	/**
 	 * 建立字典
