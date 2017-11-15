@@ -10,15 +10,15 @@ import hust.tools.csc.util.Dictionary;
 import hust.tools.csc.util.Sentence;
 import hust.tools.csc.wordseg.AbstractWordSegment;
 
-public class HUSTBNoisyChannelModel extends AbstractNoisyChannelModel {
+public class HUSTNoisyChannelModel extends AbstractNoisyChannelModel {
 	private Dictionary dictionary;
 	private ConfusionSet confusionSet;
 	private NGramModel nGramModel;
 	private AbstractWordSegment wordSegment;
-	private final int order = 2;
+	private final int order = 3;
 	private final int beamSize = 150;
  
-	public HUSTBNoisyChannelModel(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet,
+	public HUSTNoisyChannelModel(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet,
 			AbstractWordSegment wordSegment) throws IOException {
 		this.nGramModel = nGramModel;
 		this.confusionSet = confusionSet;

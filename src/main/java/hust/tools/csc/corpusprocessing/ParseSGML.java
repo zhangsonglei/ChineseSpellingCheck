@@ -62,6 +62,10 @@ public class ParseSGML {
 		writer.close();
 	}
 	
+	/**
+	 * 提取文件中的有用文本信息（句子id和句子，错误id和错误词以及对应的纠正词）
+	 * @param sgml
+	 */
 	private static void process(String sgml) {
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();   
@@ -98,6 +102,13 @@ public class ParseSGML {
 		
 	}
 	
+	/**
+	 * 
+	 * @param id
+	 * @param wrong
+	 * @param correction
+	 * @param location
+	 */
 	private static void update(String id, String wrong, String correction, String location) {
 		if(map.containsKey(id)) {
 			Sentence sentence = map.get(id);

@@ -16,11 +16,11 @@ public class APP {
 //		String originalFile = "E:\\JOB\\TestData\\testFile.txt";
 //		String goldFile = "E:\\JOB\\TestData\\goldFile.txt";
 //		String resultFile = "E:\\JOB\\TestData\\SCAUresult.txt";
-//		String resultFile = "E:\\JOB\\TestData\\HUSTresult.txt";
+		String resultFile = "E:\\JOB\\TestData\\HUSTresult.txt";
 		
 		String originalFile = "E:\\JOB\\TestData\\TestInput.txt";
 		String goldFile = "E:\\JOB\\TestData\\TestTruth.txt";
-		String resultFile = "E:\\JOB\\TestData\\SIMDresult.txt";
+//		String resultFile = "E:\\JOB\\TestData\\SIMDresult.txt";
 		
 		ArrayList<Sentence> original = readFile(originalFile, "utf-8");
 		ArrayList<Sentence> gold = readFile(goldFile, "utf-8");

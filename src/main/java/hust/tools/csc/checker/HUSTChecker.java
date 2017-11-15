@@ -55,7 +55,7 @@ public class HUSTChecker {
 		nGramModel = loadModel(lmFile);
 		wordSegment = new CKIPWordSegment();
 		
-		AbstractNoisyChannelModel noisyChannelModel = new HUSTBNoisyChannelModel(dictionary, nGramModel, confusionSet, wordSegment);
+		AbstractNoisyChannelModel noisyChannelModel = new DoubleStageNoisyChannelModel(dictionary, nGramModel, confusionSet, wordSegment);
 		
 		int no = 1;
 		Sentence bestSentence = null;
