@@ -27,6 +27,14 @@ import hust.tools.ngram.io.BinaryFileNGramModelReader;
 import hust.tools.ngram.io.TextFileNGramModelReader;
 import hust.tools.ngram.model.AbstractNGramModelReader;
 
+/**
+ *<ul>
+ *<li>Description: SCAU拼写纠错 
+ *<li>Company: HUST
+ *<li>@author Sonly
+ *<li>Date: 2017年10月18日
+ *</ul>
+ */
 public class SCAUChecker {
 	
 	private static ConfusionSet confusionSet;

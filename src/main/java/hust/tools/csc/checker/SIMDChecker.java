@@ -28,6 +28,14 @@ import hust.tools.ngram.io.BinaryFileNGramModelReader;
 import hust.tools.ngram.io.TextFileNGramModelReader;
 import hust.tools.ngram.model.AbstractNGramModelReader;
 
+/**
+ *<ul>
+ *<li>Description: SIMD拼写纠错
+ *<li>Company: HUST
+ *<li>@author Sonly
+ *<li>Date: 2017年11月1日
+ *</ul>
+ */
 public class SIMDChecker {
 	
 	private static Dictionary dictionary;

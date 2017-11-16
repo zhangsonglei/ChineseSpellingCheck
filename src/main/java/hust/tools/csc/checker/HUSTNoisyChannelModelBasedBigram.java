@@ -14,18 +14,18 @@ import hust.tools.csc.wordseg.AbstractWordSegment;
 
 /**
  *<ul>
- *<li>Description: 组合SCAU与SIMD检错方法，利用n元模型为句子打分
+ *<li>Description: 在HUST噪音通道模型的基础上，引入当前字与前后邻居组成的bigram的概率  
  *<li>Company: HUST
  *<li>@author Sonly
- *<li>Date: 2017年11月10日
+ *<li>Date: 2017年11月16日
  *</ul>
  */
-public class HUSTNoisyChannelModel extends AbstractNoisyChannelModel {
-
+public class HUSTNoisyChannelModelBasedBigram extends AbstractNoisyChannelModel {
+	
 	private Dictionary dictionary;
 	private AbstractWordSegment wordSegment;
  
-	public HUSTNoisyChannelModel(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet,
+	public HUSTNoisyChannelModelBasedBigram(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet,
 			AbstractWordSegment wordSegment) throws IOException {
 		super(confusionSet, nGramModel);
 		
@@ -68,6 +68,20 @@ public class HUSTNoisyChannelModel extends AbstractNoisyChannelModel {
 
 	@Override
 	public double getChannelModelLogScore(Sentence sentence, int location, String candidate, HashSet<String> cands) {
-		return 1.0;
+		double totalBigram = getTotalPrefixAndSuffixBigramCount(sentence, location, cands, dictionary);
+		
+		String preToken = "";
+		String nextToken = "";
+		if(location > 0)
+			preToken = sentence.getToken(location - 1);
+		if(location < sentence.size() - 1)
+			nextToken = sentence.getToken(location + 1);
+		String prefixBigram = preToken + candidate;
+		String suffixBigram = candidate + nextToken;
+		
+		int prefixBigramCount = dictionary.getCount(prefixBigram);
+		int suffixBigramCount = dictionary.getCount(suffixBigram);
+		
+		return prefixBigramCount * suffixBigramCount / totalBigram;
 	}	
 }

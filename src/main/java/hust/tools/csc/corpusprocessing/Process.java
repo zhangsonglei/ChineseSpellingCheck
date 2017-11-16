@@ -23,15 +23,15 @@ import hust.tools.csc.util.Sentence;
 public class Process {
 	
 	public static void main(String[] args) throws IOException {
-		String testFile = "E:\\JOB\\TestData\\SIGHAN15_CSC_TestInput.txt";
-		String goldFile = "E:\\JOB\\TestData\\SIGHAN15_CSC_TestTruth.txt";
+		String testFile = "E:\\FinalTest_SubTask2.txt";
+		String goldFile = "E:\\FinalTest_SubTask2_Truth.txt";
 		HashMap<String, Sentence> tests = FileOperator.readTestFile(testFile, "utf-8");
 		HashMap<String, ArrayList<SpellError>> res = FileOperator.readFile(goldFile, "utf-8");
 		
-		OutputStreamWriter test = new OutputStreamWriter(new FileOutputStream(new File("E:\\JOB\\TestData\\testFile.txt")), "utf-8");
+		OutputStreamWriter test = new OutputStreamWriter(new FileOutputStream(new File("E:\\testFile2.txt")), "utf-8");
 		BufferedWriter testwriter = new BufferedWriter(test);
 		
-		OutputStreamWriter result = new OutputStreamWriter(new FileOutputStream(new File("E:\\JOB\\TestData\\goldFile.txt")), "utf-8");
+		OutputStreamWriter result = new OutputStreamWriter(new FileOutputStream(new File("E:\\goldFile2.txt")), "utf-8");
 		BufferedWriter resultwriter = new BufferedWriter(result);
 		
 		for(Entry<String, Sentence> entry : tests.entrySet()) {

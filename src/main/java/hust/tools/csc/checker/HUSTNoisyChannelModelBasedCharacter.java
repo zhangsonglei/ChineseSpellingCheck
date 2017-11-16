@@ -14,18 +14,18 @@ import hust.tools.csc.wordseg.AbstractWordSegment;
 
 /**
  *<ul>
- *<li>Description: 组合SCAU与SIMD检错方法，利用n元模型为句子打分
+ *<li>Description: 在HUST噪音通道模型的基础上，引入字的概率
  *<li>Company: HUST
  *<li>@author Sonly
- *<li>Date: 2017年11月10日
+ *<li>Date: 2017年11月16日
  *</ul>
  */
-public class HUSTNoisyChannelModel extends AbstractNoisyChannelModel {
-
+public class HUSTNoisyChannelModelBasedCharacter extends AbstractNoisyChannelModel {
+	
 	private Dictionary dictionary;
 	private AbstractWordSegment wordSegment;
  
-	public HUSTNoisyChannelModel(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet,
+	public HUSTNoisyChannelModelBasedCharacter(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet,
 			AbstractWordSegment wordSegment) throws IOException {
 		super(confusionSet, nGramModel);
 		
@@ -68,6 +68,9 @@ public class HUSTNoisyChannelModel extends AbstractNoisyChannelModel {
 
 	@Override
 	public double getChannelModelLogScore(Sentence sentence, int location, String candidate, HashSet<String> cands) {
-		return 1.0;
+		double total = getTotalCharcterCount(cands, dictionary);
+		int count = dictionary.getCount(candidate);
+		
+		return count / total;
 	}	
 }

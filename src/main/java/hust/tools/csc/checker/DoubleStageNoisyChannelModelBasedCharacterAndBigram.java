@@ -19,12 +19,12 @@ import hust.tools.csc.wordseg.AbstractWordSegment;
  *<li>Date: 2017年11月15日
  *</ul>
  */
-public class DoubleStageNoisyChannelModel extends AbstractNoisyChannelModel {
+public class DoubleStageNoisyChannelModelBasedCharacterAndBigram extends AbstractNoisyChannelModel {
 	
 	private Dictionary dictionary;
 	private AbstractWordSegment wordSegment;
  
-	public DoubleStageNoisyChannelModel(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet,
+	public DoubleStageNoisyChannelModelBasedCharacterAndBigram(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet,
 			AbstractWordSegment wordSegment) throws IOException {
 		super(confusionSet, nGramModel);
 		
@@ -71,7 +71,23 @@ public class DoubleStageNoisyChannelModel extends AbstractNoisyChannelModel {
 
 	@Override
 	public double getChannelModelLogScore(Sentence sentence, int location, String candidate, HashSet<String> cands) {
-		return 1.0;
+		double total = getTotalCharcterCount(cands, dictionary);
+		double totalBigram = getTotalPrefixAndSuffixBigramCount(sentence, location, cands, dictionary);
+		
+		String preToken = "";
+		String nextToken = "";
+		if(location > 0)
+			preToken = sentence.getToken(location - 1);
+		if(location < sentence.size() - 1)
+			nextToken = sentence.getToken(location + 1);
+		String prefixBigram = preToken + candidate;
+		String suffixBigram = candidate + nextToken;
+		
+		int count = dictionary.getCount(candidate);
+		int prefixBigramCount = dictionary.getCount(prefixBigram);
+		int suffixBigramCount = dictionary.getCount(suffixBigram);
+		
+		return (count / total) * (prefixBigramCount * suffixBigramCount / totalBigram);
 	}
 }
 

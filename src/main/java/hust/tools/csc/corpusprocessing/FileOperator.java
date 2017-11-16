@@ -68,13 +68,14 @@ public class FileOperator {
 	public static HashMap<String, ArrayList<SpellError>> readFile(String path, String encoding) throws IOException {
 		HashMap<String, ArrayList<SpellError>> list = new HashMap<>();
 		File file = new File(path);
-		
+		int no = 0;
 		if(file.isFile() && file.exists()) {
 			InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), encoding);
 			BufferedReader reader = new BufferedReader(inputStreamReader);
 			
 			String line = "";
 			while((line = reader.readLine()) != null) {
+				System.out.println(++no);
 				line = FormatConvert.ToDBC(line).trim();
 				if(!line.equals("")) {
 					String[] strings = line.split(",");

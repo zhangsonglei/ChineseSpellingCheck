@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
+import hust.tools.csc.ngram.NGramModel;
 import hust.tools.csc.util.ConfusionSet;
 import hust.tools.csc.util.Dictionary;
 import hust.tools.csc.util.FormatConvert;
@@ -21,9 +22,15 @@ import hust.tools.csc.util.Sequence;
  *</ul>
  */
 public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
-		
-	public AbstractNoisyChannelModel() {
-
+	
+	protected int order = 3;
+	protected int beamSize = 150;
+	protected ConfusionSet confusionSet;
+	protected NGramModel nGramModel;
+	
+	public AbstractNoisyChannelModel(ConfusionSet confusionSet, NGramModel nGramModel) {
+		this.confusionSet = confusionSet;
+		this.nGramModel = nGramModel;
 	}
 	
 	/**
@@ -33,13 +40,12 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	 * @param locations	错误字的位置
 	 * @return			给出得分最高的前size个候选句子
 	 */
-	protected ArrayList<Sentence> beamSearch(Dictionary dictionary, ConfusionSet confusionSet, int beamSize, 
-			Sentence sentence, ArrayList<Integer> locations) {
+	protected ArrayList<Sentence> beamSearch(ConfusionSet confusionSet, int beamSize, Sentence sentence, ArrayList<Integer> locations) {
 		
 		Queue<Sequence> prev = new PriorityQueue<>(beamSize);
 	    Queue<Sequence> next = new PriorityQueue<>(beamSize);
 	    Queue<Sequence> tmp;
-	    prev.add(new Sequence(sentence, getSourceModelLogScore(sentence) * getChannelModelLogScore(sentence)));
+	    prev.add(new Sequence(sentence, getSourceModelLogScore(sentence)));
 	    	
 	    for(int index : locations) {//遍历每一个单字词
 	    	String character = sentence.getToken(index);
@@ -54,31 +60,8 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
     			tmpCands.addAll(tmpPronCands);
 //    		if(tmpShapeCands != null)
 //    			tmpCands.addAll(tmpShapeCands);
+    		tmpCands.add(character);
 	    	
-//    		double total = 1.0;
-    		double totalPre = 1.0;
-    		double totalNext = 1.0;
-    		Iterator<String> iterator = tmpCands.iterator();
-    		while(iterator.hasNext()) {
-    			String cand = iterator.next();
-    			String preToken = "";
-    			String nextToken = "";
-    			
-    			if(index > 0)
-    				preToken = sentence.getToken(index - 1);
-    			if(index < sentence.size() - 1)
-    				nextToken = sentence.getToken(index + 1);
-    			
-    			String preBigram = preToken + cand;
-    			String nextBigram = cand + nextToken;
-//    			if(dictionary.contains(cand))
-//    				total += dictionary.getCount(cand);
-    			if(dictionary.contains(preBigram))
-    				totalPre += dictionary.getCount(preBigram);
-    			if(dictionary.contains(nextBigram))
-    				totalNext += dictionary.getCount(nextBigram);
-    		}
-    		
 	    	int sz = Math.min(beamSize, prev.size());
 	    	for(int sc = 0; prev.size() > 0 && sc < sz; sc++) {
 	    		Sequence top = prev.remove();
@@ -86,35 +69,11 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 //	    		log.info(top.getSentence()+"'Score = " + top.getScore());
 	    		//音近、形近候选字获取并合并
 	    				
-	    		iterator = tmpCands.iterator();
+	    		Iterator<String> iterator = tmpCands.iterator();
 	    		while(iterator.hasNext()) {
 	    			String candCharacter = iterator.next();
-//	    			double count = 1.0;
-	    			double preCount = 1.0;
-	    			double nextCount = 1.0;
-	    			
-	    			String preToken = "";
-	    			String nextToken = "";
-	    			
-	    			if(index > 0)
-	    				preToken = sentence.getToken(index - 1);
-	    			if(index < sentence.size() - 1)
-	    				nextToken = sentence.getToken(index + 1);
-	    			
-	    			String preBigram = preToken + candCharacter;
-	    			String nextBigram = candCharacter + nextToken;
-//	    			if(dictionary.contains(candCharacter))
-//	    				count = dictionary.getCount(candCharacter);
-	    			if(dictionary.contains(preBigram))
-	    				preCount += dictionary.getCount(preBigram);
-	    			if(dictionary.contains(nextBigram))
-	    				nextCount += dictionary.getCount(nextBigram);
-
 	    			Sentence candSen = top.getSentence().setToken(index, candCharacter);
-//	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(candSen);
-//	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(candSen) * count / total;
-	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(candSen) * preCount / totalPre * nextCount / totalNext;
-//	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(candSen) * preCount / totalPre * nextCount / totalNext * count / total;
+	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(sentence, index, candCharacter, tmpCands);
 //	    			log.info(candSen+"'Score = " + score);
 	    			next.add(new Sequence(candSen, score));
 	    		}
@@ -133,6 +92,73 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	      result.add(prev.remove().getSentence());
 		
 		return result;
+	}
+	
+	
+	/**
+	 * 返回候选句子noisy channel model：p(s|c)*p(c)中的p(c)
+	 * @param candidate	候选句子
+	 * @return	p(c)
+	 */
+	public abstract double getSourceModelLogScore(Sentence candidate);
+	
+	/**
+	 * 返回noisy channel model：p(s|c)*p(c)中的p(s|c)
+	 * @param candidate	候选句子
+	 * @return	p(s|c)
+	 */
+	public abstract double getChannelModelLogScore(Sentence sentence, int location, String candidate,  HashSet<String> cands);
+	
+	/**
+	 * 计算候选字的总个数
+	 * @param cands			候选字集
+	 * @param dictionary	字串与计数的映射
+	 * @return				所有候选字的总个数
+	 */
+	protected double getTotalCharcterCount(HashSet<String> cands, Dictionary dictionary) {
+		double total = 1.0;
+		Iterator<String> iterator = cands.iterator();
+		while(iterator.hasNext()) {
+			String cand = iterator.next();
+			if(dictionary.contains(cand))
+				total += dictionary.getCount(cand);
+		}
+		
+		return total;
+	}
+	
+	/**
+	 * 计算所有候选字与其前后邻居组成的bigram的计数的乘积，第一个字/最后一个字只考虑与其后/前一个字组成的bigram
+	 * @param sentence		句子，用于确定前后邻居
+	 * @param index			给定候选字在句子中应处的位置
+	 * @param cands			候选字集
+	 * @param dictionary	字串与计数的映射
+	 * @return				总数之积
+	 */
+	protected double getTotalPrefixAndSuffixBigramCount(Sentence sentence, int index, HashSet<String> cands, Dictionary dictionary) {
+		double totalPre = 1.0;
+		double totalNext = 1.0;
+		Iterator<String> iterator = cands.iterator();
+		while(iterator.hasNext()) {
+			String cand = iterator.next();
+			String preToken = "";
+			String nextToken = "";
+			
+			if(index > 0)
+				preToken = sentence.getToken(index - 1);
+			if(index < sentence.size() - 1)
+				nextToken = sentence.getToken(index + 1);
+			
+			String preBigram = preToken + cand;
+			String nextBigram = cand + nextToken;
+			if(dictionary.contains(preBigram))
+				totalPre += dictionary.getCount(preBigram);
+			if(dictionary.contains(nextBigram))
+				totalNext += dictionary.getCount(nextBigram);
+		}
+		
+		return totalPre * totalNext;
+		
 	}
 	
 	/**
@@ -227,18 +253,5 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 		
 		return output;
 	}
-	
-	/**
-	 * 返回候选句子noisy channel model：p(s|c)*p(c)中的p(c)
-	 * @param candidate	候选句子
-	 * @return	p(c)
-	 */
-	public abstract double getSourceModelLogScore(Sentence candidate);
-	
-	/**
-	 * 返回noisy channel model：p(s|c)*p(c)中的p(s|c)
-	 * @param candidate	候选句子
-	 * @return	p(s|c)
-	 */
-	public abstract double getChannelModelLogScore(Sentence candidate);
+
 }

@@ -2,10 +2,11 @@ package hust.tools.csc.checker;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+
 import hust.tools.csc.ngram.NGramModel;
 import hust.tools.csc.score.AbstractNoisyChannelModel;
 import hust.tools.csc.util.ConfusionSet;
-import hust.tools.csc.util.Dictionary;
 import hust.tools.csc.util.Sentence;
 import hust.tools.csc.wordseg.AbstractWordSegment;
 
@@ -19,18 +20,12 @@ import hust.tools.csc.wordseg.AbstractWordSegment;
  */
 public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	
-	private Dictionary dictionary;
-	private ConfusionSet confusionSet;
 	private AbstractWordSegment wordSegment;
-	private NGramModel nGramModel;
-	private int order;
-	private int beamSize = 150;
 	
 	public SCAUNoisyChannelModel(NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment) throws IOException {
-		this.nGramModel = nGramModel;
-		this.confusionSet = confusionSet;
+		super(confusionSet, nGramModel);
+		
 		this.wordSegment = wordSegment;
-		dictionary = new Dictionary();
 	}
 
 	@Override
@@ -54,7 +49,7 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 			else
 				order = 3;
 			
-			candSens = beamSearch(dictionary, confusionSet, beamSize, sentence, locations);
+			candSens = beamSearch(confusionSet, beamSize, sentence, locations);
 			return candSens;
 		}
 		
@@ -63,7 +58,7 @@ public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
 	}
 
 	@Override
-	public double getChannelModelLogScore(Sentence sentence) {
+	public double getChannelModelLogScore(Sentence sentence, int location, String candidate, HashSet<String> cands) {
 		return 1.0;
 	}
 
