@@ -4,7 +4,7 @@ import hust.tools.csc.util.Sentence;
 
 /**
  *<ul>
- *<li>Description: n元模型接口 
+ *<li>Description: n元模型接口 ，提供计算ngram概率和句子概率的方法
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年10月20日

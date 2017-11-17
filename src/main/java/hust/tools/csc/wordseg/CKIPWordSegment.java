@@ -43,8 +43,8 @@ public class CKIPWordSegment extends AbstractWordSegment {
 	
 	/**
 	 * 将CKIP分词标注器返回的文本解析成词组
-	 * @param text	CKIP分词标注的返回结果
-	 * @return		词组
+	 * @param xmlText	CKIP分词标注的返回的文本
+	 * @return			词列表
 	 */
 	private ArrayList<String> parseToWords(String xmlText) {
 		ArrayList<String> res = new ArrayList<>();

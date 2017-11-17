@@ -10,6 +10,14 @@ import java.util.ArrayList;
 import hust.tools.csc.util.FormatConvert;
 import hust.tools.csc.util.Sentence;
 
+/**
+ *<ul>
+ *<li>Description: 给定原始文本，标准文本和系统纠错文本，返回各个指标的结果 
+ *<li>Company: HUST
+ *<li>@author Sonly
+ *<li>Date: 2017年11月17日
+ *</ul>
+ */
 public class APP {
 	
 	public static void main(String[] args) throws IOException {
@@ -38,6 +46,13 @@ public class APP {
 		System.out.println("CF = " + evaluator.getCorrectF());
 	}
 	
+	/**
+	 * 按行读取文本中的句子
+	 * @param path		文本的路径
+	 * @param encoding	文本的编码
+	 * @return			句子列表
+	 * @throws IOException
+	 */
 	private static ArrayList<Sentence> readFile(String path, String encoding) throws IOException {
 		ArrayList<Sentence> list = new ArrayList<Sentence>();
 		File file = new File(path);

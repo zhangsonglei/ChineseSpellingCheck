@@ -2,7 +2,7 @@ package hust.tools.csc.evaluation;
 
 /**
  *<ul>
- *<li>Description: 评价指标接口 
+ *<li>Description: 评价指标接口
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年11月2日

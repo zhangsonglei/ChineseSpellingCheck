@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class DetectResult {
 		
 	/**
-	 * 检测的拼写错误列表
+	 * 拼写错误列表
 	 */
 	private ArrayList<SpellError[]> errorList;
 		
@@ -29,16 +29,12 @@ public class DetectResult {
 		if(!errorList.contains(error))
 			errorList.add(error);
 	}
-	
+
 	/**
-	 * 返回拼写错误的个数
+	 * 返回候选检错的个数
 	 * @return	拼写错误的个数
 	 */
-	public int errorCounts(int n) {
-		return errorList.get(n).length;
-	}
-	
-	public int errorCounts() {
+	public int candiateCounts() {
 		return errorList.size();
 	}
 	

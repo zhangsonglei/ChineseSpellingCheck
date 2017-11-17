@@ -4,7 +4,7 @@ import java.util.HashSet;
 
 /**
  *<ul>
- *<li>Description: 评价器的抽象类 
+ *<li>Description: 评价器的抽象类，提供检错和纠错的评价指标
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年11月2日
@@ -27,10 +27,10 @@ public abstract class AbstractEvaluation implements Evaluation {
 	//////////////////////////////////////////////////////检测指标
 	@Override
 	public double getDetectAccuracy() {
-		HashSet<Integer> numerator = getDTN();	//分子
+		HashSet<Integer> numerator = getDTN();
 		numerator.addAll(getDTP());
 		
-		HashSet<Integer> denominator = new HashSet<>();	//分母
+		HashSet<Integer> denominator = new HashSet<>();	
 		denominator.addAll(numerator);
 		denominator.addAll(getDFN());
 		denominator.addAll(getDFP());
@@ -40,9 +40,9 @@ public abstract class AbstractEvaluation implements Evaluation {
 	
 	@Override
 	public double getDetectPrecision() {
-		HashSet<Integer> numerator = getDTP();	//分子
+		HashSet<Integer> numerator = getDTP();
 		
-		HashSet<Integer> denominator = new HashSet<>();	//分母
+		HashSet<Integer> denominator = new HashSet<>();
 		denominator.addAll(numerator);
 		denominator.addAll(getDFP());
 		
@@ -51,9 +51,9 @@ public abstract class AbstractEvaluation implements Evaluation {
 	
 	@Override
 	public double getDetectRecall() {
-		HashSet<Integer> numerator = getDTP();	//分子
+		HashSet<Integer> numerator = getDTP();
 		
-		HashSet<Integer> denominator = new HashSet<>();	//分母
+		HashSet<Integer> denominator = new HashSet<>();
 		denominator.addAll(numerator);
 		denominator.addAll(getDFN());
 		
@@ -68,10 +68,10 @@ public abstract class AbstractEvaluation implements Evaluation {
 	//////////////////////////////////////////////////////纠正指标
 	@Override
 	public double getCorrectAccuracy() {
-		HashSet<Integer> numerator = getCTP();	//分子
+		HashSet<Integer> numerator = getCTP();
 		numerator.addAll(getCTN());
 		
-		HashSet<Integer> denominator = new HashSet<>();	//分母
+		HashSet<Integer> denominator = new HashSet<>();
 		denominator.addAll(numerator);
 		denominator.addAll(getCFN());
 		denominator.addAll(getCFP());
@@ -81,9 +81,9 @@ public abstract class AbstractEvaluation implements Evaluation {
 	
 	@Override
 	public double getCorrectPrecision() {
-		HashSet<Integer> numerator = getCTP();	//分子
+		HashSet<Integer> numerator = getCTP();
 		
-		HashSet<Integer> denominator = new HashSet<>();	//分母
+		HashSet<Integer> denominator = new HashSet<>();
 		denominator.addAll(numerator);
 		denominator.addAll(getCFP());
 		
@@ -92,8 +92,8 @@ public abstract class AbstractEvaluation implements Evaluation {
 	
 	@Override
 	public double getCorrectRecall() {
-		HashSet<Integer> numerator = getCTP();	//分子
-		HashSet<Integer> denominator = getCFN();	//分母
+		HashSet<Integer> numerator = getCTP();
+		HashSet<Integer> denominator = getCFN();
 		denominator.addAll(getCTP());
 		
 		return 1.0 * numerator.size() / denominator.size();

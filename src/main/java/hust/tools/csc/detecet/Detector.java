@@ -13,28 +13,19 @@ import hust.tools.csc.util.Sentence;
 public interface Detector {
 	
 	/**
-	 * 返回所有检测出的错误的字
-	 * @return	所有检测出的错误的字
+	 * 返回给定句子的所有候选检错结果
+	 * @param sentence	待检错的句子
+	 * @return			所有候选检错结果		
 	 */
-	String[][] getErrorCharacter(DetectResult result);
+	int[][] getErrorLocation(Sentence sentence);
 	
 	/**
-	 * 返回所有检测出的错误字的位置
-	 * @return	所有检测出的错误字的位置
+	 * 返回排名第n的候选检错结果（检错的位置）
+	 * @param sentence	待检测的句子
+	 * @param n		            检错结果的排列的名次
+	 * @return			排名第n的候选检错结果（检错的位置）
 	 */
-	int[][] getErrorLocation(DetectResult result);
-	
-	/**
-	 * 返回所有检测出的错误的字
-	 * @return	所有检测出的错误的字
-	 */
-	String[] getErrorCharacter(DetectResult result, int n);
-	
-	/**
-	 * 返回所有检测出的错误字的位置
-	 * @return	所有检测出的错误字的位置
-	 */
-	int[] getErrorLocation(DetectResult result, int n);
+	int[] getErrorLocation(Sentence sentence, int n);
 	
 	/**
 	 * 返回给定句子检测错误的结果

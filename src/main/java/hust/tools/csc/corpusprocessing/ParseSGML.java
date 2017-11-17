@@ -24,7 +24,7 @@ import hust.tools.csc.util.Sentence;
 
 /**
  *<ul>
- *<li>Description: 解析SIGHAN2015 SGML格式语料 
+ *<li>Description: 解析SIGHAN2015 SGML格式语料， 提取有用的文本
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年11月14日

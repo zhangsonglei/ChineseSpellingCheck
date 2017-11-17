@@ -15,9 +15,9 @@ import hust.tools.csc.util.Sentence;
 public interface NoisyChannelModel {
 
 	/**
-	 * 返回给定原始句子的正确句子
+	 * 返回给定句子的候选句子列表，根据句子的得分从高到低，从前往后排列
 	 * @param sentence	原始句子	
-	 * @return			原始句子的正确结果
+	 * @return			原始句子的候选句子列表
 	 */
 	public ArrayList<Sentence> getCorrectSentence(Sentence sentence);
 }

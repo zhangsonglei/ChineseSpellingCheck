@@ -23,8 +23,9 @@ import hust.tools.csc.util.Sequence;
  */
 public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	
-	protected int order = 3;
-	protected int beamSize = 150;
+	protected int bestSize = 5;				//最佳候选句的个数
+	protected int order = 3;				//计算句子的n元模型的最高阶数
+	protected int beamSize = 150;			//beamSearch方法的beam大小
 	protected ConfusionSet confusionSet;
 	protected NGramModel nGramModel;
 	
@@ -35,17 +36,21 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	
 	/**
 	 * 根据给定句子，给出得分最高的前size个候选句子
-	 * @param sentence	待搜索的原始句子
-	 * @param size		搜索束的大小
-	 * @param locations	错误字的位置
-	 * @return			给出得分最高的前size个候选句子
+	 * @param confusionSet	字的混淆字集
+	 * @param beamSize		搜索束的大小
+	 * @param sentence		待搜索的原始句子
+	 * @param locations		错误字的位置
+	 * @return				得分最高的前size个候选句子
 	 */
-	protected ArrayList<Sentence> beamSearch(ConfusionSet confusionSet, int beamSize, Sentence sentence, ArrayList<Integer> locations) {
-		
+	protected ArrayList<Sentence> beamSearch(ConfusionSet confusionSet, int beamSize, Sentence sentence, 
+			ArrayList<Integer> locations) {
 		Queue<Sequence> prev = new PriorityQueue<>(beamSize);
 	    Queue<Sequence> next = new PriorityQueue<>(beamSize);
 	    Queue<Sequence> tmp;
-	    prev.add(new Sequence(sentence, getSourceModelLogScore(sentence)));
+	    
+	    //原始句子的得分
+	    double score = 1.0;
+	    prev.add(new Sequence(sentence, score));
 	    	
 	    for(int index : locations) {//遍历每一个单字词
 	    	String character = sentence.getToken(index);
@@ -53,28 +58,19 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
     		if(character == null || !FormatConvert.isHanZi(character))
     			continue;
     		
-    		HashSet<String> tmpPronCands = confusionSet.getSimilarityPronunciations(character);
-//    		HashSet<String> tmpShapeCands = confusionSet.getSimilarityShapes(character);
-    		HashSet<String> tmpCands = new HashSet<>();
-    		if(tmpPronCands != null)
-    			tmpCands.addAll(tmpPronCands);
-//    		if(tmpShapeCands != null)
-//    			tmpCands.addAll(tmpShapeCands);
-    		tmpCands.add(character);
+    		HashSet<String> tmpCands = confusionSet.getConfusionSet(character);
+    		tmpCands.add(character);	//将原始字与混淆字同等对待
 	    	
 	    	int sz = Math.min(beamSize, prev.size());
 	    	for(int sc = 0; prev.size() > 0 && sc < sz; sc++) {
 	    		Sequence top = prev.remove();
 	    		next.add(top);
-//	    		log.info(top.getSentence()+"'Score = " + top.getScore());
-	    		//音近、形近候选字获取并合并
 	    				
 	    		Iterator<String> iterator = tmpCands.iterator();
-	    		while(iterator.hasNext()) {
+	    		while(iterator.hasNext()) {	//遍历当前字的所有混淆字，分别替换原始字组成新句子，计算句子得分
 	    			String candCharacter = iterator.next();
 	    			Sentence candSen = top.getSentence().setToken(index, candCharacter);
-	    			double score = getSourceModelLogScore(candSen) * getChannelModelLogScore(sentence, index, candCharacter, tmpCands);
-//	    			log.info(candSen+"'Score = " + score);
+	    			score = getSourceModelLogScore(candSen) * getChannelModelLogScore(sentence, index, candCharacter, tmpCands);
 	    			next.add(new Sequence(candSen, score));
 	    		}
 	        }
@@ -85,15 +81,15 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	        next = tmp;
 	      }
 	    
+	    //选取得分最高的bestSize个候选句子
 	    ArrayList<Sentence> result = new ArrayList<>();
-	    int num = Math.min(5, prev.size());
+	    int num = Math.min(bestSize, prev.size());
 
 	    for (int i = 0; i < num; i++)
 	      result.add(prev.remove().getSentence());
 		
 		return result;
 	}
-	
 	
 	/**
 	 * 返回候选句子noisy channel model：p(s|c)*p(c)中的p(c)
@@ -110,10 +106,10 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	public abstract double getChannelModelLogScore(Sentence sentence, int location, String candidate,  HashSet<String> cands);
 	
 	/**
-	 * 计算候选字的总个数
-	 * @param cands			候选字集
-	 * @param dictionary	字串与计数的映射
-	 * @return				所有候选字的总个数
+	 * 计算混淆字的字频之和
+	 * @param cands			混淆字集
+	 * @param dictionary	字与字频的映射
+	 * @return				所有混淆字的字频之和
 	 */
 	protected double getTotalCharcterCount(HashSet<String> cands, Dictionary dictionary) {
 		double total = 1.0;
@@ -128,11 +124,11 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	}
 	
 	/**
-	 * 计算所有候选字与其前后邻居组成的bigram的计数的乘积，第一个字/最后一个字只考虑与其后/前一个字组成的bigram
-	 * @param sentence		句子，用于确定前后邻居
-	 * @param index			给定候选字在句子中应处的位置
+	 * 计算所有混淆字与其在句子中前后邻居组成的bigram的计数的乘积，第一个字/最后一个字只考虑与其后/前一个字组成的bigram
+	 * @param sentence		句子，用于确定当前字的前后邻居
+	 * @param index			给定混淆字在句子中的位置
 	 * @param cands			候选字集
-	 * @param dictionary	字串与计数的映射
+	 * @param dictionary	bigram与其频数的映射
 	 * @return				总数之积
 	 */
 	protected double getTotalPrefixAndSuffixBigramCount(Sentence sentence, int index, HashSet<String> cands, Dictionary dictionary) {
@@ -162,9 +158,9 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	}
 	
 	/**
-	 * 返回连续的单字词的最大长度，并将孤立的单字词位置索引剔除
-	 * @param words	词组
-	 * @return		连续的单字词的最大长度
+	 * 遍历给定的位置索引列表，返回最大的连续索引的长度
+	 * @param locations	待遍历的位置索引列表
+	 * @return			最大的连续索引的长度
 	 */
 	protected int maxContinueSingleWordsLength(ArrayList<Integer> locations) {		
 		if(locations.size() < 2) 
@@ -186,9 +182,9 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	}
 	
 	/**
-	 * 返回单个字的词在句子中的索引
-	 * @param words	句子分词后的词
-	 * @return		单个字的词在句子中的位置
+	 * 遍历给定词列表返回所有单字词的位置索引
+	 * @param words	待遍历的词列表
+	 * @return		单字词的位置位置
 	 */
 	protected ArrayList<Integer> locationsOfSingleWords(ArrayList<String> words) {
 		ArrayList<Integer> locations = new ArrayList<>();
@@ -207,8 +203,8 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	}
 	
 	/**
-	 * 根据n元切分匹配方法确定错误字的位置
-	 * @param sentence			待处理的句子
+	 * 根据bigram匹配方法确定错误字的位置
+	 * @param sentence			待确定错误字的句子
 	 * @param errorLocations	错误字在句子中的位置索引列表
 	 */
 	protected ArrayList<Integer> getErrorLocationsBySIMD(Dictionary dictionary, Sentence sentence) {
@@ -232,9 +228,9 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	}
 	
 	/**
-	 * 将给定句子切分成bigrams
+	 * 将给定句子切分成连续的bigrams
 	 * @param input	待切分的句子
-	 * @return		bigrams
+	 * @return		连续的bigrams
 	 */
 	private ArrayList<String> generateBigrams(String[] input)  {
 		ArrayList<String> output = new ArrayList<>();

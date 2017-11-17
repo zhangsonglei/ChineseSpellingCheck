@@ -18,5 +18,10 @@ public abstract class AbstractWordSegment {
 		
 	}
 	
+	/**
+	 * 给定句子返回分词后的词列表
+	 * @param sentence	待分词的句子
+	 * @return			分词后的词列表
+	 */
 	public abstract ArrayList<String> segment(Sentence sentence);
 }

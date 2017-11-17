@@ -2,7 +2,7 @@ package hust.tools.csc.detecet;
 
 /**
  *<ul>
- *<li>Description: 句子中的一个拼写错误信息的类 
+ *<li>Description: 句子中的一个拼写错误
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年10月20日
@@ -16,7 +16,7 @@ public class SpellError {
 	private String character;
 
 	/**
-	 * 拼写错误的类
+	 * 错字在句子中的位置
 	 */
 	private int location;
 
@@ -63,6 +63,6 @@ public class SpellError {
 
 	@Override
 	public String toString() {
-		return "[" + location + ","+ character + "]";
+		return location + ", "+ character;
 	}
 }

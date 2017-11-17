@@ -30,6 +30,9 @@ public class CSCEvaluator extends AbstractEvaluation {
 		validate();
 	}
 
+	/**
+	 * 评测前检测数据的合法性
+	 */
 	private void validate() {
 		int originalSize = original.size();
 		int goldSize = gold.size();
