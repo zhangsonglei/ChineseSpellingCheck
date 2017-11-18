@@ -44,41 +44,4 @@ public class HUSTDetector implements Detector{
 		
 		return new DetectResult(errorList);
 	}
-	
-	
-	@Override
-	public int[] getErrorLocation(Sentence sentence, int n) {
-		SpellError[] errors = detect(sentence).getErrors(n);
-		if(errors == null)
-			return null;
-
-		int size = errors.length;
-		int[] errorLoactions = new int[size];
-		
-		for(int i = 0; i < size; i++)
-			errorLoactions[i] = errors[i].getLocation();
-		
-		return errorLoactions;		
-	}
-
-	@Override
-	public int[][] getErrorLocation(Sentence sentence) {
-		DetectResult result = detect(sentence);
-		int[][] res = new int[result.candiateCounts()][];
-		
-		for(int i = 0; i < res.length; i++) {
-			SpellError[] errors = result.getErrors(i);
-			if(errors == null)
-				return null;
-
-			int size = errors.length;
-			int[] errorLoactions = new int[size];
-			
-			for(int j = 0; j < size; j++)
-				errorLoactions[i] = errors[i].getLocation();
-			
-			res[i] = errorLoactions;
-		}
-		return res;
-	}
 }

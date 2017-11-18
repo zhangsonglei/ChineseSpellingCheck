@@ -4,6 +4,7 @@ import java.util.HashMap;
 import hust.tools.csc.detecet.DetectResult;
 import hust.tools.csc.detecet.Detector;
 import hust.tools.csc.detecet.SpellError;
+import hust.tools.csc.score.NoisyChannelModel;
 import hust.tools.csc.util.Sentence;
 
 /**
@@ -17,15 +18,28 @@ import hust.tools.csc.util.Sentence;
 public class HUSTCorrector implements Corrector {
 
 	private Detector detector;
+	private NoisyChannelModel noisyChannelModel;
 	
 	public HUSTCorrector(Detector detector) {
 		this.detector = detector;
+		this.noisyChannelModel = null;
+	}
+	
+	public HUSTCorrector(NoisyChannelModel noisyChannelModel) {
+		this.noisyChannelModel = noisyChannelModel;
+		this.detector = null;
 	}
 	
 	@Override
 	public CorrectResult correct(Sentence sentence) {
-//		DetectResult result = detector.detect(sentence);
-//		int[][] locations = detector.getErrorLocation(result);
+		if(detector != null) {
+			DetectResult result = detector.detect(sentence);
+			int[][] locations = result.getErrorLocation();
+			String[][] characters = result.getErrorCharacter();
+		}
+		
+//		
+//		
 //		String[][] characters = detector.getErrorCharacter(result);
 		
 		HashMap<Integer, Suggestions> map = new HashMap<>();
