@@ -1,26 +1,26 @@
-package hust.tools.csc.detecet;
+package hust.tools.csc.correct;
 
 /**
  *<ul>
- *<li>Description: 句子中的一个拼写错误
+ *<li>Description: 纠正的字
  *<li>Company: HUST
  *<li>@author Sonly
- *<li>Date: 2017年10月20日
+ *<li>Date: 2017年11月19日
  *</ul>
  */
-public class SpellError {
+public class Correction {
 
 	/**
-	 * 拼写错误的字
+	 * 纠正的字
 	 */
 	private String character;
 
 	/**
-	 * 错字在句子中的位置
+	 * 纠正的位置
 	 */
 	private int location;
 
-	public SpellError(String character, int location) {
+	public Correction(String character, int location) {
 		this.character = character;
 		this.location = location;
 	}
@@ -32,7 +32,7 @@ public class SpellError {
 	public String getCharacter() {
 		return character;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -50,7 +50,7 @@ public class SpellError {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		SpellError other = (SpellError) obj;
+		Correction other = (Correction) obj;
 		if (character == null) {
 			if (other.character != null)
 				return false;
@@ -60,9 +60,9 @@ public class SpellError {
 			return false;
 		return true;
 	}
-
+	
 	@Override
 	public String toString() {
-		return String.valueOf(location);
+		return location + ", " + character;
 	}
 }

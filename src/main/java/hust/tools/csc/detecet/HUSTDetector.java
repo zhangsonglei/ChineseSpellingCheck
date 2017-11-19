@@ -23,7 +23,7 @@ public class HUSTDetector implements Detector{
 
 	@Override
 	public DetectResult detect(Sentence sentence) {
-		ArrayList<SpellError[]> errorList = new ArrayList<>();
+		DetectResult result = new DetectResult();
 		ArrayList<Sentence> candSentences = noisyChannelModel.getCorrectSentence(sentence);
 		
 		//将提取候选句子中进行了修改的字与其在句子中的位置
@@ -37,11 +37,14 @@ public class HUSTDetector implements Detector{
 							errors.add(new SpellError(character, i));
 					}//end for
 					
-					errorList.add(errors.toArray(new SpellError[errors.size()]));
+					if(errors.size() != 0)
+						result.add(errors.toArray(new SpellError[errors.size()]));
+					else
+						result.add(null);
 				}//end if
 			}//end for
 		}//end if
 		
-		return new DetectResult(errorList);
+		return result;
 	}
 }

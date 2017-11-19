@@ -16,6 +16,10 @@ public class DetectResult {
 	 * 拼写错误列表
 	 */
 	private ArrayList<SpellError[]> errorList;
+	
+	public DetectResult() {
+		this(new ArrayList<>());
+	}
 		
 	public DetectResult(ArrayList<SpellError[]> errorList) {
 		this.errorList = errorList;

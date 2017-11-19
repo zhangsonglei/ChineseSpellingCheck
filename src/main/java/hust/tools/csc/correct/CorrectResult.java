@@ -1,7 +1,7 @@
 package hust.tools.csc.correct;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  *<ul>
@@ -14,35 +14,87 @@ import java.util.Iterator;
 public class CorrectResult {
 	
 	private HashMap<Integer, Suggestions> map;
+	private ArrayList<Correction[]> correctionList;
+	
+	public CorrectResult() {
+		this(new HashMap<>(), new ArrayList<>());
+	}
 	
 	public CorrectResult(HashMap<Integer, Suggestions> map) {
+		this(map, new ArrayList<>());
+	}
+	
+	public CorrectResult(ArrayList<Correction[]> correctionList) {
+		this(new HashMap<>(), correctionList);
+	}
+	
+	public CorrectResult(HashMap<Integer, Suggestions> map, ArrayList<Correction[]> correctionList) {
+		this.correctionList = correctionList;
 		this.map = map;
 	}
 	
 	/**
-	 * 向队列中添加一个元素
-	 * @param suggestion	待添加的元素
+	 * 添加一个候选纠正句的信息（所有纠正的字）
+	 * @param corrections	纠正的字组
 	 */
-	public void add(int location, Suggestions suggestion) {
-		if(!map.containsKey(location)) {
-			Iterator<String> iterator = suggestion.iterator();
-			while(iterator.hasNext()) {
-				map.get(location).add(iterator.next());
+	public void add(Correction[] corrections) {
+		correctionList.add(corrections);
+		
+		for(Correction correction : corrections) {
+			int location = correction.getLocation();
+			String character = correction.getCharacter();
+			
+			if(map.containsKey(location)) {
+				map.get(location).add(character);
+			}else {
+				Suggestions suggestions = new Suggestions();
+				suggestions.add(character);
+				
+				map.put(location, suggestions);
 			}
-		}else
-			map.put(location, suggestion);
+		}
 	}
 	
 	/**
-	 * 返回队列中的第一个元素
-	 * @return	队列中的第一个元素
+	 * 返回所有候选纠正结果，第一维度为候选纠正结果的排名，第二维度为纠正结果
+	 * @return	所有候选纠正结果
+	 */
+	public Correction[][] getSuggestions(){
+		if(correctionList.size() == 0)
+			return null;
+		
+		Correction[][] corrections = new Correction[correctionList.size()][];
+		for(int i = 0; i < correctionList.size(); i++)
+			corrections[i] = correctionList.get(0);
+		return corrections;
+	}
+
+	/**
+	 * 返回排名第order的候选纠正结果
+	 * @param order	候选纠正结果的排名
+	 * @return		排名第order的候选纠正结果
+	 */
+	public Correction[] getSuggestions(int order) {
+		if(order > correctionList.size() || order < 0)
+			return null;
+		
+		return correctionList.get(order);
+	}
+	
+	
+	/**
+	 * 返回给定位置的纠正词列表，如果该字没错，返回null
+	 * @return	给定位置的纠正词列表，如果该字没错，返回null
 	 */
 	public Suggestions get(int location) {
-		return map.get(location);
+		if(map.containsKey(location))
+			return map.get(location);
+		
+		return null;
 	}
 	
 	/**
-	 * 判断是否含有给定位置的建议列表
+	 * 判断是否含有给定位置的纠正词
 	 * @param location	待判断的位置
 	 * @return			true-是/false-否
 	 */

@@ -1,9 +1,6 @@
 package hust.tools.csc.correct;
 
-import java.util.HashMap;
-import hust.tools.csc.detecet.DetectResult;
-import hust.tools.csc.detecet.Detector;
-import hust.tools.csc.detecet.SpellError;
+import java.util.ArrayList;
 import hust.tools.csc.score.NoisyChannelModel;
 import hust.tools.csc.util.Sentence;
 
@@ -17,68 +14,49 @@ import hust.tools.csc.util.Sentence;
  */
 public class HUSTCorrector implements Corrector {
 
-	private Detector detector;
 	private NoisyChannelModel noisyChannelModel;
-	
-	public HUSTCorrector(Detector detector) {
-		this.detector = detector;
-		this.noisyChannelModel = null;
-	}
 	
 	public HUSTCorrector(NoisyChannelModel noisyChannelModel) {
 		this.noisyChannelModel = noisyChannelModel;
-		this.detector = null;
 	}
 	
 	@Override
 	public CorrectResult correct(Sentence sentence) {
-		if(detector != null) {
-			DetectResult result = detector.detect(sentence);
-			int[][] locations = result.getErrorLocation();
-			String[][] characters = result.getErrorCharacter();
+		CorrectResult result = new CorrectResult();
+		ArrayList<Sentence> candSentences = noisyChannelModel.getCorrectSentence(sentence);
+		if(candSentences != null) {
+			for(Sentence candSentence : candSentences) {
+				int len = candSentence.size();
+				if(len != sentence.size())
+					continue;
+				
+				ArrayList<Correction> corrections = new ArrayList<>();
+				for(int i = 0; i < len; i++) {
+					if(candSentence.getToken(i).equals(sentence.getToken(i)))
+						corrections.add(new Correction(candSentence.getToken(i), i));
+				}
+				
+				if(corrections.size() != 0)
+					result.add(corrections.toArray(new Correction[corrections.size()]));
+				else
+					result.add(null);
+			}
 		}
-		
-//		
-//		
-//		String[][] characters = detector.getErrorCharacter(result);
-		
-		HashMap<Integer, Suggestions> map = new HashMap<>();
-//		
-//		for(int i = 0; i < locations.length; i++) {
-//			HashSet<String> set = confusionSet.getConfusions(characters[i]);
-//			Iterator<String> iterator = set.iterator();
-//			
-//			Suggestions suggestions = new Suggestions();
-//			for(int j = 0; j < set.size(); j++) {
-//				String character = iterator.next();
-//				suggestions.add(new Correction(character, dictionary.getCount(character), locations[i]));
-//			}
-//			
-//			map.put(locations[i], suggestions);
-//		}
-		
-		return new CorrectResult(map);
+			
+		return result;
 	}
 	
 	@Override
 	public Sentence autoCorrect(Sentence sentence) {
-		DetectResult result = detector.detect(sentence);
-		String[] characters = detector.getErrorCharacter(result, 0);
-		int[] locations = detector.getErrorLocation(result, 0);
+		CorrectResult result = correct(sentence);
+		Correction[] corrections = result.getSuggestions(0);
 		
-		for(int i=0; i < locations.length; i++) 
-			sentence = sentence.setToken(locations[i], characters[i]);
+		for(Correction correction :corrections) { 
+			int location = correction.getLocation();
+			String character = correction.getCharacter();
+			sentence = sentence.setToken(location, character);
+		}
 		
 		return sentence;
-	}
-
-	@Override
-	public String[][] getSuggestions() {
-		return null;
-	}
-
-	@Override
-	public String[] getSuggestions(SpellError spellError) {
-		return null;
 	}
 }
