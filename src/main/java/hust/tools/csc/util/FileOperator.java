@@ -1,4 +1,4 @@
-package hust.tools.csc.corpusprocessing;
+package hust.tools.csc.util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import hust.tools.csc.detecet.SpellError;
-import hust.tools.csc.util.FormatConvert;
-import hust.tools.csc.util.Sentence;
 
 /**
  *<ul>
@@ -65,7 +63,7 @@ public class FileOperator {
 	 * @return			句子pid与该句子所有错字的映射
 	 * @throws IOException
 	 */
-	public static HashMap<String, ArrayList<SpellError>> readFile(String path, String encoding) throws IOException {
+	public static HashMap<String, ArrayList<SpellError>> readGoldFile(String path, String encoding) throws IOException {
 		HashMap<String, ArrayList<SpellError>> list = new HashMap<>();
 		File file = new File(path);
 		int no = 0;
@@ -121,6 +119,36 @@ public class FileOperator {
 				if(!line.equals("")) {
 					list.add(line);
 				}
+			}
+			reader.close();
+		}else {
+			System.err.println("File:\""+path+"\" read failed!");
+		}
+		
+		return list;	
+	}
+	
+	/**
+	 * 按行读取文本中的句子
+	 * @param path		文本的路径
+	 * @param encoding	文本的编码
+	 * @return			句子列表
+	 * @throws IOException
+	 */
+	public static ArrayList<Sentence> readFile(String path, String encoding) throws IOException {
+		ArrayList<Sentence> list = new ArrayList<Sentence>();
+		File file = new File(path);
+		
+		if(file.isFile() && file.exists()) {
+			InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), encoding);
+			BufferedReader reader = new BufferedReader(inputStreamReader);
+			
+			String line = "";
+			while((line = reader.readLine()) != null) {
+				line = FormatConvert.ToDBC(line).trim();
+				String[] chs = line.split("");
+				
+				list.add(new Sentence(chs));
 			}
 			reader.close();
 		}else {

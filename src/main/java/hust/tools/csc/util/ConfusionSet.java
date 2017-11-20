@@ -309,4 +309,12 @@ public class ConfusionSet {
 		
 		return false;
 	}
+	
+	public int getSimilarProCount() {
+		return similarityPronunciation.size();
+	}
+	
+	public int getSimilarShapeCount() {
+		return similarityShape.size();
+	}
 }

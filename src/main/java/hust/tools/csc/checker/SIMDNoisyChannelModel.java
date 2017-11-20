@@ -13,7 +13,7 @@ import hust.tools.csc.util.Sentence;
 
 /**
  *<ul>
- *<li>Description: 根据bigram匹配字典的方法检错，并利用ngram模型计算句子得分  
+ *<li>Description: 根据bigram匹配字典的方法检错，并利用ngram模型计算句子得分
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年11月1日
@@ -22,15 +22,11 @@ import hust.tools.csc.util.Sentence;
 public class SIMDNoisyChannelModel extends AbstractNoisyChannelModel {
 	
 	private Dictionary dictionary;
-	private ConfusionSet confusionSet;
-	private NGramModel nGramModel;
-	private final int order = 3;
-	private final int beamSize = 150;
 	
 	public SIMDNoisyChannelModel(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet) throws IOException {
 		super(confusionSet, nGramModel);
 		
-		this.confusionSet = confusionSet;
+		this.dictionary = dictionary;
 	}
 	
 	@Override
@@ -45,7 +41,7 @@ public class SIMDNoisyChannelModel extends AbstractNoisyChannelModel {
 	
 			String C_1 = sentence.getToken(index - 1);
 			String C1 = sentence.getToken(index + 1);
-				
+			
 			HashSet<String> tmpPronCands = confusionSet.getSimilarityPronunciations(C);
 			HashSet<String> tmpCands = new HashSet<>();
 			if(tmpPronCands != null)

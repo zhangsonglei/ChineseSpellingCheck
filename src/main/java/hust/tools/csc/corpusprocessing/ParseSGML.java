@@ -20,6 +20,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import hust.tools.csc.util.FileOperator;
 import hust.tools.csc.util.Sentence;
 
 /**

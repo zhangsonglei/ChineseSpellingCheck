@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import hust.tools.csc.detecet.SpellError;
+import hust.tools.csc.util.FileOperator;
 import hust.tools.csc.util.Sentence;
 
 /**
@@ -26,7 +27,7 @@ public class Process {
 		String testFile = "E:\\FinalTest_SubTask2.txt";
 		String goldFile = "E:\\FinalTest_SubTask2_Truth.txt";
 		HashMap<String, Sentence> tests = FileOperator.readTestFile(testFile, "utf-8");
-		HashMap<String, ArrayList<SpellError>> res = FileOperator.readFile(goldFile, "utf-8");
+		HashMap<String, ArrayList<SpellError>> res = FileOperator.readGoldFile(goldFile, "utf-8");
 		
 		OutputStreamWriter test = new OutputStreamWriter(new FileOutputStream(new File("E:\\testFile2.txt")), "utf-8");
 		BufferedWriter testwriter = new BufferedWriter(test);
