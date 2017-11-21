@@ -38,7 +38,7 @@ public class FileOperator {
 			
 			String line = "";
 			while((line = reader.readLine()) != null) {
-				line = FormatConvert.ToDBC(line).trim();
+				line = CommonUtils.ToDBC(line).trim();
 				if(!line.equals("")) {
 					String[] strings = line.split("\\s+");
 					String pid = strings[0].trim();
@@ -74,7 +74,7 @@ public class FileOperator {
 			String line = "";
 			while((line = reader.readLine()) != null) {
 				System.out.println(++no);
-				line = FormatConvert.ToDBC(line).trim();
+				line = CommonUtils.ToDBC(line).trim();
 				if(!line.equals("")) {
 					String[] strings = line.split(",");
 					if(strings.length > 2) {
@@ -115,7 +115,7 @@ public class FileOperator {
 			
 			String line = "";
 			while((line = reader.readLine()) != null) {
-				line = FormatConvert.ToDBC(line).trim();
+				line = CommonUtils.ToDBC(line).trim();
 				if(!line.equals("")) {
 					list.add(line);
 				}
@@ -145,7 +145,7 @@ public class FileOperator {
 			
 			String line = "";
 			while((line = reader.readLine()) != null) {
-				line = FormatConvert.ToDBC(line).trim();
+				line = CommonUtils.ToDBC(line).trim();
 				String[] chs = line.split("");
 				
 				list.add(new Sentence(chs));

@@ -9,7 +9,7 @@ import java.util.Queue;
 import hust.tools.csc.ngram.NGramModel;
 import hust.tools.csc.util.ConfusionSet;
 import hust.tools.csc.util.Dictionary;
-import hust.tools.csc.util.FormatConvert;
+import hust.tools.csc.util.CommonUtils;
 import hust.tools.csc.util.Sentence;
 import hust.tools.csc.util.Sequence;
 
@@ -55,7 +55,7 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	    for(int index : locations) {//遍历每一个单字词
 	    	String character = sentence.getToken(index);
     		
-    		if(character == null || !FormatConvert.isHanZi(character))
+    		if(character == null || !CommonUtils.isHanZi(character))
     			continue;
     		
     		HashSet<String> tmpCands = confusionSet.getConfusionSet(character);
@@ -191,7 +191,7 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 		int index = 0;
 		for(String word : words) {
 			if(word.length() == 1) {
-				if(FormatConvert.isHanZi(word)) {
+				if(CommonUtils.isHanZi(word)) {
 					locations.add(index);
 				}
 			}
@@ -209,7 +209,7 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	 */
 	protected ArrayList<Integer> getErrorLocationsBySIMD(Dictionary dictionary, Sentence sentence) {
 		ArrayList<Integer> errorLocations = new ArrayList<>();
-		ArrayList<String> bigrams = generateBigrams(sentence.toString().split(""));
+		ArrayList<String> bigrams = CommonUtils.generateNGrams(sentence.toString().split(""), 2);
 		
 		//可能的错误位置， 当前bigram与下一个bigram中有不存在与字典的，设置当前bigram的第二个字为可能出错的字
 		for(int index = 0; index < bigrams.size() - 1; index++) {
@@ -219,35 +219,11 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 			if(!(dictionary.contains(currentBigram) && dictionary.contains(nextBigram))) {
 				String wrong = sentence.getToken(index + 1);
 				//非汉字不考虑
-				if(FormatConvert.isHanZi(wrong))
+				if(CommonUtils.isHanZi(wrong))
 					errorLocations.add(index + 1);
 			}
 		}//end for
 		
 		return errorLocations;
 	}
-	
-	/**
-	 * 将给定句子切分成连续的bigrams
-	 * @param input	待切分的句子
-	 * @return		连续的bigrams
-	 */
-	private ArrayList<String> generateBigrams(String[] input)  {
-		ArrayList<String> output = new ArrayList<>();
-		
-		for(int i = 0; i < input.length - 2 + 1; i++) {
-			String[] ngrams = new String[2];
-			for(int j = i, index = 0; j < i + 2; j++, index++)
-				ngrams[index] = input[j];
-
-			String bigram = "";
-			for(String ch : ngrams)
-				bigram += ch;
-			
-			output.add(bigram);
-		}//end for
-		
-		return output;
-	}
-
 }

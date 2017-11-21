@@ -27,31 +27,31 @@ public class FormatConvertTest {
 	
 	@Test
 	public void testIsHanZi() {
-		assertTrue(FormatConvert.isHanZi(test1));
-		assertFalse(FormatConvert.isHanZi(test2));
-		assertFalse(FormatConvert.isHanZi(test3));
-		assertFalse(FormatConvert.isHanZi(test4));
-		assertFalse(FormatConvert.isHanZi(test5));
-		assertFalse(FormatConvert.isHanZi(test6));
-		assertFalse(FormatConvert.isHanZi(test7));
+		assertTrue(CommonUtils.isHanZi(test1));
+		assertFalse(CommonUtils.isHanZi(test2));
+		assertFalse(CommonUtils.isHanZi(test3));
+		assertFalse(CommonUtils.isHanZi(test4));
+		assertFalse(CommonUtils.isHanZi(test5));
+		assertFalse(CommonUtils.isHanZi(test6));
+		assertFalse(CommonUtils.isHanZi(test7));
 	}
 
 	@Test
 	public void testIsNumber() {
-		assertFalse(FormatConvert.isNumber(test1));
-		assertFalse(FormatConvert.isNumber(test2));
-		assertFalse(FormatConvert.isNumber(test3));
-		assertFalse(FormatConvert.isNumber(test4));
-		assertTrue(FormatConvert.isNumber(test5));
-		assertFalse(FormatConvert.isNumber(test6));
-		assertTrue(FormatConvert.isNumber(test7));
-		assertTrue(FormatConvert.isNumber(test7));
-		assertTrue(FormatConvert.isNumber(test7));
+		assertFalse(CommonUtils.isNumber(test1));
+		assertFalse(CommonUtils.isNumber(test2));
+		assertFalse(CommonUtils.isNumber(test3));
+		assertFalse(CommonUtils.isNumber(test4));
+		assertTrue(CommonUtils.isNumber(test5));
+		assertFalse(CommonUtils.isNumber(test6));
+		assertTrue(CommonUtils.isNumber(test7));
+		assertTrue(CommonUtils.isNumber(test7));
+		assertTrue(CommonUtils.isNumber(test7));
 	}
 	
 	@Test
 	public void testConvert() {
-		assertEquals(test5, FormatConvert.ToDBC(test7));
-		assertEquals(test7, FormatConvert.ToSBC(test5));
+		assertEquals(test5, CommonUtils.ToDBC(test7));
+		assertEquals(test7, CommonUtils.ToSBC(test5));
 	}
 }

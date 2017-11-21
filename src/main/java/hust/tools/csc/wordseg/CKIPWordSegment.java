@@ -12,7 +12,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import hust.tools.csc.util.FormatConvert;
+import hust.tools.csc.util.CommonUtils;
 import hust.tools.csc.util.Sentence;
 import tw.cheyingwu.ckip.CKIP;
 import tw.cheyingwu.ckip.WordSegmentationService;
@@ -60,7 +60,7 @@ public class CKIPWordSegment extends AbstractWordSegment {
 	        
 	        for(int i = 0; i < nodeList.getLength(); i++) {
 	        	Node node = nodeList.item(i);
-	        	String sen = FormatConvert.ToDBC(node.getFirstChild().getNodeValue()).trim();//将全角格式转为半角格式
+	        	String sen = CommonUtils.ToDBC(node.getFirstChild().getNodeValue()).trim();//将全角格式转为半角格式
 	        	
 	        	String[] words = sen.split("\\s+");
 	 	        for(int j = 0; j < words.length; j++) {

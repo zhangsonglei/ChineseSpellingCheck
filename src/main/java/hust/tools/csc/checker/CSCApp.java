@@ -21,7 +21,7 @@ import hust.tools.csc.ngram.NGramModel;
 import hust.tools.csc.score.AbstractNoisyChannelModel;
 import hust.tools.csc.util.ConfusionSet;
 import hust.tools.csc.util.Dictionary;
-import hust.tools.csc.util.FormatConvert;
+import hust.tools.csc.util.CommonUtils;
 import hust.tools.csc.util.Sentence;
 import hust.tools.csc.wordseg.AbstractWordSegment;
 import hust.tools.csc.wordseg.CKIPWordSegment;
@@ -168,7 +168,7 @@ public class CSCApp {
 		for(int i = 0; i < count; i++) {
 			String[] entry = reader.readUTF().split("\t");
 			if(entry.length == 2) {
-				String ngrams = FormatConvert.ToDBC(entry[0]);
+				String ngrams = CommonUtils.ToDBC(entry[0]);
 				ngrams = ngrams.replaceAll("\t", "").trim();
 				if(!ngrams.equals("")) {
 					int num = Integer.parseInt(entry[1]);
@@ -200,7 +200,7 @@ public class CSCApp {
 		String line = "";
 		try {
 			while ((line = proReader.readLine())!= null) {
-				line = FormatConvert.ToDBC(line);		//全角转为半角
+				line = CommonUtils.ToDBC(line);		//全角转为半角
 				line = line.replace("\t", "").trim();	//去除多于的空格
 				if(!line.equals("")) {					//过滤空行
 					String[] strings = line.split("");
@@ -269,7 +269,7 @@ public class CSCApp {
 			while((line = reader.readLine()) != null) {
 				line = line.trim();
 				if(!line.equals("")) {
-					String[] sentence = FormatConvert.ToDBC(line).split("");
+					String[] sentence = CommonUtils.ToDBC(line).split("");
 					list.add(new Sentence(sentence));
 				}
 			}

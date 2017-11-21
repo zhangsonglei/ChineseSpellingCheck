@@ -1,5 +1,7 @@
 package hust.tools.csc.util;
 
+import java.util.ArrayList;
+
 /**
  *<ul>
  *<li>Description: 工具类，对文本进行判断和转换
@@ -8,7 +10,7 @@ package hust.tools.csc.util;
  *<li>Date: 2017年10月13日
  *</ul>
  */
-public class FormatConvert {
+public class CommonUtils {
 	
 	/**
 	 * 判断一个字符串是不是汉字（汉字：[0x4e00,0x9fa5]（或十进制[19968,40869]））
@@ -76,4 +78,27 @@ public class FormatConvert {
          
         return new String(c);
     }
+    
+    /**
+	 * 将给定句子切分成连续的bigrams
+	 * @param input	待切分的句子
+	 * @return		连续的bigrams
+	 */
+	public static ArrayList<String> generateNGrams(String[] input, int n)  {
+		ArrayList<String> output = new ArrayList<>();
+		
+		for(int i = 0; i < input.length - n + 1; i++) {
+			String[] ngrams = new String[n];
+			for(int j = i, index = 0; j < i + n; j++, index++)
+				ngrams[index] = input[j];
+
+			String ngram = "";
+			for(String ch : ngrams)
+				ngram += ch;
+			
+			output.add(ngram);
+		}//end for
+		
+		return output;
+	}
 }
