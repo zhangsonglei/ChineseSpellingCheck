@@ -63,4 +63,9 @@ public interface Evaluation {
 	 * @return	纠正的F值
 	 */
 	public double getCorrectF();
+	
+	/**
+	 * 打印评价指标
+	 */
+	public void show();
 }

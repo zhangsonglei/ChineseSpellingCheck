@@ -219,4 +219,17 @@ public class CSCEvaluator extends AbstractEvaluation {
 	protected HashSet<Integer> getTN() {
 		return getCTN();
 	}
+	
+	@Override
+	public void show() {
+		System.out.println("FPR = " + getFalsePositiveRate());
+		System.out.println("DA = " + getDetectAccuracy());
+		System.out.println("DP = " + getDetectPrecision());
+		System.out.println("DR = " + getDetectRecall());
+		System.out.println("DF = " + getDetectF());
+		System.out.println("CA = " + getCorrectAccuracy());
+		System.out.println("CP = " + getCorrectPrecision());
+		System.out.println("CR = " + getCorrectRecall());
+		System.out.println("CF = " + getCorrectF());
+	}
 }

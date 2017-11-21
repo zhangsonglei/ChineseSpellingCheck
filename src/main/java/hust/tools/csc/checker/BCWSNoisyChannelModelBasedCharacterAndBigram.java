@@ -13,18 +13,18 @@ import hust.tools.csc.wordseg.AbstractWordSegment;
 
 /**
  *<ul>
- *<li>Description: 在SCAU噪音通道模型的基础上，引入字的概率以及当前字与前后邻居组成的bigram的概率
+ *<li>Description: 在BCWS噪音通道模型的基础上，引入字的概率以及当前字与前后邻居组成的bigram的概率
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年11月16日
  *</ul>
  */
-public class SCAUNoisyChannelModelBasedCharacterAndBigram extends AbstractNoisyChannelModel {
+public class BCWSNoisyChannelModelBasedCharacterAndBigram extends AbstractNoisyChannelModel {
 	
 	private Dictionary dictionary;
 	private AbstractWordSegment wordSegment;
 	
-	public SCAUNoisyChannelModelBasedCharacterAndBigram(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment) throws IOException {
+	public BCWSNoisyChannelModelBasedCharacterAndBigram(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment) throws IOException {
 		super(confusionSet, nGramModel);
 		
 		this.wordSegment = wordSegment;

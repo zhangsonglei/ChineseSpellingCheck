@@ -13,7 +13,7 @@ import hust.tools.csc.wordseg.AbstractWordSegment;
 
 /**
  *<ul>
- *<li>Description: 
+ *<li>Description: 在DoubleStage噪音通道模型的基础上，引入字的概率 
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年11月15日

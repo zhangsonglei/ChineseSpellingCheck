@@ -33,19 +33,8 @@ public class Evaluator {
 		ArrayList<Sentence> gold = FileOperator.readFile(goldFile, encoding);
 		ArrayList<Sentence> result = FileOperator.readFile(resultFile, encoding);;
 		Evaluation evaluator = new CSCEvaluator(original, gold, result);
-		show(evaluator);
-		
+		evaluator.show();
 	}
 	
-	private static void show(Evaluation evaluator) {
-		System.out.println("FPR = " + evaluator.getFalsePositiveRate());
-		System.out.println("DA = " + evaluator.getDetectAccuracy());
-		System.out.println("DP = " + evaluator.getDetectPrecision());
-		System.out.println("DR = " + evaluator.getDetectRecall());
-		System.out.println("DF = " + evaluator.getDetectF());
-		System.out.println("CA = " + evaluator.getCorrectAccuracy());
-		System.out.println("CP = " + evaluator.getCorrectPrecision());
-		System.out.println("CR = " + evaluator.getCorrectRecall());
-		System.out.println("CF = " + evaluator.getCorrectF());
-	}
+	
 }

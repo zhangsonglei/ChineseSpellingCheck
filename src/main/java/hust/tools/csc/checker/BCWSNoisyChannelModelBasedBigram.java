@@ -13,18 +13,18 @@ import hust.tools.csc.wordseg.AbstractWordSegment;
 
 /**
  *<ul>
- *<li>Description: 在SCAU噪音通道模型的基础上，引入字的概率
+ *<li>Description: 在BCWS噪音通道模型的基础上，引入当前字与前后邻居组成的bigram的概率
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年11月16日
  *</ul>
  */
-public class SCAUNoisyChannelModelBasedCharacter extends AbstractNoisyChannelModel {
+public class BCWSNoisyChannelModelBasedBigram extends AbstractNoisyChannelModel {
 	
 	private Dictionary dictionary;
 	private AbstractWordSegment wordSegment;
 	
-	public SCAUNoisyChannelModelBasedCharacter(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment) throws IOException {
+	public BCWSNoisyChannelModelBasedBigram(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment) throws IOException {
 		super(confusionSet, nGramModel);
 		
 		this.wordSegment = wordSegment;
@@ -60,9 +60,20 @@ public class SCAUNoisyChannelModelBasedCharacter extends AbstractNoisyChannelMod
 
 	@Override
 	public double getChannelModelLogScore(Sentence sentence, int location, String candidate, HashSet<String> cands) {
-		double total = getTotalCharcterCount(cands, dictionary);
-		double count = dictionary.getCount(candidate);
+		double totalBigram = getTotalPrefixAndSuffixBigramCount(sentence, location, cands, dictionary);
 		
-		return count / total;
+		String preToken = "";
+		String nextToken = "";
+		if(location > 0)
+			preToken = sentence.getToken(location - 1);
+		if(location < sentence.size() - 1)
+			nextToken = sentence.getToken(location + 1);
+		String prefixBigram = preToken + candidate;
+		String suffixBigram = candidate + nextToken;
+		
+		int prefixBigramCount = dictionary.getCount(prefixBigram);
+		int suffixBigramCount = dictionary.getCount(suffixBigram);
+		
+		return prefixBigramCount * suffixBigramCount / totalBigram;
 	}
 }

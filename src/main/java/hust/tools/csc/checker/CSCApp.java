@@ -30,12 +30,12 @@ import hust.tools.ngram.io.BinaryFileNGramModelReader;
 import hust.tools.ngram.io.TextFileNGramModelReader;
 import hust.tools.ngram.model.AbstractNGramModelReader;
 
-public class ChineseSpellChecker {
+public class CSCApp {
 	
 	private static ConfusionSet confusionSet;
 	private static NGramModel nGramModel;
 	private static AbstractNoisyChannelModel noisyChannelModel;
-	
+
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		int len = args.length;
 		if(4 != len) {
@@ -49,13 +49,13 @@ public class ChineseSpellChecker {
 		String output = args[3];
 		
 		nGramModel = loadModel("E:\\JOB\\TestData\\smallknLM.bin");
-		confusionSet = constructConfusionSet(new File("E:\\JOB\\TestData\\pro.txt"));
+		confusionSet = constructConfusionSet(new File("resources\\pro.txt"));
 		selectNoisyChannelModel(method);
 		
 		List<Sentence> sentences = readFile(testFile, encoding);
 		OutputStreamWriter oWriter = new OutputStreamWriter(new FileOutputStream(new File(output)), encoding);
 		BufferedWriter writer = new BufferedWriter(oWriter);
-		 		
+		
 		int no = 1;
 		Sentence bestSentence = null;
 		for(Sentence sentence : sentences) {
@@ -73,79 +73,79 @@ public class ChineseSpellChecker {
 
 	private static void selectNoisyChannelModel(String method) throws IOException {
 		switch (method.toLowerCase()) {
-		case "1":
+		case "ds":
 			Dictionary dictionary = constructDict("E:\\JOB\\TestData\\trigramCount.bin");
 			AbstractWordSegment wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new DoubleStageNoisyChannelModel(dictionary, nGramModel, confusionSet, wordSegment);
 			break;
-		case "2":
+		case "dsc":
 			Dictionary dictionary1 = constructDict("E:\\JOB\\TestData\\trigramCount.bin");
 			AbstractWordSegment wordSegment1 = new CKIPWordSegment();
 			noisyChannelModel = new DoubleStageNoisyChannelModelBasedCharacter(dictionary1, nGramModel, confusionSet, wordSegment1);
 			break;
-		case "3":
+		case "dsb":
 			Dictionary dictionary2 = constructDict("E:\\JOB\\TestData\\trigramCount.bin");
 			AbstractWordSegment wordSegment2 = new CKIPWordSegment();
 			noisyChannelModel = new DoubleStageNoisyChannelModelBasedCharacterAndBigram(dictionary2, nGramModel, confusionSet, wordSegment2);
 			break;
-		case "4":
+		case "dscb":
 			Dictionary dictionary3 = constructDict("E:\\JOB\\TestData\\trigramCount.bin");
 			AbstractWordSegment wordSegment3 = new CKIPWordSegment();
 			noisyChannelModel = new DoubleStageNoisyChannelModelBasedBigram(dictionary3, nGramModel, confusionSet, wordSegment3);
 			break;
-		case "5":
+		case "hust":
 			Dictionary dictionary4 = constructDict("E:\\JOB\\TestData\\trigramCount.bin");
 			AbstractWordSegment wordSegment4 = new CKIPWordSegment();
 			noisyChannelModel = new HUSTNoisyChannelModel(dictionary4, nGramModel, confusionSet, wordSegment4);
 			break;
-		case "6":
+		case "hustc":
 			Dictionary dictionary5 = constructDict("E:\\JOB\\TestData\\trigramCount.bin");
 			AbstractWordSegment wordSegment5 = new CKIPWordSegment();
 			noisyChannelModel = new HUSTNoisyChannelModelBasedCharacter(dictionary5, nGramModel, confusionSet, wordSegment5);
 			break;
-		case "7":
+		case "hustb":
 			Dictionary dictionary6 = constructDict("E:\\JOB\\TestData\\trigramCount.bin");
 			AbstractWordSegment wordSegment6 = new CKIPWordSegment();
 			noisyChannelModel = new HUSTNoisyChannelModelBasedBigram(dictionary6, nGramModel, confusionSet, wordSegment6);
 			break;
-		case "8":
+		case "hustbc":
 			Dictionary dictionary7 = constructDict("E:\\JOB\\TestData\\trigramCount.bin");
 			AbstractWordSegment wordSegment7 = new CKIPWordSegment();
 			noisyChannelModel = new HUSTNoisyChannelModelBasedCharacterAndBigram(dictionary7, nGramModel, confusionSet, wordSegment7);
 			break;
-		case "9":
+		case "bcws":
 			AbstractWordSegment wordSegment8 = new CKIPWordSegment();
-			noisyChannelModel = new SCAUNoisyChannelModel(nGramModel, confusionSet, wordSegment8);
+			noisyChannelModel = new BCWSNoisyChannelModel(nGramModel, confusionSet, wordSegment8);
 			break;
-		case "10":
+		case "bcwsc":
 			Dictionary dictionary9 = constructDict("E:\\JOB\\TestData\\trigramCount.bin");
 			AbstractWordSegment wordSegment9 = new CKIPWordSegment();
-			noisyChannelModel = new SCAUNoisyChannelModelBasedCharacter(dictionary9, nGramModel, confusionSet, wordSegment9);
+			noisyChannelModel = new BCWSNoisyChannelModelBasedCharacter(dictionary9, nGramModel, confusionSet, wordSegment9);
 			break;
-		case "11":
+		case "bcwsb":
 			Dictionary dictionary10 = constructDict("E:\\JOB\\TestData\\trigramCount.bin");
 			AbstractWordSegment wordSegment10 = new CKIPWordSegment();
-			noisyChannelModel = new SCAUNoisyChannelModelBasedBigram(dictionary10, nGramModel, confusionSet, wordSegment10);
+			noisyChannelModel = new BCWSNoisyChannelModelBasedBigram(dictionary10, nGramModel, confusionSet, wordSegment10);
 			break;
-		case "12":
+		case "bcwscb":
 			Dictionary dictionary11 = constructDict("E:\\JOB\\TestData\\trigramCount.bin");
 			AbstractWordSegment wordSegment11 = new CKIPWordSegment();
-			noisyChannelModel = new SCAUNoisyChannelModelBasedCharacterAndBigram(dictionary11, nGramModel, confusionSet, wordSegment11);
+			noisyChannelModel = new BCWSNoisyChannelModelBasedCharacterAndBigram(dictionary11, nGramModel, confusionSet, wordSegment11);
 			break;
-		case "13":
+		case "simd":
 			Dictionary dictionary12 = constructDict("E:\\JOB\\TestData\\trigramCount.bin");
 			System.out.println(dictionary12.size());
 			noisyChannelModel = new SIMDNoisyChannelModel(dictionary12, nGramModel, confusionSet);
 			break;
-		case "14":
+		case "simdc":
 			Dictionary dictionary13 = constructDict("E:\\JOB\\TestData\\trigramCount.bin");
 			noisyChannelModel = new SIMDNoisyChannelModelBasedCharacter(dictionary13, nGramModel, confusionSet);
 			break;
-		case "15":
+		case "simdb":
 			Dictionary dictionary14 = constructDict("E:\\JOB\\TestData\\trigramCount.bin");
 			noisyChannelModel = new SIMDNoisyChannelModelBasedBigram(dictionary14, nGramModel, confusionSet);
 			break;
-		case "16":
+		case "simdcb":
 			Dictionary dictionary15 = constructDict("E:\\JOB\\TestData\\trigramCount.bin");
 			noisyChannelModel = new SIMDNoisyChannelModelBasedCharacterAndBigram(dictionary15, nGramModel, confusionSet);
 			break;

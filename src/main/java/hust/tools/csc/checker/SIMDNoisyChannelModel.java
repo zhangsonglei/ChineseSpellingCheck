@@ -13,7 +13,7 @@ import hust.tools.csc.util.Sentence;
 
 /**
  *<ul>
- *<li>Description: 根据bigram匹配字典的方法检错，并利用ngram模型计算句子得分
+ *<li>Description: 基于字串模型的检测方法（SIMD-> Based on Simple Dictionary ），并利用ngram模型计算句子得分
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年11月1日

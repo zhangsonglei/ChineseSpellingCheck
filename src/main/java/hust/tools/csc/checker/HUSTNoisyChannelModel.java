@@ -14,7 +14,7 @@ import hust.tools.csc.wordseg.AbstractWordSegment;
 
 /**
  *<ul>
- *<li>Description: 组合SCAU与SIMD检错方法，利用n元模型为句子打分
+ *<li>Description: 组合BCWS与SIMD检错方法(将两者检错位置组合起来作为出错位置)，利用n元模型为句子打分
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年11月10日

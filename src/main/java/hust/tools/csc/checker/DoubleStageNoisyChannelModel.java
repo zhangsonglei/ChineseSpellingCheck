@@ -13,7 +13,7 @@ import hust.tools.csc.wordseg.AbstractWordSegment;
 
 /**
  *<ul>
- *<li>Description: 
+ *<li>Description: 二阶拼写纠正器(在SIMD拼写纠正器的基础上继续使用BCWS拼写纠正器进行纠正)
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年11月15日

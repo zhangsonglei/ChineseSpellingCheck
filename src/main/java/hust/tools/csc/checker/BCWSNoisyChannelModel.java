@@ -12,17 +12,17 @@ import hust.tools.csc.wordseg.AbstractWordSegment;
 
 /**
  *<ul>
- *<li>Description: 由SCAU提出的利用n元模型为句子打分 
+ *<li>Description: 基于中文分词的检测方法（BCWS-> Based on Chinese Word Segmentation），并利用ngram模型计算句子得分
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年10月18日
  *</ul>
  */
-public class SCAUNoisyChannelModel extends AbstractNoisyChannelModel {
+public class BCWSNoisyChannelModel extends AbstractNoisyChannelModel {
 	
 	private AbstractWordSegment wordSegment;
 	
-	public SCAUNoisyChannelModel(NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment) throws IOException {
+	public BCWSNoisyChannelModel(NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment) throws IOException {
 		super(confusionSet, nGramModel);
 		
 		this.wordSegment = wordSegment;
