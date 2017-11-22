@@ -11,6 +11,14 @@ import hust.tools.csc.evaluation.CSCEvaluator;
 import hust.tools.csc.evaluation.Evaluation;
 import hust.tools.csc.util.Sentence;
 
+/**
+ *<ul>
+ *<li>Description: 中文拼写纠正模型 
+ *<li>Company: HUST
+ *<li>@author Sonly
+ *<li>Date: 2017年11月21日
+ *</ul>
+ */
 public class ChineseSpellCheckModel {
 	
 	private Detector detector;		//检测器

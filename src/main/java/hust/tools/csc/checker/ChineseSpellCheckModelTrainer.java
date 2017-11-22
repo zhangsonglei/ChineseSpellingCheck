@@ -3,7 +3,6 @@ package hust.tools.csc.checker;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -24,6 +23,14 @@ import hust.tools.csc.wordseg.AbstractWordSegment;
 import hust.tools.csc.wordseg.CKIPWordSegment;
 import hust.tools.ngram.model.KneserNeyLanguageModelTrainer;
 
+/**
+ *<ul>
+ *<li>Description: 中国文拼写纠错模型训练器
+ *<li>Company: HUST
+ *<li>@author Sonly
+ *<li>Date: 2017年11月21日
+ *</ul>
+ */
 public class ChineseSpellCheckModelTrainer {
 	
 	private AbstractNoisyChannelModel noisyChannelModel;
@@ -36,21 +43,40 @@ public class ChineseSpellCheckModelTrainer {
 		constructConfusionSet(new File("resources\\pro.txt"));
 	}
 
+	/**
+	 * 训练检查器
+	 * @return 	检查器
+	 */
 	public Detector trainDetector() {
 		return new HUSTDetector(noisyChannelModel);
 	}
 	
+	/**
+	 * 训练纠正器
+	 * @return	纠正器
+	 */
 	public Corrector trainCorrector() {
 		return new HUSTCorrector(noisyChannelModel);
 	}
 	
-	public ChineseSpellCheckModel checkModel() {
+	/**
+	 * 训练中文拼写纠错模型
+	 * @return	中文拼写纠错模型
+	 */
+	public ChineseSpellCheckModel trainCSCModel() {
 		Detector detector = trainDetector();
 		Corrector corrector = trainCorrector();
 		
 		return new ChineseSpellCheckModel(detector, corrector);
 	}
 	
+	/**
+	 * 训练噪音通道模型
+	 * @param trainCorpus	训练语料
+	 * @param encoding		语料编码
+	 * @param method		噪音通道模型训练方法
+	 * @throws IOException
+	 */
 	private void selectNoisyChannelModel(String trainCorpus, String encoding, String method) throws IOException {
 		Dictionary dictionary = null;
 		AbstractWordSegment wordSegment = null;
@@ -185,7 +211,6 @@ public class ChineseSpellCheckModelTrainer {
 	 * 根据困惑集构造困惑矩阵
 	 * @param file			混淆集文件
 	 * @return				混淆矩阵
-	 * @throws FileNotFoundException 
 	 * @throws IOException
 	 */
 	private ConfusionSet constructConfusionSet(File similarityPronunciation) throws IOException {

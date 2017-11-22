@@ -1,15 +1,26 @@
 package hust.tools.csc.util;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import hust.tools.csc.detecet.SpellError;
+import hust.tools.csc.ngram.HustNGramModel;
+import hust.tools.csc.ngram.NGramModel;
+import hust.tools.ngram.io.ARPATextFileNGramModleReader;
+import hust.tools.ngram.io.BinaryFileNGramModelReader;
+import hust.tools.ngram.io.TextFileNGramModelReader;
+import hust.tools.ngram.model.AbstractNGramModelReader;
 
 /**
  *<ul>
@@ -146,8 +157,10 @@ public class FileOperator {
 			String line = "";
 			while((line = reader.readLine()) != null) {
 				line = CommonUtils.ToDBC(line).trim();
-				String[] chs = line.split("");
+				if(line.equals(""))
+					continue;
 				
+				String[] chs = line.split("");
 				list.add(new Sentence(chs));
 			}
 			reader.close();
@@ -156,5 +169,65 @@ public class FileOperator {
 		}
 		
 		return list;	
+	}
+	
+	/**
+	 * 建立字典
+	 * @param path	字典文件路径
+	 * @return		字典
+	 * @throws IOException
+	 */
+	public static Dictionary constructDict(String path) throws IOException {
+		File file = new File(path);
+		DataInputStream reader = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+		Dictionary dictionary = new Dictionary();
+		int count = reader.readInt();
+		for(int i = 0; i < count; i++) {
+			String[] entry = reader.readUTF().split("\t");
+			if(entry.length == 2) {
+				String ngrams = CommonUtils.ToDBC(entry[0]);
+				ngrams = ngrams.replaceAll("\t", "").trim();
+				if(!ngrams.equals("")) {
+					int num = Integer.parseInt(entry[1]);
+					dictionary.add(ngrams, num);
+				}
+			}
+		}
+		reader.close();
+	
+		return dictionary;
+	}
+
+	/**
+	 * 加载n元模型文件
+	 * @param modelFile		语言模型文件
+	 * @return				语言模型
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
+	public static NGramModel loadModel(String modelFile) throws ClassNotFoundException, IOException {
+		AbstractNGramModelReader modelReader;
+		if(modelFile.endsWith(".arpa"))
+			modelReader = new ARPATextFileNGramModleReader(new File(modelFile));
+		else if(modelFile.endsWith(".bin"))
+			modelReader = new BinaryFileNGramModelReader(new File(modelFile));
+		else
+			modelReader = new TextFileNGramModelReader(new File(modelFile));
+	 
+		return new HustNGramModel(modelReader.constructModel());
+	}
+	
+	/**
+	 * 写文件
+	 * @param outPath	写出路径
+	 * @param encoding	文件编码
+	 * @param content	写入的内容
+	 * @throws IOException
+	 */
+	public static void writeEvaluation(String outPath, String encoding, String content) throws IOException {
+		OutputStreamWriter oWriter = new OutputStreamWriter(new FileOutputStream(new File(outPath)), encoding);
+		BufferedWriter writer = new BufferedWriter(oWriter);
+		writer.write(content);
+		writer.close();
 	}
 }

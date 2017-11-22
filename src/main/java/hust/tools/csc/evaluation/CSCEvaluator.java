@@ -221,15 +221,19 @@ public class CSCEvaluator extends AbstractEvaluation {
 	}
 	
 	@Override
-	public void show() {
-		System.out.println("FPR = " + getFalsePositiveRate());
-		System.out.println("DA = " + getDetectAccuracy());
-		System.out.println("DP = " + getDetectPrecision());
-		System.out.println("DR = " + getDetectRecall());
-		System.out.println("DF = " + getDetectF());
-		System.out.println("CA = " + getCorrectAccuracy());
-		System.out.println("CP = " + getCorrectPrecision());
-		System.out.println("CR = " + getCorrectRecall());
-		System.out.println("CF = " + getCorrectF());
+	public String show() {
+		String output = "";
+		output += "FPR = " + getFalsePositiveRate() +"\n";
+		output += "DA = " + getDetectAccuracy() +"\n";
+		output += "DP = " + getDetectPrecision() +"\n";
+		output += "DR = " + getDetectRecall() +"\n";
+		output += "DF = " + getDetectF() +"\n";
+		output += "CA = " + getCorrectAccuracy() +"\n";
+		output += "CP = " + getCorrectPrecision() +"\n";
+		output += "CR = " + getCorrectRecall() +"\n";
+		output += "CF = " + getCorrectF() +"\n";
+	
+		System.out.println(output);
+		return output;
 	}
 }
