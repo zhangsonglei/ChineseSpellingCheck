@@ -19,7 +19,7 @@ public class EvaluatorApp {
 	public static void main(String[] args) throws IOException {
 		
 		int len = args.length;
-		if(4 != len || 5 != len) {
+		if(4 != len && 5 != len) {
 			System.err.println("错误的参数个数：" + len + "\n示例1:(Evaluator 测试语料路径  黄金语料路径  系统结果路径 文件编码  输出路径)"
 												   + "\n示例2:(Evaluator 测试语料路径  黄金语料路径  系统结果路径 文件编码)");
 			System.exit(0);

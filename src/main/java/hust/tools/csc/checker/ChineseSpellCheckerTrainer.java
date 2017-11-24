@@ -9,10 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import hust.tools.csc.correct.Corrector;
-import hust.tools.csc.correct.HUSTCorrector;
-import hust.tools.csc.detecet.Detector;
-import hust.tools.csc.detecet.HUSTDetector;
 import hust.tools.csc.ngram.HustNGramModel;
 import hust.tools.csc.ngram.NGramModel;
 import hust.tools.csc.score.AbstractNoisyChannelModel;
@@ -22,6 +18,7 @@ import hust.tools.csc.util.CommonUtils;
 import hust.tools.csc.wordseg.AbstractWordSegment;
 import hust.tools.csc.wordseg.CKIPWordSegment;
 import hust.tools.ngram.model.KneserNeyLanguageModelTrainer;
+import hust.tools.ngram.utils.StringGramSentenceStream;
 
 /**
  *<ul>
@@ -31,43 +28,30 @@ import hust.tools.ngram.model.KneserNeyLanguageModelTrainer;
  *<li>Date: 2017年11月21日
  *</ul>
  */
-public class ChineseSpellCheckModelTrainer {
+public class ChineseSpellCheckerTrainer {
 	
 	private AbstractNoisyChannelModel noisyChannelModel;
 	private NGramModel nGramModel;
 	private ConfusionSet confusionSet;
 
-	public ChineseSpellCheckModelTrainer(String corpus, String encoding, String method) throws IOException {
+	public ChineseSpellCheckerTrainer(String corpus, String encoding, String method) throws IOException {
+		System.out.println("开始建立ngram模型...");
+		nGramModel = constructLM(corpus, encoding, 3);
+		System.out.println("ngram模型建立完成\n开始建立混淆集...");
+		confusionSet = constructConfusionSet(new File("resources\\pro.txt"));
+		System.out.println("混淆集建立完成。proSize = "+confusionSet.getSimilarProCount());
+		
+		System.out.println("开始构造噪音通道模型...");
 		selectNoisyChannelModel(corpus, encoding, method);
-		constructLM(corpus, encoding, 3);
-		constructConfusionSet(new File("resources\\pro.txt"));
+		System.out.println("噪音通道模型构造完成。 method = " + method + "\n开始进行拼写检查...");
 	}
 
-	/**
-	 * 训练检查器
-	 * @return 	检查器
-	 */
-	public Detector trainDetector() {
-		return new HUSTDetector(noisyChannelModel);
-	}
-	
-	/**
-	 * 训练纠正器
-	 * @return	纠正器
-	 */
-	public Corrector trainCorrector() {
-		return new HUSTCorrector(noisyChannelModel);
-	}
-	
 	/**
 	 * 训练中文拼写纠错模型
 	 * @return	中文拼写纠错模型
 	 */
-	public ChineseSpellCheckModel trainCSCModel() {
-		Detector detector = trainDetector();
-		Corrector corrector = trainCorrector();
-		
-		return new ChineseSpellCheckModel(detector, corrector);
+	public ChineseSpellChecker trainCSCModel() {
+		return new ChineseSpellChecker(noisyChannelModel);
 	}
 	
 	/**
@@ -176,20 +160,21 @@ public class ChineseSpellCheckModelTrainer {
 	private Dictionary constructNGramDict(BufferedReader corpus, int n) throws IOException {
 		Dictionary dictionary = new Dictionary();
 		
+		System.out.println("开始建立字典");
 		String line = "";
 		while ((line = corpus.readLine()) != null) {
-			line = CommonUtils.ToDBC(line).trim();
+			line = CommonUtils.ToDBC(line.replaceAll("\\s+", "")).trim();
 			ArrayList<String> ngrams = new ArrayList<>();
 			
 			for(int i = 1; i <= n; i++) {
 				ngrams = CommonUtils.generateNGrams(line.split(""), i);
-				
 				for(String ngram : ngrams)
 					dictionary.add(ngram);
 			}			
 		}
 		corpus.close();
-		
+
+		System.out.println("字典建立完成，size = " + dictionary.size());
 		return dictionary;
 	}
 	
@@ -200,11 +185,11 @@ public class ChineseSpellCheckModelTrainer {
 	 * @param n			ngram的最大长度
 	 * @throws IOException	
 	 */
-	private void constructLM(String corpus, String encoding, int n) throws IOException {
+	private NGramModel constructLM(String corpus, String encoding, int n) throws IOException {
 		StringGramSentenceStream gramSentenceStream = new StringGramSentenceStream(corpus, encoding);
 		KneserNeyLanguageModelTrainer trainer = new KneserNeyLanguageModelTrainer(gramSentenceStream, n);
 
-		nGramModel = new HustNGramModel(trainer.trainModel());
+		return new HustNGramModel(trainer.trainModel());
 	}
 
 	/**

@@ -25,7 +25,7 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	
 	protected int bestSize = 5;				//最佳候选句的个数
 	protected int order = 3;				//计算句子的n元模型的最高阶数
-	protected int beamSize = 150;			//beamSearch方法的beam大小
+	protected int beamSize = 50;			//beamSearch方法的beam大小
 	protected ConfusionSet confusionSet;
 	protected NGramModel nGramModel;
 	
@@ -52,7 +52,7 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	    double score = 1.0;
 	    prev.add(new Sequence(sentence, score));
 	    	
-	    for(int index : locations) {//遍历每一个单字词
+	    for(int index : locations) {//遍历每一个错误位置
 	    	String character = sentence.getToken(index);
     		
     		if(character == null || !CommonUtils.isHanZi(character))
@@ -210,7 +210,7 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	protected ArrayList<Integer> getErrorLocationsBySIMD(Dictionary dictionary, Sentence sentence) {
 		ArrayList<Integer> errorLocations = new ArrayList<>();
 		ArrayList<String> bigrams = CommonUtils.generateNGrams(sentence.toString().split(""), 2);
-		
+
 		//可能的错误位置， 当前bigram与下一个bigram中有不存在与字典的，设置当前bigram的第二个字为可能出错的字
 		for(int index = 0; index < bigrams.size() - 1; index++) {
 			String currentBigram = bigrams.get(index);
@@ -223,7 +223,7 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 					errorLocations.add(index + 1);
 			}
 		}//end for
-		
+
 		return errorLocations;
 	}
 }

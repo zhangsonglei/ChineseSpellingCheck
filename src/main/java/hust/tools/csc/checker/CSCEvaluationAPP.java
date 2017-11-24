@@ -2,6 +2,9 @@ package hust.tools.csc.checker;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import hust.tools.csc.evaluation.CSCEvaluator;
 import hust.tools.csc.evaluation.Evaluation;
 import hust.tools.csc.util.FileOperator;
@@ -25,7 +28,7 @@ public class CSCEvaluationAPP {
 	 * @param output		结果输出路径
 	 * @throws IOException
 	 */
-	private static void evaluation(ChineseSpellCheckModel checkModel, String testCorpus, String goldCorpus, String encoding, String output) throws IOException {
+	private static void evaluation(ChineseSpellChecker checkModel, String testCorpus, String goldCorpus, String encoding, String output) throws IOException {
 		ArrayList<Sentence> original = FileOperator.readFile(testCorpus, encoding);
 		ArrayList<Sentence> gold = FileOperator.readFile(goldCorpus, encoding);
 		ArrayList<Sentence> result = new ArrayList<>();
@@ -46,15 +49,25 @@ public class CSCEvaluationAPP {
 	}
  
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
+		String[] temp = new String[]{"ds", "dsc", "dsb", "dscb", "bcws", "bcwsc", "bcwsb", "bcwscb", 
+				"simd", "simdb", "simdc", "simdcb","hust", "hustc", "hustb", "hustcb"};
+		List<String> methods = Arrays.asList(temp);
+		
 		int len = args.length;
-		if(5 != len || 6 != len) {
+		if(5 != len && 6 != len) {
 			System.err.println("错误的参数个数：" + len + "\n示例1:ChineseSpellChecker  训练语料  模型方法  测试语料  黄金语料  文件编码   输出路径。"
 												   + "\n示例2：ChineseSpellChecker  训练语料  模型方法  测试语料  黄金语料  文件编码");
 			System.exit(0);
 		}
 		
 		String train = args[0];
+		
 		String method = args[1];
+		if(!methods.contains(method.toLowerCase())){
+			System.err.println("错误的模型训练方法：" + method + "\n请从列表中选择："+ methods);
+			System.exit(0);
+		}
+		
 		String test = args[2];
 		String gold = args[3];
 		String encoding = args[4];
@@ -63,8 +76,8 @@ public class CSCEvaluationAPP {
 		if(len == 6)
 			output = args[5];
 		
-		ChineseSpellCheckModelTrainer modelTrainer = new ChineseSpellCheckModelTrainer(train, encoding, method);
-		ChineseSpellCheckModel checkModel = modelTrainer.trainCSCModel();
+		ChineseSpellCheckerTrainer modelTrainer = new ChineseSpellCheckerTrainer(train, encoding, method);
+		ChineseSpellChecker checkModel = modelTrainer.trainCSCModel();
 		evaluation(checkModel, test, gold, encoding, output);
 	}
 }
