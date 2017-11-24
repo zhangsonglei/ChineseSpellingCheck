@@ -1,8 +1,12 @@
 package hust.tools.csc.ngram;
 
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import hust.tools.csc.util.Sentence;
+import hust.tools.ngram.io.BinaryFileNGramModelWriter;
 import hust.tools.ngram.model.NGramLanguageModel;
 import hust.tools.ngram.utils.Gram;
 import hust.tools.ngram.utils.StringGram;
@@ -44,5 +48,16 @@ public class HustNGramModel implements NGramModel {
 			grams[i] = new StringGram(strs[i]);
 		
 		return nGramModel.getSequenceLogProbability(grams, order, false);
+	}
+	
+	/**
+	 * 写ngram模型到指定路径
+	 * @param path	写入路径
+	 * @throws IOException 
+	 */
+	public void writeLM(String path) throws IOException {
+		DataOutputStream dos = new DataOutputStream(new FileOutputStream(new File("path")));
+		BinaryFileNGramModelWriter lmWriter = new BinaryFileNGramModelWriter(nGramModel, dos);
+		lmWriter.persist();
 	}
 }

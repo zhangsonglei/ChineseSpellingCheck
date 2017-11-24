@@ -33,17 +33,19 @@ public class ChineseSpellCheckerTrainer {
 	private AbstractNoisyChannelModel noisyChannelModel;
 	private NGramModel nGramModel;
 	private ConfusionSet confusionSet;
-
-	public ChineseSpellCheckerTrainer(String corpus, String encoding, String method) throws IOException {
-		System.out.println("开始建立ngram模型...");
-		nGramModel = constructLM(corpus, encoding, 3);
-		System.out.println("ngram模型建立完成\n开始建立混淆集...");
-		confusionSet = constructConfusionSet(new File("resources\\pro.txt"));
-		System.out.println("混淆集建立完成。proSize = "+confusionSet.getSimilarProCount());
+	
+	public ChineseSpellCheckerTrainer() {
 		
-		System.out.println("开始构造噪音通道模型...");
-		selectNoisyChannelModel(corpus, encoding, method);
-		System.out.println("噪音通道模型构造完成。 method = " + method + "\n开始进行拼写检查...");
+	}
+	
+	public ChineseSpellCheckerTrainer(NGramModel nGramModel, String method) throws IOException {
+		this(nGramModel, null, method);
+	}
+	
+	public ChineseSpellCheckerTrainer(NGramModel nGramModel, Dictionary dictionary, String method) throws IOException {
+		this.nGramModel = nGramModel;
+		confusionSet = constructConfusionSet(new File("resources\\pro.txt"));
+		selectNoisyChannelModel(dictionary, method);
 	}
 
 	/**
@@ -61,52 +63,48 @@ public class ChineseSpellCheckerTrainer {
 	 * @param method		噪音通道模型训练方法
 	 * @throws IOException
 	 */
-	private void selectNoisyChannelModel(String trainCorpus, String encoding, String method) throws IOException {
-		Dictionary dictionary = null;
-		AbstractWordSegment wordSegment = null;
+	private void selectNoisyChannelModel(Dictionary dictionary, String method) throws IOException {
+		if(nGramModel == null) {
+			System.err.println("模型数据缺少语言模型.");
+			System.exit(0);
+			
+		}else if(method != "bcws" && dictionary == null) {
+			System.err.println("模型数据缺少字典数据， 已转为“bcws”方法");
+			method = "bcws";
+		}
 		
-		File file = new File(trainCorpus);
-		InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), encoding);
-		BufferedReader corpus = new BufferedReader(inputStreamReader);
+		AbstractWordSegment wordSegment = null;
 		
 		switch (method.toLowerCase()) {
 		case "ds":
-			dictionary = constructNGramDict(corpus, 2);
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new DoubleStageNoisyChannelModel(dictionary, nGramModel, confusionSet, wordSegment);
 			break;
 		case "dsc":
-			dictionary = constructNGramDict(corpus, 2);
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new DoubleStageNoisyChannelModelBasedCharacter(dictionary, nGramModel, confusionSet, wordSegment);
 			break;
 		case "dsb":
-			dictionary = constructNGramDict(corpus, 2);
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new DoubleStageNoisyChannelModelBasedCharacterAndBigram(dictionary, nGramModel, confusionSet, wordSegment);
 			break;
 		case "dscb":
-			dictionary = constructNGramDict(corpus, 2);
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new DoubleStageNoisyChannelModelBasedBigram(dictionary, nGramModel, confusionSet, wordSegment);
 			break;
 		case "hust":
-			dictionary = constructNGramDict(corpus, 2);
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new HUSTNoisyChannelModel(dictionary, nGramModel, confusionSet, wordSegment);
 			break;
 		case "hustc":
-			dictionary = constructNGramDict(corpus, 2);
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new HUSTNoisyChannelModelBasedCharacter(dictionary, nGramModel, confusionSet, wordSegment);
 			break;
 		case "hustb":
-			dictionary = constructNGramDict(corpus, 2);
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new HUSTNoisyChannelModelBasedBigram(dictionary, nGramModel, confusionSet, wordSegment);
 			break;
 		case "hustbc":
-			dictionary = constructNGramDict(corpus, 2);
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new HUSTNoisyChannelModelBasedCharacterAndBigram(dictionary, nGramModel, confusionSet, wordSegment);
 			break;
@@ -115,34 +113,27 @@ public class ChineseSpellCheckerTrainer {
 			noisyChannelModel = new BCWSNoisyChannelModel(nGramModel, confusionSet, wordSegment);
 			break;
 		case "bcwsc":
-			dictionary = constructNGramDict(corpus, 1);
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new BCWSNoisyChannelModelBasedCharacter(dictionary, nGramModel, confusionSet, wordSegment);
 			break;
 		case "bcwsb":
-			dictionary = constructNGramDict(corpus, 2);
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new BCWSNoisyChannelModelBasedBigram(dictionary, nGramModel, confusionSet, wordSegment);
 			break;
 		case "bcwscb":
-			dictionary = constructNGramDict(corpus, 2);
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new BCWSNoisyChannelModelBasedCharacterAndBigram(dictionary, nGramModel, confusionSet, wordSegment);
 			break;
 		case "simd":
-			dictionary = constructNGramDict(corpus, 2);
 			noisyChannelModel = new SIMDNoisyChannelModel(dictionary, nGramModel, confusionSet);
 			break;
 		case "simdc":
-			dictionary = constructNGramDict(corpus, 2);
 			noisyChannelModel = new SIMDNoisyChannelModelBasedCharacter(dictionary, nGramModel, confusionSet);
 			break;
 		case "simdb":
-			dictionary = constructNGramDict(corpus, 2);
 			noisyChannelModel = new SIMDNoisyChannelModelBasedBigram(dictionary, nGramModel, confusionSet);
 			break;
 		case "simdcb":
-			dictionary = constructNGramDict(corpus, 2);
 			noisyChannelModel = new SIMDNoisyChannelModelBasedCharacterAndBigram(dictionary, nGramModel, confusionSet);
 			break;
 		default:
@@ -157,10 +148,15 @@ public class ChineseSpellCheckerTrainer {
 	 * @return			基于ngram频数的字典
 	 * @throws IOException 
 	 */
-	private Dictionary constructNGramDict(BufferedReader corpus, int n) throws IOException {
+	public Dictionary constructNGramDict(String trainCorpus, String encoding, int n) throws IOException {
 		Dictionary dictionary = new Dictionary();
 		
 		System.out.println("开始建立字典");
+		
+		File file = new File(trainCorpus);
+		InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), encoding);
+		BufferedReader corpus = new BufferedReader(inputStreamReader);
+		
 		String line = "";
 		while ((line = corpus.readLine()) != null) {
 			line = CommonUtils.ToDBC(line.replaceAll("\\s+", "")).trim();
@@ -183,9 +179,10 @@ public class ChineseSpellCheckerTrainer {
 	 * @param corpus	n元模型语料
 	 * @param encoding	语料格式
 	 * @param n			ngram的最大长度
+	 * @return			ngram模型
 	 * @throws IOException	
 	 */
-	private NGramModel constructLM(String corpus, String encoding, int n) throws IOException {
+	public HustNGramModel constructLM(String corpus, String encoding, int n) throws IOException {
 		StringGramSentenceStream gramSentenceStream = new StringGramSentenceStream(corpus, encoding);
 		KneserNeyLanguageModelTrainer trainer = new KneserNeyLanguageModelTrainer(gramSentenceStream, n);
 

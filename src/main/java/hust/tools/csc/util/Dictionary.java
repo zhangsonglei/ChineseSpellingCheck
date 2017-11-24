@@ -1,6 +1,11 @@
 package hust.tools.csc.util;
 
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 /**
  *<ul>
@@ -103,5 +108,22 @@ public class Dictionary {
 			return dict.size();
 		
 		return 0;
+	}
+	
+	/**
+	 * 写字典到指定路径
+	 * @param path	待写入的路径
+	 * @throws IOException
+	 */
+	public void writeDict(String path) throws IOException {
+		DataOutputStream dos = new DataOutputStream(new FileOutputStream(new File(path)));
+		int size = size();
+		dos.writeInt(size);
+		
+		for(Entry<String, Integer> entry : dict.entrySet()) {
+			dos.writeUTF(entry.getKey() + "\t" + entry.getValue());
+		}
+		
+		dos.close();
 	}
 }

@@ -7,6 +7,8 @@ import java.util.List;
 
 import hust.tools.csc.evaluation.CSCEvaluator;
 import hust.tools.csc.evaluation.Evaluation;
+import hust.tools.csc.ngram.NGramModel;
+import hust.tools.csc.util.Dictionary;
 import hust.tools.csc.util.FileOperator;
 import hust.tools.csc.util.Sentence;
 
@@ -47,6 +49,30 @@ public class CSCEvaluationAPP {
 			FileOperator.writeEvaluation(output, encoding, eval);
 		}		
 	}
+	
+	/**
+	 * 读取拼写纠正模型
+	 * @param model		模型路径	
+	 * @param method	模型方法
+	 * @return			拼写纠正模型
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
+	public static ChineseSpellChecker readModel(String model, String method) throws ClassNotFoundException, IOException {
+		String path = "resource\\";
+		FileOperator.unZipFile(method, path);
+
+		NGramModel nGramModel = FileOperator.loadModel(path+"lm.bin");
+		ChineseSpellCheckerTrainer trainer = null;
+		if(method.equals("bcws")) {
+			trainer = new ChineseSpellCheckerTrainer(nGramModel, method);
+			return trainer.trainCSCModel();
+		}
+		
+		Dictionary dictionary = FileOperator.constructDict(path+"dict.bin");
+		trainer = new ChineseSpellCheckerTrainer(nGramModel, dictionary, method);
+		return trainer.trainCSCModel();
+	}
  
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		String[] temp = new String[]{"ds", "dsc", "dsb", "dscb", "bcws", "bcwsc", "bcwsb", "bcwscb", 
@@ -55,12 +81,12 @@ public class CSCEvaluationAPP {
 		
 		int len = args.length;
 		if(5 != len && 6 != len) {
-			System.err.println("错误的参数个数：" + len + "\n示例1:ChineseSpellChecker  训练语料  模型方法  测试语料  黄金语料  文件编码   输出路径。"
-												   + "\n示例2：ChineseSpellChecker  训练语料  模型方法  测试语料  黄金语料  文件编码");
+			System.err.println("错误的参数个数：" + len + "\n示例1:ChineseSpellChecker  模型文件  模型方法  测试语料  黄金语料  文件编码   输出路径。"
+												   + "\n示例2：ChineseSpellChecker  模型文件  模型方法  测试语料  黄金语料  文件编码");
 			System.exit(0);
 		}
 		
-		String train = args[0];
+		String model = args[0];
 		
 		String method = args[1];
 		if(!methods.contains(method.toLowerCase())){
@@ -76,8 +102,7 @@ public class CSCEvaluationAPP {
 		if(len == 6)
 			output = args[5];
 		
-		ChineseSpellCheckerTrainer modelTrainer = new ChineseSpellCheckerTrainer(train, encoding, method);
-		ChineseSpellChecker checkModel = modelTrainer.trainCSCModel();
+		ChineseSpellChecker checkModel = readModel(model, method);
 		evaluation(checkModel, test, gold, encoding, output);
 	}
 }

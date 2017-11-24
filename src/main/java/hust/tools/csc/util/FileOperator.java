@@ -1,6 +1,7 @@
 package hust.tools.csc.util;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
@@ -8,11 +9,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import hust.tools.csc.detecet.SpellError;
 import hust.tools.csc.ngram.HustNGramModel;
@@ -229,5 +236,82 @@ public class FileOperator {
 		BufferedWriter writer = new BufferedWriter(oWriter);
 		writer.write(content);
 		writer.close();
+	}
+	
+	/**
+	 * 将多个文件压缩到制定目录
+	 * @param files		待压缩的文件路径
+	 * @param zipname	压缩包的路径名
+	 * @throws IOException
+	 */
+	public static void zipFiles(ArrayList<String> files,String zipPath) throws IOException {
+        OutputStream os = new BufferedOutputStream(new FileOutputStream(zipPath + ".model"));
+        ZipOutputStream zos = new ZipOutputStream(os);
+        byte[] buf = new byte[8192];
+        int len;
+        for(String filePath: files) {
+        	File file = new File(filePath);
+            if(!file.isFile())
+            	continue;
+            ZipEntry ze = new ZipEntry(file.getName());
+            zos.putNextEntry(ze);
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+            while((len = bis.read(buf)) > 0) {
+            	zos.write(buf, 0, len);
+            }
+            zos.closeEntry();
+            bis.close();
+        }
+        zos.close();
+        
+        for(String filePath: files) {
+        	File file = new File(filePath);
+        	file.delete();
+        }
+	}
+	
+	/**
+	 * 解压压缩文件到指定目录
+	 * @param filePath	待解压的文件
+	 * @param toPath	解压的路径
+	 * @throws IOException
+	 */
+	public static void unZipFile(String filePath, String toPath) throws IOException {
+		//去目录下寻找文件
+		File file = new File(filePath);
+		ZipFile zipFile = null;
+		
+		try {
+			zipFile = new ZipFile(file);//设置编码格式
+        } catch (IOException exception) {
+        	exception.printStackTrace();
+        	System.out.println("解压文件不存在!");
+        }
+        
+		Enumeration<? extends ZipEntry> e = zipFile.entries(); 
+		while(e.hasMoreElements()) { 
+			ZipEntry zipEntry = (ZipEntry)e.nextElement(); 
+			if(zipEntry.isDirectory()) { 
+				continue;
+        	}else { 
+        		File tempFile = new File(toPath + zipEntry.getName()); 
+        		tempFile.getParentFile().mkdirs(); 
+        		tempFile.createNewFile();
+        		InputStream is = zipFile.getInputStream(zipEntry); 
+        		FileOutputStream fos = new FileOutputStream(tempFile); 
+        		int length = 0;
+        		byte[] b = new byte[1024]; 
+        		while((length=is.read(b, 0, 1024)) != -1) { 
+        			fos.write(b, 0, length); 
+        		} 
+        		is.close(); 
+        		fos.close(); 
+        	} 
+        }
+
+        if (zipFile != null) {
+        	zipFile.close(); 
+        }
+        file.deleteOnExit();//解压完以后将压缩包删除
 	}
 }
