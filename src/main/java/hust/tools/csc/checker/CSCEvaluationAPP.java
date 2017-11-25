@@ -59,7 +59,7 @@ public class CSCEvaluationAPP {
 	 * @throws IOException
 	 */
 	public static ChineseSpellChecker readModel(String model, String method) throws ClassNotFoundException, IOException {
-		String path = "resource\\";
+		String path = CSCApp.class.getClassLoader().getResource("model\\").getFile();
 		FileOperator.unZipFile(method, path);
 
 		NGramModel nGramModel = FileOperator.loadModel(path+"lm.bin");

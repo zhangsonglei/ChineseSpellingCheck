@@ -65,15 +65,15 @@ public class CSCApp {
 		ChineseSpellCheckerTrainer trainer = new ChineseSpellCheckerTrainer();
 		ArrayList<String> files = new ArrayList<>();
 		HustNGramModel nGramModel = trainer.constructLM(corpus, encoding, 3);
-		nGramModel.writeLM("resource\\lm.bin");
-		files.add("resource\\lm.bin");
+		nGramModel.writeLM(CSCApp.class.getClassLoader().getResource("model\\lm.bin").getFile());
+		files.add(CSCApp.class.getClassLoader().getResource("model\\lm.bin").getFile());
 		if(!method.equals("bcws")) {
 			int n = 2;
 			if(method.equals("bcwsc"))
 				n = 1;
 			Dictionary dictionary = trainer.constructNGramDict(corpus, encoding, n);
-			dictionary.writeDict("resource\\dict.bin");
-			files.add("resource\\dict.bin");
+			dictionary.writeDict(CSCApp.class.getClassLoader().getResource("model\\dict.bin").getFile());
+			files.add(CSCApp.class.getClassLoader().getResource("model\\dict.bin").getFile());
 		}
 		
 		FileOperator.zipFiles(files, zipPath);
@@ -88,7 +88,7 @@ public class CSCApp {
 	 * @throws IOException
 	 */
 	public static ChineseSpellChecker readModel(String model, String method) throws ClassNotFoundException, IOException {
-		String path = "resource\\";
+		String path = CSCApp.class.getClassLoader().getResource("model\\").getFile();
 		FileOperator.unZipFile(method, path);
 
 		NGramModel nGramModel = FileOperator.loadModel(path+"lm.bin");

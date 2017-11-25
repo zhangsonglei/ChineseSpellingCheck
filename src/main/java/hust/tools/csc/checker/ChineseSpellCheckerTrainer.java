@@ -44,7 +44,7 @@ public class ChineseSpellCheckerTrainer {
 	
 	public ChineseSpellCheckerTrainer(NGramModel nGramModel, Dictionary dictionary, String method) throws IOException {
 		this.nGramModel = nGramModel;
-		confusionSet = constructConfusionSet(new File("resources\\pro.txt"));
+		confusionSet = constructConfusionSet(new File(this.getClass().getClassLoader().getResource("confusionSet\\pro.txt").getFile()));
 		selectNoisyChannelModel(dictionary, method);
 	}
 
