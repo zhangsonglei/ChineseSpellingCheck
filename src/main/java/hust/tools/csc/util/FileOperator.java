@@ -184,7 +184,7 @@ public class FileOperator {
 	 * @return		字典
 	 * @throws IOException
 	 */
-	public static Dictionary constructDict(String path) throws IOException {
+	public static Dictionary loadDict(String path) throws IOException {
 		File file = new File(path);
 		DataInputStream reader = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
 		Dictionary dictionary = new Dictionary();
@@ -245,7 +245,7 @@ public class FileOperator {
 	 * @throws IOException
 	 */
 	public static void zipFiles(ArrayList<String> files,String zipPath) throws IOException {
-        OutputStream os = new BufferedOutputStream(new FileOutputStream(zipPath + ".model"));
+        OutputStream os = new BufferedOutputStream(new FileOutputStream(zipPath + "\\checker.model"));
         ZipOutputStream zos = new ZipOutputStream(os);
         byte[] buf = new byte[8192];
         int len;
@@ -264,6 +264,7 @@ public class FileOperator {
         }
         zos.close();
         
+        //删除已压缩的文件
         for(String filePath: files) {
         	File file = new File(filePath);
         	file.delete();
@@ -309,9 +310,9 @@ public class FileOperator {
         	} 
         }
 
-        if (zipFile != null) {
-        	zipFile.close(); 
-        }
-        file.deleteOnExit();//解压完以后将压缩包删除
+//        if (zipFile != null) {
+//        	zipFile.close(); 
+//        }
+//        file.deleteOnExit();//解压完以后将压缩包删除
 	}
 }

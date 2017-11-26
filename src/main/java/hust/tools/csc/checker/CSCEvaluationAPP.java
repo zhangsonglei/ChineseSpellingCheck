@@ -69,7 +69,7 @@ public class CSCEvaluationAPP {
 			return trainer.trainCSCModel();
 		}
 		
-		Dictionary dictionary = FileOperator.constructDict(path+"dict.bin");
+		Dictionary dictionary = FileOperator.loadDict(path+"dict.bin");
 		trainer = new ChineseSpellCheckerTrainer(nGramModel, dictionary, method);
 		return trainer.trainCSCModel();
 	}

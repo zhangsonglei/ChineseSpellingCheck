@@ -18,7 +18,6 @@ import hust.tools.csc.util.CommonUtils;
 import hust.tools.csc.wordseg.AbstractWordSegment;
 import hust.tools.csc.wordseg.CKIPWordSegment;
 import hust.tools.ngram.model.KneserNeyLanguageModelTrainer;
-import hust.tools.ngram.utils.StringGramSentenceStream;
 
 /**
  *<ul>
@@ -44,7 +43,7 @@ public class ChineseSpellCheckerTrainer {
 	
 	public ChineseSpellCheckerTrainer(NGramModel nGramModel, Dictionary dictionary, String method) throws IOException {
 		this.nGramModel = nGramModel;
-		confusionSet = constructConfusionSet(new File(this.getClass().getClassLoader().getResource("confusionSet\\pro.txt").getFile()));
+		confusionSet = constructConfusionSet(new File(this.getClass().getClassLoader().getResource("confusionSet/pro.txt").getFile()));
 		selectNoisyChannelModel(dictionary, method);
 	}
 

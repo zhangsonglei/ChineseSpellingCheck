@@ -65,15 +65,17 @@ public class CSCApp {
 		ChineseSpellCheckerTrainer trainer = new ChineseSpellCheckerTrainer();
 		ArrayList<String> files = new ArrayList<>();
 		HustNGramModel nGramModel = trainer.constructLM(corpus, encoding, 3);
-		nGramModel.writeLM(CSCApp.class.getClassLoader().getResource("model\\lm.bin").getFile());
-		files.add(CSCApp.class.getClassLoader().getResource("model\\lm.bin").getFile());
+		String lm = zipPath + "\\lm.bin";
+		nGramModel.writeLM(lm);
+		files.add(lm);
 		if(!method.equals("bcws")) {
 			int n = 2;
 			if(method.equals("bcwsc"))
 				n = 1;
 			Dictionary dictionary = trainer.constructNGramDict(corpus, encoding, n);
-			dictionary.writeDict(CSCApp.class.getClassLoader().getResource("model\\dict.bin").getFile());
-			files.add(CSCApp.class.getClassLoader().getResource("model\\dict.bin").getFile());
+			String dict = zipPath + "\\dict.bin";
+			dictionary.writeDict(dict);
+			files.add(dict);
 		}
 		
 		FileOperator.zipFiles(files, zipPath);
@@ -88,18 +90,20 @@ public class CSCApp {
 	 * @throws IOException
 	 */
 	public static ChineseSpellChecker readModel(String model, String method) throws ClassNotFoundException, IOException {
-		String path = CSCApp.class.getClassLoader().getResource("model\\").getFile();
-		FileOperator.unZipFile(method, path);
+		String path = model.split("checker.model")[0];
+		FileOperator.unZipFile(model, path);
 
-		NGramModel nGramModel = FileOperator.loadModel(path+"lm.bin");
+		NGramModel nGramModel = FileOperator.loadModel(path + "lm.bin");
 		ChineseSpellCheckerTrainer trainer = null;
 		if(method.equals("bcws")) {
 			trainer = new ChineseSpellCheckerTrainer(nGramModel, method);
 			return trainer.trainCSCModel();
 		}
 		
-		Dictionary dictionary = FileOperator.constructDict(path+"dict.bin");
+		Dictionary dictionary = FileOperator.loadDict(path + "dict.bin");
 		trainer = new ChineseSpellCheckerTrainer(nGramModel, dictionary, method);
+		
+		
 		return trainer.trainCSCModel();
 	}
  
@@ -114,10 +118,10 @@ public class CSCApp {
 			System.exit(0);
 		}
 		String operation = args[0];
-		if(operation != "train" && operation != "check") {
+		if(!operation.equals("train") && !operation.equals("check")) {
 			System.err.println("错误的指令：" + operation+"\n--train或check");
 			System.exit(0);
-		}else if((operation == "train" && len != 5) || (operation == "check" && len != 6)) {
+		}else if((operation.equals("train") && len != 5) || (operation.equals("check") && len != 6)) {
 			show(len);
 			System.exit(0);
 		}else{
@@ -126,7 +130,7 @@ public class CSCApp {
 			String method = "";
 			String output = "";
 			
-			if(operation == "train") {
+			if(operation.equals("train")) {
 				encoding = args[2];
 				method = args[3];
 				if(!methods.contains(method.toLowerCase())){
@@ -137,14 +141,14 @@ public class CSCApp {
 				output = args[4];
 				writeModel(sourceFile, encoding, method, output);
 			}else{
-				String test = args[2];
-				encoding = args[3];
-				method = args[4];
+				method = args[2];
 				if(!methods.contains(method.toLowerCase())){
 					System.err.println("错误的模型训练方法：" + method + "\n请从列表中选择："+ methods);
 					System.exit(0);
 				}
 				
+				String test = args[3];
+				encoding = args[4];
 				output = args[5];
 				
 				check(sourceFile, test, encoding, method, output);

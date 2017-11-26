@@ -24,6 +24,10 @@ public class StringGramSentenceStream extends AbstractGramSentenceStream {
 		for(int i = 0; i < lines.size(); i++) {
 			String line = CommonUtils.ToDBC(lines.get(i));
 			line = line.replaceAll("\\s+", "").trim();
+			
+			if(line.equals(""))
+				continue;
+			
 			String[] strings = line.split("");
 			Gram[] grams = new Gram[strings.length];
 			

@@ -1,8 +1,6 @@
 package hust.tools.csc.ngram;
 
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import hust.tools.csc.util.Sentence;
@@ -56,8 +54,7 @@ public class HustNGramModel implements NGramModel {
 	 * @throws IOException 
 	 */
 	public void writeLM(String path) throws IOException {
-		DataOutputStream dos = new DataOutputStream(new FileOutputStream(new File("path")));
-		BinaryFileNGramModelWriter lmWriter = new BinaryFileNGramModelWriter(nGramModel, dos);
+		BinaryFileNGramModelWriter lmWriter = new BinaryFileNGramModelWriter(nGramModel, new File(path));
 		lmWriter.persist();
 	}
 }
