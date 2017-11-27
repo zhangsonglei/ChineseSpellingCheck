@@ -149,9 +149,7 @@ public class ChineseSpellCheckerTrainer {
 	 */
 	public Dictionary constructNGramDict(String trainCorpus, String encoding, int n) throws IOException {
 		Dictionary dictionary = new Dictionary();
-		
-		System.out.println("开始建立字典");
-		
+				
 		File file = new File(trainCorpus);
 		InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), encoding);
 		BufferedReader corpus = new BufferedReader(inputStreamReader);
@@ -163,13 +161,13 @@ public class ChineseSpellCheckerTrainer {
 			
 			for(int i = 1; i <= n; i++) {
 				ngrams = CommonUtils.generateNGrams(line.split(""), i);
-				for(String ngram : ngrams)
+				for(String ngram : ngrams) {
 					dictionary.add(ngram);
+				}
 			}			
 		}
 		corpus.close();
 
-		System.out.println("字典建立完成，size = " + dictionary.size());
 		return dictionary;
 	}
 	

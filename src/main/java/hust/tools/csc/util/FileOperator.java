@@ -24,9 +24,7 @@ import java.util.zip.ZipOutputStream;
 import hust.tools.csc.detecet.SpellError;
 import hust.tools.csc.ngram.HustNGramModel;
 import hust.tools.csc.ngram.NGramModel;
-import hust.tools.ngram.io.ARPATextFileNGramModleReader;
 import hust.tools.ngram.io.BinaryFileNGramModelReader;
-import hust.tools.ngram.io.TextFileNGramModelReader;
 import hust.tools.ngram.model.AbstractNGramModelReader;
 
 /**
@@ -184,8 +182,7 @@ public class FileOperator {
 	 * @return		字典
 	 * @throws IOException
 	 */
-	public static Dictionary loadDict(String path) throws IOException {
-		File file = new File(path);
+	public static Dictionary loadDict(File file) throws IOException {
 		DataInputStream reader = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
 		Dictionary dictionary = new Dictionary();
 		int count = reader.readInt();
@@ -212,14 +209,8 @@ public class FileOperator {
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 */
-	public static NGramModel loadModel(String modelFile) throws ClassNotFoundException, IOException {
-		AbstractNGramModelReader modelReader;
-		if(modelFile.endsWith(".arpa"))
-			modelReader = new ARPATextFileNGramModleReader(new File(modelFile));
-		else if(modelFile.endsWith(".bin"))
-			modelReader = new BinaryFileNGramModelReader(new File(modelFile));
-		else
-			modelReader = new TextFileNGramModelReader(new File(modelFile));
+	public static NGramModel loadModel(File file) throws ClassNotFoundException, IOException {
+		AbstractNGramModelReader modelReader = new BinaryFileNGramModelReader(file);
 	 
 		return new HustNGramModel(modelReader.constructModel());
 	}
@@ -272,12 +263,14 @@ public class FileOperator {
 	}
 	
 	/**
-	 * 解压压缩文件到指定目录
+	 * 解压压缩文件到指定目录, 并返回文件列表
 	 * @param filePath	待解压的文件
 	 * @param toPath	解压的路径
 	 * @throws IOException
 	 */
-	public static void unZipFile(String filePath, String toPath) throws IOException {
+	public static List<File> unZipFile(String filePath, String toPath) throws IOException {
+		List<File> list = new ArrayList<>();
+		
 		//去目录下寻找文件
 		File file = new File(filePath);
 		ZipFile zipFile = null;
@@ -296,6 +289,7 @@ public class FileOperator {
 				continue;
         	}else { 
         		File tempFile = new File(toPath + zipEntry.getName()); 
+        		list.add(tempFile);
         		tempFile.getParentFile().mkdirs(); 
         		tempFile.createNewFile();
         		InputStream is = zipFile.getInputStream(zipEntry); 
@@ -309,10 +303,6 @@ public class FileOperator {
         		fos.close(); 
         	} 
         }
-
-//        if (zipFile != null) {
-//        	zipFile.close(); 
-//        }
-//        file.deleteOnExit();//解压完以后将压缩包删除
+		return list;
 	}
 }

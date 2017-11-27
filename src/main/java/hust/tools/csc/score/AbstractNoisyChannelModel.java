@@ -64,8 +64,7 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	    	int sz = Math.min(beamSize, prev.size());
 	    	for(int sc = 0; prev.size() > 0 && sc < sz; sc++) {
 	    		Sequence top = prev.remove();
-	    		next.add(top);
-	    				
+
 	    		Iterator<String> iterator = tmpCands.iterator();
 	    		while(iterator.hasNext()) {	//遍历当前字的所有混淆字，分别替换原始字组成新句子，计算句子得分
 	    			String candCharacter = iterator.next();
