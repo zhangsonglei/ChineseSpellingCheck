@@ -41,7 +41,7 @@ public class CSCApp {
 		System.out.println("加载模型文件...");
 		ChineseSpellChecker checkModel = readModel(model, method);
 		System.out.println("模型文件加载完成。\n开始纠正文本..");
-		ArrayList<Sentence> sentences = FileOperator.readFile(testCorpus, encoding);
+		ArrayList<Sentence> sentences = FileOperator.readSentenceFile(testCorpus, encoding);
 		OutputStreamWriter oWriter = new OutputStreamWriter(new FileOutputStream(new File(output)), encoding);
 		BufferedWriter writer = new BufferedWriter(oWriter);
 		
@@ -70,8 +70,8 @@ public class CSCApp {
 		System.out.println("加载模型文件...");
 		ChineseSpellChecker checkModel = readModel(model, method);
 		System.out.println("模型文件加载完成。\n开始预处理测试语料...");
-		ArrayList<Sentence> original = FileOperator.readFile(testCorpus, encoding);
-		ArrayList<Sentence> gold = FileOperator.readFile(goldCorpus, encoding);
+		ArrayList<Sentence> original = FileOperator.readSentenceFile(testCorpus, encoding);
+		ArrayList<Sentence> gold = FileOperator.readSentenceFile(goldCorpus, encoding);
 		ArrayList<Sentence> result = new ArrayList<>();
 		
 		Sentence bestSentence = null;
@@ -175,6 +175,9 @@ public class CSCApp {
 	}
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
+		
+		long start = System.currentTimeMillis();
+		
 		String[] temp = new String[]{"ds", "dsc", "dsb", "dscb", "bcws", "bcwsc", "bcwsb", "bcwscb", 
 				"simd", "simdb", "simdc", "simdcb","hust", "hustc", "hustb", "hustcb"};
 		List<String> methods = Arrays.asList(temp);
@@ -236,6 +239,10 @@ public class CSCApp {
 				evaluation(sourceFile, method, test, gold, encoding, output);
 			}
 		}
+		
+		long end = System.currentTimeMillis();
+		double min = (end - start) / 60000.0;
+		System.out.println("Time : " + min);
 	}
 	
 	/**

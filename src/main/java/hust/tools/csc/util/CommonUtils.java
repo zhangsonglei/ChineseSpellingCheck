@@ -2,6 +2,8 @@ package hust.tools.csc.util;
 
 import java.util.ArrayList;
 
+import com.hankcs.hanlp.HanLP;
+
 /**
  *<ul>
  *<li>Description: 工具类，对文本进行判断和转换
@@ -100,5 +102,23 @@ public class CommonUtils {
 		}//end for
 		
 		return output;
+	}
+	
+	/**
+	 * 繁体中文转为简体中文
+	 * @param traditionalChinese	待转换的繁体中文
+	 * @return						简体中文
+	 */
+	public static String convertToSimplifiedChinese(String traditionalChinese) {
+		return HanLP.convertToSimplifiedChinese(traditionalChinese);
+	}
+	
+	/**
+	 * 简体中文转为繁体中文
+	 * @param simplifiedChinese	待转换的简体中文
+	 * @return					繁体中文
+	 */
+	public static String convertToTraditionalChinese(String simplifiedChinese) {
+		return HanLP.convertToTraditionalChinese(simplifiedChinese);
 	}
 }

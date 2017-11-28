@@ -66,7 +66,7 @@ public class FileOperator {
 			}
 			reader.close();
 		}else {
-			System.err.println("File:\""+path+"\" read failed!");
+			System.err.println("文件:\""+path+"\" 读取失败!");
 		}
 		
 		return list;	
@@ -106,7 +106,7 @@ public class FileOperator {
 			}
 			reader.close();
 		}else {
-			System.err.println("File:\""+path+"\" read failed!");
+			System.err.println("文件:\""+path+"\" 读取失败!");
 		}
 		
 		return list;	
@@ -138,7 +138,7 @@ public class FileOperator {
 			}
 			reader.close();
 		}else {
-			System.err.println("File:\""+path+"\" read failed!");
+			System.err.println("文件:\""+path+"\" 读取失败!");
 		}
 		
 		return list;	
@@ -151,7 +151,7 @@ public class FileOperator {
 	 * @return			句子列表
 	 * @throws IOException
 	 */
-	public static ArrayList<Sentence> readFile(String path, String encoding) throws IOException {
+	public static ArrayList<Sentence> readSentenceFile(String path, String encoding) throws IOException {
 		ArrayList<Sentence> list = new ArrayList<Sentence>();
 		File file = new File(path);
 		
@@ -170,7 +170,7 @@ public class FileOperator {
 			}
 			reader.close();
 		}else {
-			System.err.println("File:\""+path+"\" read failed!");
+			System.err.println("文件:\""+path+"\" 读取失败!");
 		}
 		
 		return list;	
@@ -304,5 +304,54 @@ public class FileOperator {
         	} 
         }
 		return list;
+	}
+	
+	/**
+	 * 按行读取给定编码的文本文件，返回以行为元素的列表
+	 * @param path		文本文件路径
+	 * @param encoding	文件编码
+	 * @return			以行为元素的列表
+	 * @throws IOException
+	 */
+	public static ArrayList<String> readConfusionSetFile(String path, String encoding) throws IOException {
+		ArrayList<String> list = new ArrayList<String>();
+		File file = new File(path);
+		
+		if(file.isFile() && file.exists()) {
+			InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), encoding);
+			BufferedReader reader = new BufferedReader(inputStreamReader);
+			
+			String line = "";
+			while((line = reader.readLine()) != null) {
+				line = CommonUtils.ToDBC(line).trim();
+				if(line.equals(""))
+					continue;
+				
+				list.add(line);
+			}
+			reader.close();
+		}else {
+			System.err.println("文件:\""+path+"\" 读取失败!");
+		}
+		
+		return list;
+	}
+	
+	/**
+	 * 写文件
+	 * @param contend	待写的内容
+	 * @param outPath	输出文件
+	 * @param encoding	输出文件编码
+	 * @throws IOException 
+	 */
+	public static void writeFile(ArrayList<String> contend, String outPath, String encoding) throws IOException {
+		OutputStreamWriter oWriter = new OutputStreamWriter(new FileOutputStream(new File(outPath)), encoding);
+		BufferedWriter writer = new BufferedWriter(oWriter);
+		for(String line : contend) {
+			writer.write(line);
+			writer.newLine();
+
+		}
+		writer.close();
 	}
 }

@@ -21,18 +21,28 @@ import hust.tools.csc.util.Sentence;
  *<li>Date: 2017年11月5日
  *</ul>
  */
-public class Process {
+public class PreProcessSIGHANTestSet {
 	
 	public static void main(String[] args) throws IOException {
-		String testFile = "E:\\FinalTest_SubTask2.txt";
-		String goldFile = "E:\\FinalTest_SubTask2_Truth.txt";
-		HashMap<String, Sentence> tests = FileOperator.readTestFile(testFile, "utf-8");
-		HashMap<String, ArrayList<SpellError>> res = FileOperator.readGoldFile(goldFile, "utf-8");
 		
-		OutputStreamWriter test = new OutputStreamWriter(new FileOutputStream(new File("E:\\testFile2.txt")), "utf-8");
+		if(args.length != 5) {
+			System.out.println("错误的参数个数： "+args.length + "\n示例: 原始测试语料  原始标准结果  文档编码  测试语料输出  标准结果输出");
+			System.exit(0);
+		}
+		
+		String testInput = args[0];
+		String goldInput = args[1];
+		String encoding = args[2];
+		String testFile = args[3];
+		String goldFile = args[4];
+		
+		HashMap<String, Sentence> tests = FileOperator.readTestFile(testInput, encoding);
+		HashMap<String, ArrayList<SpellError>> res = FileOperator.readGoldFile(goldInput, encoding);
+		
+		OutputStreamWriter test = new OutputStreamWriter(new FileOutputStream(new File(testFile)), encoding);
 		BufferedWriter testwriter = new BufferedWriter(test);
 		
-		OutputStreamWriter result = new OutputStreamWriter(new FileOutputStream(new File("E:\\goldFile2.txt")), "utf-8");
+		OutputStreamWriter result = new OutputStreamWriter(new FileOutputStream(new File(goldFile)), encoding);
 		BufferedWriter resultwriter = new BufferedWriter(result);
 		
 		for(Entry<String, Sentence> entry : tests.entrySet()) {

@@ -25,7 +25,7 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	
 	protected int bestSize = 5;				//最佳候选句的个数
 	protected int order = 3;				//计算句子的n元模型的最高阶数
-	protected int beamSize = 50;			//beamSearch方法的beam大小
+	protected int beamSize = 150;			//beamSearch方法的beam大小
 	protected ConfusionSet confusionSet;
 	protected NGramModel nGramModel;
 	
@@ -70,6 +70,10 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	    			String candCharacter = iterator.next();
 	    			Sentence candSen = top.getSentence().setToken(index, candCharacter);
 	    			score = getSourceModelLogScore(candSen) * getChannelModelLogScore(sentence, index, candCharacter, tmpCands);
+	    			if(candCharacter.equals(character))
+	    				score *= 30;
+	    				
+	    			
 	    			next.add(new Sequence(candSen, score));
 	    		}
 	        }

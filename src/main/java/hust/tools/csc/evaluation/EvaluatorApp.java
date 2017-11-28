@@ -30,9 +30,9 @@ public class EvaluatorApp {
 		String resultFile = args[2];
 		String encoding = args[3];
 		
-		ArrayList<Sentence> original = FileOperator.readFile(originalFile, encoding);
-		ArrayList<Sentence> gold = FileOperator.readFile(goldFile, encoding);
-		ArrayList<Sentence> result = FileOperator.readFile(resultFile, encoding);;
+		ArrayList<Sentence> original = FileOperator.readSentenceFile(originalFile, encoding);
+		ArrayList<Sentence> gold = FileOperator.readSentenceFile(goldFile, encoding);
+		ArrayList<Sentence> result = FileOperator.readSentenceFile(resultFile, encoding);;
 		
 		Evaluation evaluator = new CSCEvaluator(original, gold, result);
 		String eval = evaluator.show();

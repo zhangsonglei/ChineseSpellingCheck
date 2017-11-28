@@ -67,7 +67,7 @@ public class ChineseSpellCheckerTrainer {
 			System.err.println("模型数据缺少语言模型.");
 			System.exit(0);
 			
-		}else if(method != "bcws" && dictionary == null) {
+		}else if(!method.equals("bcws") && dictionary == null) {
 			System.err.println("模型数据缺少字典数据， 已转为“bcws”方法");
 			method = "bcws";
 		}
@@ -103,7 +103,7 @@ public class ChineseSpellCheckerTrainer {
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new HUSTNoisyChannelModelBasedBigram(dictionary, nGramModel, confusionSet, wordSegment);
 			break;
-		case "hustbc":
+		case "hustcb":
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new HUSTNoisyChannelModelBasedCharacterAndBigram(dictionary, nGramModel, confusionSet, wordSegment);
 			break;
