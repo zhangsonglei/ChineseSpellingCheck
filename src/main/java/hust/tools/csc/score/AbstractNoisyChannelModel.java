@@ -72,7 +72,7 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	    			score = getSourceModelLogScore(candSen) * getChannelModelLogScore(sentence, index, candCharacter, tmpCands);
 	    			
 	    			if(candCharacter.equals(character))
-	    				score *= 1.0;
+	    				score *= 30.0;
 	    				
 	    			next.add(new Sequence(candSen, score));
 	    		}
