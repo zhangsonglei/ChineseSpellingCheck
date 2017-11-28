@@ -70,10 +70,10 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	    			String candCharacter = iterator.next();
 	    			Sentence candSen = top.getSentence().setToken(index, candCharacter);
 	    			score = getSourceModelLogScore(candSen) * getChannelModelLogScore(sentence, index, candCharacter, tmpCands);
-	    			if(candCharacter.equals(character))
-	    				score *= 30;
-	    				
 	    			
+	    			if(candCharacter.equals(character))
+	    				score *= 1.0;
+	    				
 	    			next.add(new Sequence(candSen, score));
 	    		}
 	        }
