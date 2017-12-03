@@ -26,129 +26,17 @@ import hust.tools.csc.util.Sentence;
  *</ul>
  */
 public class CSCApp {
-
-	/**
-	 * 纠正文本
-	 * @param model			拼写纠错模型
-	 * @param testCorpus	待纠正语料
-	 * @param encoding		语料编码
-	 * @param method		模型方法
-	 * @param output		结果输出路径
-	 * @throws IOException
-	 * @throws ClassNotFoundException 
-	 */
-	private static void check(String model, String testCorpus, String encoding, String method, String output) throws IOException, ClassNotFoundException {
-		System.out.println("加载模型文件...");
-		ChineseSpellChecker checkModel = readModel(model, method);
-		System.out.println("模型文件加载完成。\n开始纠正文本..");
-		ArrayList<Sentence> sentences = FileOperator.readSentenceFile(testCorpus, encoding);
-		OutputStreamWriter oWriter = new OutputStreamWriter(new FileOutputStream(new File(output)), encoding);
-		BufferedWriter writer = new BufferedWriter(oWriter);
-		
-		int no = 1;
-		Sentence bestSentence = null;
-		for(Sentence sentence : sentences) {
-			System.out.println(no++);
-			bestSentence = checkModel.correct(sentence);
-			writer.write(bestSentence.toString());
-			writer.newLine();
-		}
-		writer.close();	
-		System.out.println("纠正结束。");
-	}
 	
 	/**
-	 * 纠正文本
-	 * @param checkModel	拼写纠错模型
-	 * @param testCorpus	待纠正语料
-	 * @param encoding		语料编码
-	 * @param output		结果输出路径
-	 * @throws IOException
-	 * @throws ClassNotFoundException 
-	 */
-	private static void evaluation(String model, String method, String testCorpus, String goldCorpus, String encoding, String output) throws IOException, ClassNotFoundException {
-		System.out.println("加载模型文件...");
-		ChineseSpellChecker checkModel = readModel(model, method);
-		System.out.println("模型文件加载完成。\n开始预处理测试语料...");
-		ArrayList<Sentence> original = FileOperator.readSentenceFile(testCorpus, encoding);
-		ArrayList<Sentence> gold = FileOperator.readSentenceFile(goldCorpus, encoding);
-		ArrayList<Sentence> result = new ArrayList<>();
-		
-		Sentence bestSentence = null;
-		for(Sentence sentence : original) {
-			bestSentence = checkModel.correct(sentence);
-			result.add(bestSentence);
-		}
-		
-		System.out.println("语料预处理完成。\n开始评价模型指标...");
-		
-		Evaluation evaluation = new CSCEvaluator(original, gold, result);
-		String eval = evaluation.show();
-		if(output != null) {
-			FileOperator.writeEvaluation(output, encoding, eval);
-		}
-		System.out.println("模型指标评价完成。");
-	}
-	
-	/**
-	 * 读取拼写纠正模型
-	 * @param model		模型路径	
-	 * @param method	模型方法
-	 * @return			拼写纠正模型
-	 * @throws ClassNotFoundException
-	 * @throws IOException
-	 */
-	public static ChineseSpellChecker readModel(String model, String method) throws ClassNotFoundException, IOException {
-		ChineseSpellCheckerTrainer trainer = null;
-		String path = model.split("checker.model")[0];
-		List<File> files = FileOperator.unZipFile(model, path);
-		
-		if(files == null) {
-			System.err.println("模型文件为空");
-			System.exit(0);
-		}else {
-			System.out.println("开始加载语言模型...");
-			File lmFile = new File(path + "lm.bin");
-			if(lmFile.exists()) {
-				NGramModel nGramModel = FileOperator.loadModel(lmFile);
-				System.out.println("语言模型加载完成。");
-				if(method.equals("bcws")) {
-					trainer = new ChineseSpellCheckerTrainer(nGramModel, method);
-					return trainer.trainCSCModel();
-				}
-
-				System.out.println("开始加载字典...");
-				File dictFile = new File(path + "dict.bin");
-				if(dictFile.exists()) {
-					Dictionary dictionary = FileOperator.loadDict(dictFile);
-					System.out.println("字典加载完成。");
-					trainer = new ChineseSpellCheckerTrainer(nGramModel, dictionary, method);
-				}else {
-					System.err.println("模型缺失字典");
-					System.exit(0);
-				}
-			}else {
-				System.err.println("模型缺失语言模型");
-				System.exit(0);
-			}
-		}
-
-		for(File file : files) {
-        	file.delete();
-		}
-		
-		return trainer.trainCSCModel();
-	}
-	
-	/**
-	 * 输出拼写纠正模型
+	 * 训练并输出拼写纠正模型
 	 * @param corpus	训练模型的语料
+	 * @param charType  字体类型(简/繁)
 	 * @param encoding	语料编码
 	 * @param method	训练方法
 	 * @param zipPath	输出路径
 	 * @throws IOException
 	 */
-	private static void writeModel(String corpus, String encoding, String method, String zipPath) throws IOException {
+	private static void trainModel(String corpus, String charType, String encoding, String method, String zipPath) throws IOException {
 		System.out.println("开始训练拼写纠正模型...");
 		ChineseSpellCheckerTrainer trainer = new ChineseSpellCheckerTrainer();
 		ArrayList<String> files = new ArrayList<>();
@@ -174,69 +62,195 @@ public class CSCApp {
 		System.out.println("拼写纠正模型建立完成。");
 	}
 	
+	/**
+	 * 纠正文本
+	 * @param model			拼写纠错模型
+	 * @param testCorpus	待纠正语料
+	 * @param charType  	字体类型(简/繁)
+	 * @param encoding		语料编码
+	 * @param method		模型方法
+	 * @param output		结果输出路径
+	 * @throws IOException
+	 * @throws ClassNotFoundException 
+	 */
+	private static void check(String model, String testCorpus, String charType, String encoding, String method, String output) throws IOException, ClassNotFoundException {
+		System.out.println("加载模型文件...");
+		ChineseSpellChecker checkModel = readModel(model, method, charType);
+		System.out.println("模型文件加载完成。\n开始纠正文本..");
+		ArrayList<Sentence> sentences = FileOperator.readSentenceFile(testCorpus, encoding);
+		OutputStreamWriter oWriter = new OutputStreamWriter(new FileOutputStream(new File(output)), encoding);
+		BufferedWriter writer = new BufferedWriter(oWriter);
+		
+		int no = 1;
+		Sentence bestSentence = null;
+		for(Sentence sentence : sentences) {
+			System.out.println(no++);
+			bestSentence = checkModel.correct(sentence);
+			writer.write(bestSentence.toString());
+			writer.newLine();
+		}
+		writer.close();	
+		System.out.println("纠正结束。");
+	}
+
+	/**
+	 * 评估拼写纠正模型
+	 * @param model			拼写纠正模型
+	 * @param method		模型训练方法
+	 * @param testCorpus	测试语料文件
+	 * @param goldCorpus	标准语料文件
+	 * @param charType		字体类型(简/繁)
+	 * @param encoding		语料编码
+	 * @param output		结果输出路径
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	private static void evaluation(String model, String method, String testCorpus, String goldCorpus, String charType, String encoding, String output) throws IOException, ClassNotFoundException {
+		System.out.println("加载模型文件...");
+		ChineseSpellChecker checkModel = readModel(model, method, charType);
+		System.out.println("模型文件加载完成。\n开始预处理测试语料...");
+		ArrayList<Sentence> original = FileOperator.readSentenceFile(testCorpus, encoding);
+		ArrayList<Sentence> gold = FileOperator.readSentenceFile(goldCorpus, encoding);
+		ArrayList<Sentence> result = new ArrayList<>();
+		
+		Sentence bestSentence = null;
+		for(Sentence sentence : original) {
+			bestSentence = checkModel.correct(sentence);
+			result.add(bestSentence);
+		}
+		
+		System.out.println("语料预处理完成。\n开始评价模型指标...");
+		
+		Evaluation evaluation = new CSCEvaluator(original, gold, result);
+		String eval = evaluation.show();
+		if(output != null) {
+			FileOperator.writeEvaluation(output, encoding, eval);
+		}
+		System.out.println("模型指标评价完成。");
+	}
+	
+	/**
+	 * 读取拼写纠正模型
+	 * @param model		模型路径	
+	 * @param method	模型方法
+	 * @param charType	字体类型(简/繁)
+	 * @return			拼写纠正模型
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
+	public static ChineseSpellChecker readModel(String model, String method, String charType) throws ClassNotFoundException, IOException {
+		ChineseSpellCheckerTrainer trainer = null;
+		String path = model.split("checker.model")[0];
+		List<File> files = FileOperator.unZipFile(model, path);
+		
+		if(files == null) {
+			System.err.println("模型文件为空");
+			System.exit(0);
+		}else {
+			System.out.println("开始加载语言模型...");
+			File lmFile = new File(path + "lm.bin");
+			if(lmFile.exists()) {
+				NGramModel nGramModel = FileOperator.loadModel(lmFile);
+				System.out.println("语言模型加载完成。");
+				if(method.equals("bcws")) {
+					trainer = new ChineseSpellCheckerTrainer(nGramModel, method, charType);
+					return trainer.trainCSCModel();
+				}
+
+				System.out.println("开始加载字典...");
+				File dictFile = new File(path + "dict.bin");
+				if(dictFile.exists()) {
+					Dictionary dictionary = FileOperator.loadDict(dictFile);
+					System.out.println("字典加载完成。");
+					trainer = new ChineseSpellCheckerTrainer(nGramModel, dictionary, method, charType);
+				}else {
+					System.err.println("模型缺失字典");
+					System.exit(0);
+				}
+			}else {
+				System.err.println("模型缺失语言模型");
+				System.exit(0);
+			}
+		}
+
+		for(File file : files) {
+        	file.delete();
+		}
+		
+		return trainer.trainCSCModel();
+	}
+	
+
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		
 		long start = System.currentTimeMillis();
 		
-		String[] temp = new String[]{"ds", "dsc", "dsb", "dscb", "bcws", "bcwsc", "bcwsb", "bcwscb", 
-				"simd", "simdb", "simdc", "simdcb","hust", "hustc", "hustb", "hustcb"};
+		String[] temp = new String[]{"ds", "dsc", "dscib", "dsb", "dscb", "bcws", "bcwsc", "bcwscib", "bcwsb", "bcwscb", 
+				"simd", "simdb", "simdc", "simdcib", "simdcb", "hust", "hustc", "hustcib", "hustb", "hustcb"};
+		String[] charTypes = new String[]{"trad", "simple"};
+		List<String> types = Arrays.asList(charTypes);
 		List<String> methods = Arrays.asList(temp);
 		
 		int len = args.length;
-		if(6 != len && 5 != len && 7 != len) {
-			show(len);
-			System.exit(0);
-		}
+		if(6 != len && 7 != len && 8 != len) 
+			errParamLen(len);
 		
 		String operation = args[0];
 		if(!operation.equals("train") && !operation.equals("check") && !operation.equals("eval")) {
 			System.err.println("错误的指令：" + operation+"\n--train(训练模型)\n--check(拼写纠正)\n--eval(模型评价)");
 			System.exit(0);
-		}else if((operation.equals("train") && len != 5) || (operation.equals("check") && len != 6) || ((operation.equals("eval") && len != 7))) {
-			show(len);
-			System.exit(0);
+		}else if((operation.equals("train") && len != 6) || (operation.equals("check") && len != 7) || ((operation.equals("eval") && len != 8))) {
+			errParamLen(len);
 		}else {
 			String sourceFile = args[1];
+			String charType = null;
 			String encoding = null;
 			String method = null;
 			String output = null;
 			
 			if(operation.equals("train")) {
-				encoding = args[2];
-				method = args[3];
-				if(!methods.contains(method.toLowerCase())){
-					System.err.println("错误的模型训练方法：" + method + "\n请从列表中选择："+ methods);
-					System.exit(0);
-				}
+				charType = args[2];
+				if(!types.contains(charType.toLowerCase()))
+					errCharType(charType, types);
 				
-				output = args[4];
-				writeModel(sourceFile, encoding, method, output);
+				encoding = args[3];
+				method = args[4];
+				if(!methods.contains(method.toLowerCase()))
+					errMethod(method, methods);
+				
+				output = args[5];
+				trainModel(sourceFile, charType, encoding, method, output);
 			}else if(operation.equals("check")) {
 				method = args[2];
-				if(!methods.contains(method.toLowerCase())){
-					System.err.println("错误的模型训练方法：" + method + "\n请从列表中选择："+ methods);
-					System.exit(0);
-				}
+				if(!methods.contains(method.toLowerCase()))
+					errMethod(method, methods);
 				
 				String test = args[3];
-				encoding = args[4];
-				output = args[5];
+				charType = args[4];
+				if(!types.contains(charType.toLowerCase()))
+					errCharType(charType, types);
 				
-				check(sourceFile, test, encoding, method, output);
+				encoding = args[5];
+				output = args[6];
+				
+				check(sourceFile, test, charType, encoding, method, output);
 			}else {
 				method = args[2];
-				if(!methods.contains(method.toLowerCase())){
-					System.err.println("错误的模型训练方法：" + method + "\n请从列表中选择："+ methods);
-					System.exit(0);
-				}
+				if(!methods.contains(method.toLowerCase()))
+					errMethod(method, methods);
+				
 				
 				String test = args[3];
 				String gold = args[4];
-				encoding = args[5];
-				if(len == 7)
-					output = args[6];
+				charType = args[5];
+				if(!types.contains(charType.toLowerCase()))
+					errCharType(charType, types);
 				
-				evaluation(sourceFile, method, test, gold, encoding, output);
+				encoding = args[6];
+				if(len == 8)
+					output = args[7];
+				
+				evaluation(sourceFile, method, test, gold, charType, encoding, output);
 			}
 		}
 		
@@ -249,10 +263,21 @@ public class CSCApp {
 	 * 打印错误信息
 	 * @param len	用户输入参数的个数
 	 */
-	private static void show(int len) {
-		System.err.println("错误的参数个数：" + len + "\n示例1:train  训练语料  文件编码  模型方法  输出路径"
-				   							   + "\n示例2：check  模型文件 模型方法  测试语料  语料编码  输出路径"
-											   + "\n示例3:eval  模型文件  模型方法  测试语料  黄金语料  文件编码   输出路径。"
-											   + "\n示例4：eval  模型文件  模型方法  测试语料  黄金语料  文件编码");
+	private static void errParamLen(int len) {
+		System.err.println("错误的参数个数：" + len + "\n示例1:train  训练语料  简繁体(trad/simple)  文件编码  模型方法  输出路径"
+				   							   + "\n示例2：check  模型文件 模型方法  测试语料  简繁体(trad/simple)  语料编码  输出路径"
+											   + "\n示例3:eval  模型文件  模型方法  测试语料  黄金语料  简繁体(trad/simple)  文件编码   输出路径。"
+											   + "\n示例4：eval  模型文件  模型方法  测试语料  黄金语料  简繁体(trad/simple)  文件编码");
+		System.exit(0);
+	}
+	
+	private static void errCharType(String charType, List<String> types) {
+		System.err.println("错误的字体(简繁体)格式：" + charType + "\n请从列表中选择："+ types);
+		System.exit(0);
+	}
+	
+	private static void errMethod(String method, List<String> methods) {
+		System.err.println("错误的模型训练方法：" + method + "\n请从列表中选择："+ methods);
+		System.exit(0);
 	}
 }

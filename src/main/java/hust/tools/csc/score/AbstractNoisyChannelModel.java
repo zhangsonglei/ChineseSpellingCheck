@@ -1,5 +1,7 @@
 package hust.tools.csc.score;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -9,6 +11,7 @@ import java.util.Queue;
 import hust.tools.csc.ngram.NGramModel;
 import hust.tools.csc.util.ConfusionSet;
 import hust.tools.csc.util.Dictionary;
+import hust.tools.csc.util.FileOperator;
 import hust.tools.csc.util.CommonUtils;
 import hust.tools.csc.util.Sentence;
 import hust.tools.csc.util.Sequence;
@@ -123,7 +126,7 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 				total += dictionary.getCount(cand);
 		}
 		
-		return total;
+		return total > 1.0 ? total - 1 : total;
 	}
 	
 	/**
@@ -228,5 +231,35 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 		}//end for
 
 		return errorLocations;
+	}
+	
+	/**
+	 * 从资源文件平衡字典文件构建字典，并返回字典所有字的频率之和
+	 * @param charType	中文类型(简繁体)
+	 * @return			字典所有字的频率之和
+	 * @throws IOException
+	 */
+	protected Dictionary buildCharDict(String charType) throws IOException {
+		String path = "dict/" + charType + "Dict.bin";
+		File dictFile = new File(this.getClass().getClassLoader().getResource(path).getFile());
+
+		return FileOperator.loadDict(dictFile);
+	}
+	
+	/**
+	 * 获取字典频数之和
+	 * @param charDict	字典
+	 * @return			频数总和
+	 */
+	protected int calcTotalCountFromDict(Dictionary charDict) {
+		int total = 0;
+		Iterator<String> iterator = charDict.iterator();
+		while(iterator.hasNext()) {
+			String character = iterator.next();
+			if(character.length() == 1)
+				total += charDict.getCount(iterator.next());
+		}
+		
+		return total;
 	}
 }

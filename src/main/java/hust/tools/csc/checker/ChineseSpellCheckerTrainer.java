@@ -37,14 +37,17 @@ public class ChineseSpellCheckerTrainer {
 		
 	}
 	
-	public ChineseSpellCheckerTrainer(NGramModel nGramModel, String method) throws IOException {
-		this(nGramModel, null, method);
+	public ChineseSpellCheckerTrainer(NGramModel nGramModel, String method, String charType) throws IOException {
+		this(nGramModel, null, method, charType);
 	}
 	
-	public ChineseSpellCheckerTrainer(NGramModel nGramModel, Dictionary dictionary, String method) throws IOException {
+	public ChineseSpellCheckerTrainer(NGramModel nGramModel, Dictionary dictionary, String method, String charType) throws IOException {
 		this.nGramModel = nGramModel;
-		confusionSet = constructConfusionSet(new File(this.getClass().getClassLoader().getResource("confusionSet/traditionalPro.txt").getFile()));
-		selectNoisyChannelModel(dictionary, method);
+		
+		String path = "confusionSet/" + charType + "Pro.utf8";
+		confusionSet = constructConfusionSet(new File(this.getClass().getClassLoader().getResource(path).getFile()));
+		
+		selectNoisyChannelModel(dictionary, method, charType);
 	}
 
 	/**
@@ -62,7 +65,7 @@ public class ChineseSpellCheckerTrainer {
 	 * @param method		噪音通道模型训练方法
 	 * @throws IOException
 	 */
-	private void selectNoisyChannelModel(Dictionary dictionary, String method) throws IOException {
+	private void selectNoisyChannelModel(Dictionary dictionary, String method, String charType) throws IOException {
 		if(nGramModel == null) {
 			System.err.println("模型数据缺少语言模型.");
 			System.exit(0);
@@ -83,6 +86,10 @@ public class ChineseSpellCheckerTrainer {
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new DoubleStageNoisyChannelModelBasedCharacter(dictionary, nGramModel, confusionSet, wordSegment);
 			break;
+		case "dscib":
+			wordSegment = new CKIPWordSegment();
+			noisyChannelModel = new DoubleStageNoisyChannelModelBasedCharacterInBalance(dictionary, nGramModel, confusionSet, wordSegment, charType);
+			break;
 		case "dsb":
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new DoubleStageNoisyChannelModelBasedCharacterAndBigram(dictionary, nGramModel, confusionSet, wordSegment);
@@ -98,6 +105,10 @@ public class ChineseSpellCheckerTrainer {
 		case "hustc":
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new HUSTNoisyChannelModelBasedCharacter(dictionary, nGramModel, confusionSet, wordSegment);
+			break;
+		case "hustcib":
+			wordSegment = new CKIPWordSegment();
+			noisyChannelModel = new HUSTNoisyChannelModelBasedCharacterInBalance(dictionary, nGramModel, confusionSet, wordSegment, charType);
 			break;
 		case "hustb":
 			wordSegment = new CKIPWordSegment();
@@ -115,6 +126,10 @@ public class ChineseSpellCheckerTrainer {
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new BCWSNoisyChannelModelBasedCharacter(dictionary, nGramModel, confusionSet, wordSegment);
 			break;
+		case "bcwscib":
+			wordSegment = new CKIPWordSegment();
+			noisyChannelModel = new BCWSNoisyChannelModelBasedCharacterInBalance(nGramModel, confusionSet, wordSegment, charType);
+			break;
 		case "bcwsb":
 			wordSegment = new CKIPWordSegment();
 			noisyChannelModel = new BCWSNoisyChannelModelBasedBigram(dictionary, nGramModel, confusionSet, wordSegment);
@@ -129,12 +144,18 @@ public class ChineseSpellCheckerTrainer {
 		case "simdc":
 			noisyChannelModel = new SIMDNoisyChannelModelBasedCharacter(dictionary, nGramModel, confusionSet);
 			break;
+		case "simdcib":
+			wordSegment = new CKIPWordSegment();
+			noisyChannelModel = new SIMDNoisyChannelModelBasedCharacterInBalance(dictionary, nGramModel, confusionSet, charType);
+			break;
 		case "simdb":
 			noisyChannelModel = new SIMDNoisyChannelModelBasedBigram(dictionary, nGramModel, confusionSet);
 			break;
 		case "simdcb":
 			noisyChannelModel = new SIMDNoisyChannelModelBasedCharacterAndBigram(dictionary, nGramModel, confusionSet);
 			break;
+		
+
 		default:
 			break;
 		}		

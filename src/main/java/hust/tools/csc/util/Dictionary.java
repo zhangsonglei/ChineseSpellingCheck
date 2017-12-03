@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 /**
@@ -125,5 +126,13 @@ public class Dictionary {
 		}
 		
 		dos.close();
+	}
+	
+	/**
+	 * 返回字典key的迭代器
+	 * @return
+	 */
+	public Iterator<String> iterator() {
+		return dict.keySet().iterator();
 	}
 }
