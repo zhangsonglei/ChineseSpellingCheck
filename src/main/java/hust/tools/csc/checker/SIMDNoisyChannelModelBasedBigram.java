@@ -22,8 +22,16 @@ public class SIMDNoisyChannelModelBasedBigram extends AbstractNoisyChannelModel 
 	
 	private Dictionary dictionary;
 	
-	public SIMDNoisyChannelModelBasedBigram(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet) throws IOException {
+	public SIMDNoisyChannelModelBasedBigram(Dictionary dictionary, NGramModel nGramModel,
+			ConfusionSet confusionSet) throws IOException {
 		super(confusionSet, nGramModel);
+		
+		this.dictionary = dictionary;
+	}
+	
+	public SIMDNoisyChannelModelBasedBigram(Dictionary dictionary, NGramModel nGramModel,
+			ConfusionSet confusionSet, double magicNumber) throws IOException {
+		super(confusionSet, nGramModel, magicNumber);
 		
 		this.dictionary = dictionary;
 	}

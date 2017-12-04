@@ -33,6 +33,14 @@ public class HUSTNoisyChannelModelBasedCharacter extends AbstractNoisyChannelMod
 		this.wordSegment = wordSegment;
 	}
 	
+	public HUSTNoisyChannelModelBasedCharacter(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet,
+			AbstractWordSegment wordSegment, double magicNumber) throws IOException {
+		super(confusionSet, nGramModel, magicNumber);
+		
+		this.dictionary = dictionary;
+		this.wordSegment = wordSegment;
+	}
+	
 	@Override
 	public ArrayList<Sentence> getCorrectSentence(Sentence sentence) {
 		ArrayList<Sentence> candSens = new ArrayList<>();

@@ -22,8 +22,16 @@ public class SIMDNoisyChannelModelBasedCharacter extends AbstractNoisyChannelMod
 	
 	private Dictionary dictionary;
 	
-	public SIMDNoisyChannelModelBasedCharacter(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet) throws IOException {
+	public SIMDNoisyChannelModelBasedCharacter(Dictionary dictionary, NGramModel nGramModel,
+			ConfusionSet confusionSet) throws IOException {
 		super(confusionSet, nGramModel);
+		
+		this.dictionary = dictionary;
+	}
+	
+	public SIMDNoisyChannelModelBasedCharacter(Dictionary dictionary, NGramModel nGramModel,
+			ConfusionSet confusionSet, double magicNumber) throws IOException {
+		super(confusionSet, nGramModel, magicNumber);
 		
 		this.dictionary = dictionary;
 	}

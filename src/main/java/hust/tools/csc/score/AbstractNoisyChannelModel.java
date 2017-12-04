@@ -26,6 +26,8 @@ import hust.tools.csc.util.Sequence;
  */
 public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	
+	private final static double DEFAULT_MagicNumber = 30.0;
+	private double magicNumber;				//魔数
 	protected int bestSize = 5;				//最佳候选句的个数
 	protected int order = 3;				//计算句子的n元模型的最高阶数
 	protected int beamSize = 150;			//beamSearch方法的beam大小
@@ -33,8 +35,13 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	protected NGramModel nGramModel;
 	
 	public AbstractNoisyChannelModel(ConfusionSet confusionSet, NGramModel nGramModel) {
+		this(confusionSet, nGramModel, DEFAULT_MagicNumber);
+	}
+	
+	public AbstractNoisyChannelModel(ConfusionSet confusionSet, NGramModel nGramModel, double magicNumber) {
 		this.confusionSet = confusionSet;
 		this.nGramModel = nGramModel;
+		this.magicNumber = magicNumber;
 	}
 	
 	/**
@@ -75,7 +82,7 @@ public abstract class AbstractNoisyChannelModel implements NoisyChannelModel {
 	    			score = getSourceModelLogScore(candSen) * getChannelModelLogScore(sentence, index, candCharacter, tmpCands);
 	    			
 	    			if(candCharacter.equals(character))
-	    				score *= 30.0;
+	    				score *= magicNumber;
 	    				
 	    			next.add(new Sequence(candSen, score));
 	    		}

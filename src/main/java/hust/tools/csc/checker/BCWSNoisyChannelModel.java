@@ -27,6 +27,12 @@ public class BCWSNoisyChannelModel extends AbstractNoisyChannelModel {
 		
 		this.wordSegment = wordSegment;
 	}
+	
+	public BCWSNoisyChannelModel(NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment, double magicNumber) throws IOException {
+		super(confusionSet, nGramModel, magicNumber);
+		
+		this.wordSegment = wordSegment;
+	}
 
 	@Override
 	public ArrayList<Sentence> getCorrectSentence(Sentence sentence) {

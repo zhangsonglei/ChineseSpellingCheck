@@ -23,8 +23,17 @@ public class SIMDNoisyChannelModelBasedCharacterInBalance extends AbstractNoisyC
 	private Dictionary dictionary;
 	private Dictionary charDict;
 	
-	public SIMDNoisyChannelModelBasedCharacterInBalance(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet, String charType) throws IOException {
+	public SIMDNoisyChannelModelBasedCharacterInBalance(Dictionary dictionary, NGramModel nGramModel,
+			ConfusionSet confusionSet, String charType) throws IOException {
 		super(confusionSet, nGramModel);
+		
+		this.dictionary = dictionary;
+		charDict = buildCharDict(charType);
+	}
+	
+	public SIMDNoisyChannelModelBasedCharacterInBalance(Dictionary dictionary, NGramModel nGramModel, 
+			ConfusionSet confusionSet, String charType, double magicNumber) throws IOException {
+		super(confusionSet, nGramModel, magicNumber);
 		
 		this.dictionary = dictionary;
 		charDict = buildCharDict(charType);

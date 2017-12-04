@@ -27,6 +27,13 @@ public class SIMDNoisyChannelModel extends AbstractNoisyChannelModel {
 		this.dictionary = dictionary;
 	}
 	
+	public SIMDNoisyChannelModel(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet,
+			double magicNumber) throws IOException {
+		super(confusionSet, nGramModel, magicNumber);
+		
+		this.dictionary = dictionary;
+	}
+	
 	@Override
 	public ArrayList<Sentence> getCorrectSentence(Sentence sentence) {
 		ArrayList<Integer> tempLocations = getErrorLocationsBySIMD(dictionary, sentence);

@@ -31,6 +31,14 @@ public class BCWSNoisyChannelModelBasedCharacterInBalance extends AbstractNoisyC
 		this.wordSegment = wordSegment;
 		charDict = buildCharDict(charType);
 	}
+	
+	public BCWSNoisyChannelModelBasedCharacterInBalance(NGramModel nGramModel, ConfusionSet confusionSet, 
+			AbstractWordSegment wordSegment, String charType, double magicNumber) throws IOException {
+		super(confusionSet, nGramModel, magicNumber);
+		
+		this.wordSegment = wordSegment;
+		charDict = buildCharDict(charType);
+	}
 
 	@Override
 	public ArrayList<Sentence> getCorrectSentence(Sentence sentence) {

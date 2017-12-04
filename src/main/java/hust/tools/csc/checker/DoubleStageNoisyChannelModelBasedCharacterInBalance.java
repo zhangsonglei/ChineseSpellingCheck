@@ -34,6 +34,15 @@ public class DoubleStageNoisyChannelModelBasedCharacterInBalance extends Abstrac
 		charDict = buildCharDict(charType);
 	}
 	
+	public DoubleStageNoisyChannelModelBasedCharacterInBalance(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet,
+			AbstractWordSegment wordSegment, String charType, double magicNumber) throws IOException {
+		super(confusionSet, nGramModel, magicNumber);
+		
+		this.dictionary = dictionary;
+		this.wordSegment = wordSegment;
+		charDict = buildCharDict(charType);
+	}
+	
 	@Override
 	public ArrayList<Sentence> getCorrectSentence(Sentence sentence) {
 		ArrayList<Sentence> candSens = new ArrayList<>();

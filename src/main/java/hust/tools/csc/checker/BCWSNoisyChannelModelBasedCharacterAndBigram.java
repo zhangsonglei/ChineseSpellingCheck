@@ -30,6 +30,13 @@ public class BCWSNoisyChannelModelBasedCharacterAndBigram extends AbstractNoisyC
 		this.wordSegment = wordSegment;
 		this.dictionary = dictionary;
 	}
+	
+	public BCWSNoisyChannelModelBasedCharacterAndBigram(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet, AbstractWordSegment wordSegment, double magicNumber) throws IOException {
+		super(confusionSet, nGramModel, magicNumber);
+		
+		this.wordSegment = wordSegment;
+		this.dictionary = dictionary;
+	}
 
 	@Override
 	public ArrayList<Sentence> getCorrectSentence(Sentence sentence) {

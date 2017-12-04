@@ -32,6 +32,14 @@ public class DoubleStageNoisyChannelModelBasedBigram extends AbstractNoisyChanne
 		this.wordSegment = wordSegment;
 	}
 	
+	public DoubleStageNoisyChannelModelBasedBigram(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet,
+			AbstractWordSegment wordSegment, double magicNumber) throws IOException {
+		super(confusionSet, nGramModel, magicNumber);
+		
+		this.dictionary = dictionary;
+		this.wordSegment = wordSegment;
+	}
+	
 	@Override
 	public ArrayList<Sentence> getCorrectSentence(Sentence sentence) {
 		ArrayList<Sentence> candSens = new ArrayList<>();
