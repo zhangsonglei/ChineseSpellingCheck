@@ -1,5 +1,7 @@
 package hust.tools.csc.detecet;
 
+import hust.tools.csc.util.Sentence;
+
 /**
  *<ul>
  *<li>Description: 句子错误检测器接口 
@@ -11,34 +13,17 @@ package hust.tools.csc.detecet;
 public interface Detector {
 	
 	/**
-	 * 返回拼写错误的集合
-	 * @return	拼写错误的集合
+	 * 返回给定句子的查错的结果
+	 * @param sentence	待查错的句子
+	 * @return			查错的结果
 	 */
-	public SpellError[] getErrors(int index);
+	public DetectResult detect(Sentence sentence);
 	
 	/**
-	 * 返回排名第n的候选检错结果的位置，，数组索引与getErrorCharacter（int n）一一对应
-	 * @param n		            检错结果的排列的名次
-	 * @return			排名第n的候选检错结果（检错的位置）
+	 * 返回给定句子的最优的k个查错的结果
+	 * @param sentence	待查错的句子
+	 * @param k			返回的候选结果数
+	 * @return			查错的k个结果
 	 */
-	public int[] getErrorLocation(int n);
-	
-	/**
-	 * 返回排名第n的候选检错结果的错字，数组索引与getErrorLocation（int n）一一对应
-	 * @param n		            检错结果的排列的名次
-	 * @return			排名第n的候选检错结果（检错的位置）
-	 */
-	public String[] getErrorCharacter(int n);
-	
-	/**
-	 * 返回给定句子的所有候选检错结果的位置索引，二维数组的索引与getErrorCharacter（）一一对应
-	 * @return	所有候选检错结果的位置索引		
-	 */
-	public int[][] getErrorLocation();
-	
-	/**
-	 * 返回给定句子的所有候选检错的错字，二维数组的索引与getErrorLocation（）一一对应
-	 * @return	所有候选检错的错字
-	 */
-	public String[][] getErrorCharacter();
+	public DetectResult detect(Sentence sentence, int k);
 }

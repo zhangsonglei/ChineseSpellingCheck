@@ -25,7 +25,7 @@ import hust.tools.csc.util.Sentence;
  *<li>Date: 2017年11月21日
  *</ul>
  */
-public class CSCApp {
+public class CSCTool {
 	
 	/**
 	 * 训练并输出拼写纠正模型
@@ -85,7 +85,7 @@ public class CSCApp {
 		Sentence bestSentence = null;
 		for(Sentence sentence : sentences) {
 			System.out.println(no++);
-			bestSentence = checkModel.correct(sentence);
+			bestSentence = checkModel.bestSentence(sentence);
 			writer.write(bestSentence.toString());
 			writer.newLine();
 		}
@@ -115,7 +115,7 @@ public class CSCApp {
 		
 		Sentence bestSentence = null;
 		for(Sentence sentence : original) {
-			bestSentence = checkModel.correct(sentence);
+			bestSentence = checkModel.bestSentence(sentence);
 			result.add(bestSentence);
 		}
 		

@@ -1,4 +1,4 @@
-package hust.tools.csc.checker;
+package hust.tools.csc.model;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashSet;
 
 import hust.tools.csc.ngram.NGramModel;
-import hust.tools.csc.score.AbstractNoisyChannelModel;
 import hust.tools.csc.util.ConfusionSet;
 import hust.tools.csc.util.Dictionary;
 import hust.tools.csc.util.Sentence;
@@ -14,35 +13,46 @@ import hust.tools.csc.wordseg.AbstractWordSegment;
 
 /**
  *<ul>
- *<li>Description: 在HUST噪音通道模型的基础上，引入当前字与前后邻居组成的bigram的概率  
+ *<li>Description: 在HUST噪音通道模型的基础上，引入字的概率,字的概率通过平衡语料获取 (pro = count/totalConfusion)
  *<li>Company: HUST
  *<li>@author Sonly
  *<li>Date: 2017年11月16日
  *</ul>
  */
-public class HUSTNoisyChannelModelBasedBigram extends AbstractNoisyChannelModel {
+public class HUSTNoisyChannelModelBasedCharacterInBalance extends AbstractNoisyChannelModel {
 	
 	private Dictionary dictionary;
 	private AbstractWordSegment wordSegment;
+	private Dictionary charDict;
  
-	public HUSTNoisyChannelModelBasedBigram(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet,
-			AbstractWordSegment wordSegment) throws IOException {
+	public HUSTNoisyChannelModelBasedCharacterInBalance(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet,
+			AbstractWordSegment wordSegment, String charType) throws IOException {
 		super(confusionSet, nGramModel);
 		
 		this.dictionary = dictionary;
 		this.wordSegment = wordSegment;
+		charDict = buildCharDict(charType);
 	}
 	
-	public HUSTNoisyChannelModelBasedBigram(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet,
-			AbstractWordSegment wordSegment, double magicNumber) throws IOException {
+	public HUSTNoisyChannelModelBasedCharacterInBalance(Dictionary dictionary, NGramModel nGramModel, ConfusionSet confusionSet,
+			AbstractWordSegment wordSegment, String charType, double magicNumber) throws IOException {
 		super(confusionSet, nGramModel, magicNumber);
 		
 		this.dictionary = dictionary;
 		this.wordSegment = wordSegment;
+		charDict = buildCharDict(charType);
 	}
 	
 	@Override
-	public ArrayList<Sentence> getCorrectSentence(Sentence sentence) {
+	public Sentence getBestSentence(Sentence sentence) {
+		return getBestKSentence(sentence, 1).get(0);
+	}
+	
+	@Override
+	public ArrayList<Sentence> getBestKSentence(Sentence sentence, int k) {
+		if(k < 1)
+			throw new IllegalArgumentException("返回候选句子数目不能小于1");
+		beamSize = k;
 		ArrayList<Sentence> candSens = new ArrayList<>();
 		ArrayList<String> words = wordSegment.segment(sentence);
 		
@@ -76,20 +86,9 @@ public class HUSTNoisyChannelModelBasedBigram extends AbstractNoisyChannelModel 
 
 	@Override
 	public double getChannelModelLogScore(Sentence sentence, int location, String candidate, HashSet<String> cands) {
-		double totalBigram = getTotalPrefixAndSuffixBigramCount(sentence, location, cands, dictionary);
+		double total = getTotalCharcterCount(cands, charDict);
+		int count = charDict.getCount(candidate);
 		
-		String preToken = "";
-		String nextToken = "";
-		if(location > 0)
-			preToken = sentence.getToken(location - 1);
-		if(location < sentence.size() - 1)
-			nextToken = sentence.getToken(location + 1);
-		String prefixBigram = preToken + candidate;
-		String suffixBigram = candidate + nextToken;
-		
-		int prefixBigramCount = dictionary.getCount(prefixBigram);
-		int suffixBigramCount = dictionary.getCount(suffixBigram);
-		
-		return prefixBigramCount * suffixBigramCount / totalBigram;
+		return count / total;
 	}	
 }

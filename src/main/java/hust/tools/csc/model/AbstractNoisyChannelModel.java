@@ -1,4 +1,4 @@
-package hust.tools.csc.score;
+package hust.tools.csc.model;
 
 import java.io.File;
 import java.io.IOException;

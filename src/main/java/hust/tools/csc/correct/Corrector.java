@@ -1,5 +1,7 @@
 package hust.tools.csc.correct;
 
+import hust.tools.csc.util.Sentence;
+
 /**
  *<ul>
  *<li>Description: 句子纠正器接口 
@@ -11,22 +13,17 @@ package hust.tools.csc.correct;
 public interface Corrector {
 	
 	/**
-	 * 返回所有候选纠正结果，第一维度为候选纠正结果的排名，第二维度为纠正结果
-	 * @return	所有候选纠正结果
+	 * 返回给定句子的纠正的结果
+	 * @param sentence	待纠正的句子
+	 * @return			纠正的结果
 	 */
-	public Correction[][] getCorrects();
+	public CorrectResult correct(Sentence sentence);
 	
 	/**
-	 * 返回排名第order的候选纠正结果
-	 * @param order	候选纠正结果的排名
-	 * @return		排名第order的候选纠正结果
+	 * 返回给定句子的最优的k个纠正的结果
+	 * @param sentence	待纠正的句子
+	 * @param k			返回的候选结果数
+	 * @return			纠正的k个结果
 	 */
-	public Correction[] getCorrects(int location);
-	
-	
-	/**
-	 * 返回给定位置的纠正词列表，如果该字没错，返回null
-	 * @return	给定位置的纠正词列表，如果该字没错，返回null
-	 */
-	public Suggestions getSuggestions(int location);
+	public CorrectResult correct(Sentence sentence, int k);
 }

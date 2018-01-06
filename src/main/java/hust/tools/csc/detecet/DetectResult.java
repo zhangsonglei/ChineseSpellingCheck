@@ -20,7 +20,7 @@ public class DetectResult {
 	public DetectResult() {
 		this(new ArrayList<>());
 	}
-		
+	
 	public DetectResult(ArrayList<SpellError[]> errorList) {
 		this.errorList = errorList;
 	}
@@ -116,6 +116,14 @@ public class DetectResult {
 			return errorList.get(index);
 		
 		return null;
+	}
+	
+	public boolean hasNext() {
+		return errorList.iterator().hasNext();
+	}
+	
+	public SpellError[] next() {
+		return errorList.iterator().next();
 	}
 	
 	@Override

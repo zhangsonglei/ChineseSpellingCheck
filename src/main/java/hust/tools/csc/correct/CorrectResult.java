@@ -14,18 +14,11 @@ import java.util.HashMap;
 public class CorrectResult {
 	
 	private HashMap<Integer, Suggestions> map;
+	
 	private ArrayList<Correction[]> correctionList;
 	
 	public CorrectResult() {
 		this(new HashMap<>(), new ArrayList<>());
-	}
-	
-	public CorrectResult(HashMap<Integer, Suggestions> map) {
-		this(map, new ArrayList<>());
-	}
-	
-	public CorrectResult(ArrayList<Correction[]> correctionList) {
-		this(new HashMap<>(), correctionList);
 	}
 	
 	public CorrectResult(HashMap<Integer, Suggestions> map, ArrayList<Correction[]> correctionList) {
@@ -100,5 +93,13 @@ public class CorrectResult {
 	 */
 	public boolean contains(int location) {
 		return map.containsKey(location);
+	}
+	
+	public boolean hasNext() {
+		return correctionList.iterator().hasNext();
+	}
+	
+	public Correction[] next() {
+		return correctionList.iterator().next();
 	}
 }

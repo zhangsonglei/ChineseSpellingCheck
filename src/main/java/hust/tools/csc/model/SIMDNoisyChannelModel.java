@@ -1,10 +1,9 @@
-package hust.tools.csc.checker;
+package hust.tools.csc.model;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import hust.tools.csc.ngram.NGramModel;
-import hust.tools.csc.score.AbstractNoisyChannelModel;
 import hust.tools.csc.util.ConfusionSet;
 import hust.tools.csc.util.Dictionary;
 import hust.tools.csc.util.Sentence;
@@ -35,7 +34,15 @@ public class SIMDNoisyChannelModel extends AbstractNoisyChannelModel {
 	}
 	
 	@Override
-	public ArrayList<Sentence> getCorrectSentence(Sentence sentence) {
+	public Sentence getBestSentence(Sentence sentence) {
+		return getBestKSentence(sentence, 1).get(0);
+	}
+	
+	@Override
+	public ArrayList<Sentence> getBestKSentence(Sentence sentence, int k) {
+		if(k < 1)
+			throw new IllegalArgumentException("返回候选句子数目不能小于1");
+		beamSize = k;
 		ArrayList<Integer> tempLocations = getErrorLocationsBySIMD(dictionary, sentence);
 //		ArrayList<Integer> errorLocations = new ArrayList<>();
 		ArrayList<Sentence> res = new ArrayList<>();
