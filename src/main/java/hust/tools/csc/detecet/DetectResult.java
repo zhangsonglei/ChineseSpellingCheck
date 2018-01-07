@@ -1,6 +1,7 @@
 package hust.tools.csc.detecet;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  *<ul>
@@ -11,7 +12,7 @@ import java.util.ArrayList;
  *</ul>
  */
 public class DetectResult {
-		
+	
 	/**
 	 * 拼写错误列表
 	 */
@@ -118,12 +119,8 @@ public class DetectResult {
 		return null;
 	}
 	
-	public boolean hasNext() {
-		return errorList.iterator().hasNext();
-	}
-	
-	public SpellError[] next() {
-		return errorList.iterator().next();
+	public Iterator<SpellError[]> iterator() {
+		return errorList.iterator();
 	}
 	
 	@Override

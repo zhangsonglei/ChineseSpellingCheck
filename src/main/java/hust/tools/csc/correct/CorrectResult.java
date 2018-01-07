@@ -2,6 +2,7 @@ package hust.tools.csc.correct;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  *<ul>
@@ -95,11 +96,7 @@ public class CorrectResult {
 		return map.containsKey(location);
 	}
 	
-	public boolean hasNext() {
-		return correctionList.iterator().hasNext();
-	}
-	
-	public Correction[] next() {
-		return correctionList.iterator().next();
+	public Iterator<Correction[]> iterator() {
+		return correctionList.iterator();
 	}
 }
